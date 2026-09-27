@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARS AGENCY - VJ Activity Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #161616;
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --text-main: #f0f0f0;
+            --text-muted: #888888;
+            --border-color: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-top: 15px;
+        }
+
+        .logo-placeholder {
+            width: 65px;
+            height: 65px;
+            border: 2px solid var(--gold);
+            transform: rotate(45deg);
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .logo-text {
+            transform: rotate(-45deg);
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 24px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 18px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--gold);
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.2s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .activity-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        /* ส่วนหัวของการ์ด (ชื่อ VJ และ ป้ายกิจกรรม) */
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+        }
+
+        .vj-main-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .vj-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--gold-light);
+        }
+
+        .vj-id-row {
+            font-size: 13px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            word-break: break-all;
+        }
+
+        /* ป้ายชื่อประเภทกิจกรรม (อิงสีตามชีต) */
+        .activity-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        /* สีตามประเภทกิจกรรมในชีต */
+        .act-pk-battle {
+            background-color: #1a3a6b;
+            color: #d0e1fd;
+            border: 1px solid #3b71ca;
+        }
+
+        .act-super-pk {
+            background-color: #58181f;
+            color: #ffccd2;
+            border: 1px solid #9c2732;
+        }
+
+        .act-family-pk {
+            background-color: #3b1f58;
+            color: #e5ccff;
+            border: 1px solid #7a329c;
+        }
+
+        .act-default {
+            background-color: #2a2a2a;
+            color: #ccc;
+            border: 1px solid #444;
+        }
+
+        /* ตารางแสดง วันที่ และ เวลา ให้เผื่อพื้นที่ข้อความยาวๆ */
+        .card-details {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .detail-item label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-bottom: 3px;
+        }
+
+        .detail-item .value-text {
+            color: var(--gold-light);
+            font-weight: 500;
+            font-size: 13.5px;
+            line-height: 1.4;
+        }
+
+        /* กล่องข้อมูลคู่แข่งและสถานะ */
+        .card-bottom-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .opponent-box {
+            background: rgba(212, 175, 55, 0.03);
+            border: 1px dashed rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .opponent-info-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .opponent-title {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .opponent-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .agency-tag {
+            font-size: 12px;
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* ป้ายสถานะ (อิงสีตามชีตตัวอย่าง) */
+        .status-badge {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .status-success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+        }
+
+        .status-scheduled {
+            background: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            border: 1px solid rgba(23, 162, 184, 0.4);
+        }
+
+        .status-waiting {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+        }
+
+        .status-failed {
+            background: rgba(255, 75, 75, 0.2);
+            color: #ff5252;
+            border: 1px solid rgba(255, 75, 75, 0.4);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .copy-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .loading-text, .no-data {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px;
+            font-size: 14px;
+        }
+
+        /* ปรับหน้าจอโทรศัพท์มือถือ */
+        @media (max-width: 480px) {
+            .card-details {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .card-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .activity-badge {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-placeholder">
+                <span class="logo-text">M</span>
+            </div>
+            <h1>MARS AGENCY</h1>
+            <p>ระบบติดตามสถานะและตารางกิจกรรม VJ (ล่าสุด)</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." onkeyup="filterCards()">
+        </div>
+
+        <div class="card-list" id="cardList">
+            <div class="loading-text">กำลังโหลดข้อมูลล่าสุด... ⏳</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzoyxPdf9LYOOXsM3-oLHYPsXfINY_U5DvKL-XxJuBImsHo2lENVPzw10V_JlWuR1lNoA/exec";
+
+        let allActivities = [];
+
+        async function loadData() {
+            try {
+                let response = await fetch(API_URL);
+                let data = await response.json();
+                
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // กรองเฉพาะกิจกรรมตั้งแต่วันนี้เป็นต้นไป
+                allActivities = data.filter(item => {
+                    if (!item.Date) return false;
+                    let eventDate = new Date(item.Date);
+                    return eventDate >= today;
+                });
+
+                // หากไม่มีกิจกรรมตั้งแต่วันนี้ ให้ดึงรายการล่าสุดตัวสุดท้ายมาแสดง
+                if (allActivities.length === 0 && data.length > 0) {
+                    allActivities = [data[data.length - 1]];
+                }
+
+                renderCards(allActivities);
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาด: ", error);
+                document.getElementById("cardList").innerHTML = `<div class="no-data" style="color: #ff5252;">⚠️ ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบการเชื่อมต่อ</div>`;
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                let d = new Date(dateString);
+                if (isNaN(d.getTime())) return dateString;
+                return d.toLocaleDateString('th-TH', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function formatTime(timeString) {
+            if (!timeString) return '-';
+            try {
+                let d = new Date(timeString);
+                if (!isNaN(d.getTime())) {
+                    let hours = String(d.getHours()).padStart(2, '0');
+                    let minutes = String(d.getMinutes()).padStart(2, '0');
+                    if (hours !== '00' || minutes !== '00') {
+                        return `${hours}:${minutes} น.`;
+                    }
+                }
+                return timeString;
+            } catch (e) {
+                return timeString;
+            }
+        }
+
+        // ฟังก์ชันเลือกสีป้ายประเภทกิจกรรมตามชื่อ
+        function getActivityClass(activityName) {
+            if (!activityName) return 'act-default';
+            let name = activityName.toLowerCase();
+            if (name.includes('battle royal')) return 'act-pk-battle';
+            if (name.includes('super pk')) return 'act-super-pk';
+            if (name.includes('family')) return 'act-family-pk';
+            return 'act-default';
+        }
+
+        // ฟังก์ชันเลือกสีป้ายสถานะตามตาราง Google Sheets
+        function getStatusInfo(status) {
+            if (!status) return { text: 'รออัปเดต', class: 'status-waiting' };
+            let s = status.trim();
+            if (s.includes('สำเร็จ')) return { text: s, class: 'status-success' };
+            if (s.includes('ได้ตารางแล้ว')) return { text: s, class: 'status-scheduled' };
+            if (s.includes('ลงทะเบียนแล้ว') || s.includes('รอ')) return { text: s, class: 'status-waiting' };
+            return { text: s, class: 'status-failed' };
+        }
+
+        function renderCards(data) {
+            let cardList = document.getElementById("cardList");
+            cardList.innerHTML = "";
+
+            if (data.length === 0) {
+                cardList.innerHTML = `<div class="no-data">ไม่พบข้อมูลกิจกรรมล่าสุดในระบบ</div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                let actClass = getActivityClass(item.ActivityName);
+                let statusInfo = getStatusInfo(item.Status);
+                let formattedDate = formatDate(item.Date);
+                let formattedTime = formatTime(item.Time);
+                
+                let cardHTML = `
+                    <div class="activity-card">
+                        <div class="card-top">
+                            <div class="vj-main-info">
+                                <div class="vj-name">${item.Name || '-'}</div>
+                                <div class="vj-id-row">
+                                    ID: ${item.BigoID || '-'} 
+                                    ${item.BigoID ? `<button class="copy-btn" onclick="copyToClipboard('${item.BigoID}', this)" title="คัดลอก VJ ID">📋</button>` : ''}
+                                </div>
+                            </div>
+                            <span class="activity-badge ${actClass}">${item.ActivityName || 'กิจกรรมทั่วไป'}</span>
+                        </div>
+
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <label>📅 วันที่จัดกิจกรรม</label>
+                                <div class="value-text">${formattedDate}</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>⏰ เวลาแข่งขันจริง</label>
+                                <div class="value-text" style="font-weight: 600;">${formattedTime}</div>
+                            </div>
+                        </div>
+
+                        <div class="card-bottom-grid">
+                            <div class="opponent-box">
+                                <div class="opponent-info-left">
+                                    <span class="opponent-title">คู่ประกบ / PK</span>
+                                    <div class="opponent-value">
+                                        ID: <span style="color: var(--gold-light);">${item.OpponentID || 'ยังไม่ระบุ'}</span>
+                                        ${item.OpponentID ? `<button class="copy-btn" onclick="copyToClipboard('${item.OpponentID}', this)" title="คัดลอก ID คู่แข่ง">📋</button>` : ''}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span style="font-size: 10px; color: var(--text-muted); display: block; text-align: right; margin-bottom: 2px;">สังกัดคู่แข่ง</span>
+                                    <span class="agency-tag">${item.OpponentAgency || 'ระบุสังกัด'}</span>
+                                </div>
+                            </div>
+
+                            <div class="status-badge ${statusInfo.class}">
+                                ${statusInfo.text}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cardList.innerHTML += cardHTML;
+            });
+        }
+
+        function filterCards() {
+            let keyword = document.getElementById("searchInput").value.toLowerCase();
+            let filtered = allActivities.filter(item => {
+                let name = (item.Name || '').toLowerCase();
+                let id = (item.BigoID || '').toLowerCase();
+                return name.includes(keyword) || id.includes(keyword);
+            });
+            renderCards(filtered);
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                let originalHTML = btn.innerHTML;
+                btn.innerHTML = "✅";
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 1200);
+            }).catch(err => {
+                console.error('คัดลอกไม่สำเร็จ: ', err);
+            });
+        }
+
+        window.onload = loadData;
+    </script>
+
+</body>
+</html>
