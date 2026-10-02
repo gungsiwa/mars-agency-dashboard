@@ -584,13 +584,13 @@
                 let formattedDate = formatDate(item.Date);
                 let formattedTime = formatTime(item.Time);
                 
-                let ourAvatarHTML = item.OurImage 
-                    ? `<img src="${item.OurImage}" alt="Our VJ">` 
-                    : `<div class="avatar-placeholder-cute">?</div>`;
+                let ourAvatarHTML = (item.OurImage && item.OurImage.trim().length > 5)
+    ? `<img src="${item.OurImage}" alt="Our VJ">` 
+    : `<div class="avatar-placeholder-cute">?</div>`;
 
-                let oppAvatarHTML = item.OpponentImage 
-                    ? `<img src="${item.OpponentImage}" alt="Opponent VJ">` 
-                    : `<div class="avatar-placeholder-cute">?</div>`;
+let oppAvatarHTML = (item.OpponentImage && item.OpponentImage.trim().length > 5)
+    ? `<img src="${item.OpponentImage}" alt="Opponent VJ">` 
+    : `<div class="avatar-placeholder-cute">?</div>`;
 
                 let cardHTML = `
                     <div class="activity-card">
