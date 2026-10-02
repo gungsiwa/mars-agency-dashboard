@@ -420,12 +420,18 @@
                 let response = await fetch(API_URL);
                 let data = await response.json();
                 
-                console.log("Data loaded successfully:", data);
-                
                 let rawActivities = Array.isArray(data) ? data : (data.activities || []);
                 allActivities = rawActivities.slice().reverse();
                 
-                externalLinks = data.externalLinks || data.ExternalLinks || [];
+                // กำหนดลิงก์กิจกรรมเพิ่มเติมแบบกำหนดเองเพื่อความเสถียรสูงสุด
+                externalLinks = [
+                    { name: "📦 PK Battle Royal", url: "https://forms.gle/5Lxx65sWSd5L4DHe8" },
+                    { name: "💎 PK Battle Royal Premium", url: "https://forms.gle/zJB46r5nG5o6xgyB7" },
+                    { name: "⭐ Super PK", url: "https://forms.gle/YjByU88DdrVr7DtH7" },
+                    { name: "✨ Super PK Premium", url: "https://forms.gle/Uei7ZswqRcnQTqF7A" },
+                    { name: "🛡️ Family PK Warriors", url: "https://forms.gle/NXwQsXnQqfaPiwrMA" },
+                    { name: "⚔️ Family Super PK 3-3", url: "https://forms.gle/xrJMdp3R" }
+                ];
 
                 renderCurrentTab();
                 renderExternalLinks();
