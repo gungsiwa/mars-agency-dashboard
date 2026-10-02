@@ -6,6 +6,9 @@
     <title>MARS AGENCY - VJ Activity Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* ==========================================
+           1. CSS VARIABLES & BASE STYLES
+           ================================---------- */
         :root {
             --bg-color: #0d0d0d;
             --card-bg: #161616;
@@ -38,13 +41,15 @@
             max-width: 650px;
         }
 
+        /* ==========================================
+           2. HEADER SECTION
+           ================================---------- */
         .header {
             text-align: center;
             margin-bottom: 25px;
             padding-top: 15px;
         }
 
-        /* โลโก้จริง marslogo.jpg */
         .logo-img-container {
             width: 75px;
             height: 75px;
@@ -78,7 +83,9 @@
             color: var(--text-muted);
         }
 
-        /* เมนูแท็บสลับส่วน */
+        /* ==========================================
+           3. NAVIGATION TABS & SEARCH
+           ================================---------- */
         .dashboard-tabs {
             display: flex;
             gap: 8px;
@@ -128,6 +135,9 @@
             border-color: var(--gold);
         }
 
+        /* ==========================================
+           4. ACTIVITY CARDS & PK MATCH LAYOUT
+           ================================---------- */
         .card-list {
             display: flex;
             flex-direction: column;
@@ -156,7 +166,6 @@
             padding-bottom: 10px;
         }
 
-        /* ส่วนแสดงคู่ PK แบบมีรูปโปรไฟล์กลมๆ */
         .pk-match-container {
             display: flex;
             align-items: center;
@@ -196,7 +205,6 @@
             object-fit: cover;
         }
 
-        /* สัญลักษณ์เครื่องหมายคำถามน่ารักๆ สำหรับรอรูปจริง */
         .avatar-placeholder-cute {
             font-size: 26px;
             color: var(--gold);
@@ -242,6 +250,9 @@
             gap: 4px;
         }
 
+        /* ==========================================
+           5. BADGES & STATUS STYLES
+           ================================---------- */
         .activity-badge {
             display: inline-block;
             padding: 6px 14px;
@@ -295,7 +306,9 @@
         }
         .copy-btn:hover { background: rgba(212, 175, 55, 0.15); }
 
-        /* ส่วนโซนลิงก์กิจกรรมภายนอก */
+        /* ==========================================
+           6. EXTERNAL LINKS SECTION
+           ================================---------- */
         .external-links-section {
             margin-top: 35px;
             border-top: 1px solid var(--border-color);
@@ -345,7 +358,9 @@
             color: var(--text-muted);
         }
 
-        /* ปุ่มลอยติดต่อ LINE */
+        /* ==========================================
+           7. FLOATING BUTTON & UTILITIES
+           ================================---------- */
         .floating-line-btn {
             position: fixed;
             bottom: 20px;
@@ -380,7 +395,7 @@
 <body>
 
     <div class="container">
-        <!-- ส่วนหัวและโลโก้จริง marslogo.jpg -->
+        <!-- ส่วนหัวและโลโก้ -->
         <div class="header">
             <div class="logo-img-container">
                 <img src="marslogo.jpg" alt="MARS Agency Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'75\' height=\'75\'><rect width=\'75\' height=\'75\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'18\' fill=\'%23d4af37\' text-anchor=\'middle\' dominant-baseline=\'central\' font-family=\'sans-serif\'>MARS</text></svg>';">
@@ -396,6 +411,7 @@
             <button class="tab-btn" onclick="switchTab('archive', event)">📂 คลังย้อนหลัง</button>
         </div>
 
+        <!-- ช่องค้นหา -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." onkeyup="filterCards()">
         </div>
@@ -419,7 +435,9 @@
         💬 ติดต่อแอดมิน
     </a>
 
-    <!-- สคริปต์การทำงานของหน้าเว็บและการดึงข้อมูล -->
+    <!-- ==========================================
+       JAVASCRIPT SCRIPT SECTION
+       ========================================== -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzoyxPdf9LYOOXsM3-oLHYPsXfINY_U5DvKL-XxJuBImsHo2lENVPzw10V_JlWuR1lNoA/exec";
 
@@ -427,12 +445,17 @@
         let externalLinks = [];
         let currentTab = 'today';
 
+        // 1. ฟังก์ชันโหลดข้อมูลหลักจาก Google Apps Script
         async function loadData() {
             try {
                 let response = await fetch(API_URL);
                 let data = await response.json();
                 
-                allActivities = Array.isArray(data) ? data : (data.activities || []);
+                // ดึงข้อมูลกิจกรรมและกลับลำดับ (.slice().reverse()) ให้รายการล่าสุดขึ้นก่อน
+                let rawActivities = Array.isArray(data) ? data : (data.activities || []);
+                allActivities = rawActivities.slice().reverse();
+                
+                // ดึงข้อมูลลิงก์ภายนอก
                 externalLinks = data.externalLinks || [];
 
                 renderCurrentTab();
@@ -443,6 +466,7 @@
             }
         }
 
+        // 2. ควบคุมการสลับแท็บแสดงผล
         function switchTab(tabName, event) {
             currentTab = tabName;
             
@@ -454,6 +478,7 @@
             renderCurrentTab();
         }
 
+        // 3. กรองข้อมูลตามแท็บที่เลือก
         function renderCurrentTab() {
             let today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -474,7 +499,7 @@
                     return eventDate >= today;
                 });
                 if(filteredData.length === 0 && allActivities.length > 0) {
-                    filteredData = [allActivities[allActivities.length - 1]];
+                    filteredData = [allActivities[0]];
                 }
             } else if (currentTab === 'archive') {
                 filteredData = allActivities.filter(item => {
@@ -487,6 +512,7 @@
             renderCards(filteredData);
         }
 
+        // 4. ฟังก์ชันจัดรูปแบบวันที่และเวลา
         function formatDate(dateString) {
             if (!dateString) return '-';
             try {
@@ -519,6 +545,7 @@
             }
         }
 
+        // 5. จัดการสีป้ายประเภทกิจกรรมและสถานะ
         function getActivityClass(activityName) {
             if (!activityName) return 'act-default';
             let name = activityName.toLowerCase();
@@ -537,6 +564,7 @@
             return { text: s, class: 'status-failed' };
         }
 
+        // 6. เรนเดอร์การ์ดกิจกรรมลงหน้าเว็บ
         function renderCards(data) {
             let cardList = document.getElementById("cardList");
             cardList.innerHTML = "";
@@ -610,6 +638,7 @@
             });
         }
 
+        // 7. เรนเดอร์ลิงก์ภายนอก (External Links)
         function renderExternalLinks() {
             let container = document.getElementById("externalLinksContainer");
             container.innerHTML = "";
@@ -630,6 +659,7 @@
             });
         }
 
+        // 8. ระบบค้นหาชื่อ VJ / Bigo ID
         function filterCards() {
             let keyword = document.getElementById("searchInput").value.toLowerCase();
             let filtered = allActivities.filter(item => {
@@ -642,6 +672,7 @@
             renderCards(filtered);
         }
 
+        // 9. ระบบคัดลอกข้อความ (Copy ID)
         function copyToClipboard(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 let originalHTML = btn.innerHTML;
@@ -654,6 +685,7 @@
             });
         }
 
+        // เริ่มต้นการทำงานเมื่อโหลดหน้าเว็บ
         window.onload = loadData;
     </script>
 </body>
