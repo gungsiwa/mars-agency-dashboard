@@ -6,9 +6,6 @@
     <title>MARS AGENCY - VJ Activity Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- ========================================== -->
-    <!-- [SECTION]: CSS STYLING                     -->
-    <!-- ========================================== -->
     <style>
         :root {
             --bg-color: #0d0d0d;
@@ -42,7 +39,6 @@
             max-width: 650px;
         }
 
-        /* --- Header & Logo Styles --- */
         .header {
             text-align: center;
             margin-bottom: 25px;
@@ -82,7 +78,6 @@
             color: var(--text-muted);
         }
 
-        /* --- Navigation Tabs & Search Styles --- */
         .dashboard-tabs {
             display: flex;
             gap: 8px;
@@ -132,7 +127,6 @@
             border-color: var(--gold);
         }
 
-        /* --- Activity Card Styles --- */
         .card-list {
             display: flex;
             flex-direction: column;
@@ -301,7 +295,6 @@
         }
         .copy-btn:hover { background: rgba(212, 175, 55, 0.15); }
 
-        /* --- External Links & Footer Section Styles --- */
         .external-links-section {
             margin-top: 35px;
             border-top: 1px solid var(--border-color);
@@ -384,11 +377,7 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- [SECTION]: HTML BODY STRUCTURE             -->
-    <!-- ========================================== -->
     <div class="container">
-        <!-- Header Section -->
         <div class="header">
             <div class="logo-img-container">
                 <img src="marslogo.jpg" alt="MARS Agency Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'75\' height=\'75\'><rect width=\'75\' height=\'75\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'18\' fill=\'%23d4af37\' text-anchor=\'middle\' dominant-baseline=\'central\' font-family=\'sans-serif\'>MARS</text></svg>';">
@@ -397,24 +386,20 @@
             <p>ระบบติดตามสถานะและตารางกิจกรรม VJ</p>
         </div>
 
-        <!-- Dashboard Tabs -->
         <div class="dashboard-tabs">
             <button class="tab-btn active" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
             <button class="tab-btn" onclick="switchTab('latest', event)">⚡ กิจกรรมล่าสุด</button>
             <button class="tab-btn" onclick="switchTab('archive', event)">📂 คลังย้อนหลัง</button>
         </div>
 
-        <!-- Search Box -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." onkeyup="filterCards()">
         </div>
 
-        <!-- Dynamic Card List Container -->
         <div class="card-list" id="cardList">
             <div class="loading-text">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
         </div>
 
-        <!-- External Links Section -->
         <div class="external-links-section">
             <div class="section-title">📌 ลิงก์กิจกรรมและช่องทางสมัครเพิ่มเติม</div>
             <div class="links-grid" id="externalLinksContainer">
@@ -423,14 +408,10 @@
         </div>
     </div>
 
-    <!-- Floating Line Contact Button -->
     <a href="https://line.me/ti/p/~your_line_id" target="_blank" class="floating-line-btn" id="lineContactBtn">
         💬 ติดต่อแอดมิน
     </a>
 
-    <!-- ========================================== -->
-    <!-- [SECTION]: JAVASCRIPT LOGIC & FUNCTIONS    -->
-    <!-- ========================================== -->
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1314436716&single=true&output=csv";
 
@@ -476,7 +457,7 @@
                 }
                 result.push(obj);
             }
-            return result.reverse();
+            return result;
         }
 
         function parseCSVLine(text) {
@@ -509,6 +490,21 @@
             renderCurrentTab();
         }
 
+        function parseLocalDate(dateString) {
+            if (!dateString) return null;
+            let parts = dateString.split(/[-/]/);
+            if (parts.length === 3) {
+                let y = parseInt(parts[0], 10);
+                let m = parseInt(parts[1], 10) - 1;
+                let d = parseInt(parts[2], 10);
+                if (y > 2500) y -= 543; // ป้องกันกรณีปี พ.ศ. เผลอหลุดมา
+                let dateObj = new Date(y, m, d);
+                if (!isNaN(dateObj.getTime())) return dateObj;
+            }
+            let fallback = new Date(dateString);
+            return isNaN(fallback.getTime()) ? null : fallback;
+        }
+
         function renderCurrentTab() {
             let today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -517,26 +513,29 @@
 
             if (currentTab === 'today') {
                 filteredData = allActivities.filter(item => {
-                    if (!item.Date) return false;
-                    let eventDate = new Date(item.Date);
+                    let eventDate = parseLocalDate(item.Date);
+                    if (!eventDate) return false;
                     eventDate.setHours(0, 0, 0, 0);
                     return eventDate.getTime() === today.getTime();
                 });
             } else if (currentTab === 'latest') {
                 filteredData = allActivities.filter(item => {
-                    if (!item.Date) return false;
-                    let eventDate = new Date(item.Date);
-                    return eventDate >= today;
+                    let eventDate = parseLocalDate(item.Date);
+                    if (!eventDate) return false;
+                    eventDate.setHours(0, 0, 0, 0);
+                    return eventDate.getTime() >= today.getTime();
                 });
-                if(filteredData.length === 0 && allActivities.length > 0) {
-                    filteredData = [allActivities[0]];
-                }
+                // เรียงจากวันที่ใกล้สุดไปไกลสุด
+                filteredData.sort((a, b) => parseLocalDate(a.Date) - parseLocalDate(b.Date));
             } else if (currentTab === 'archive') {
                 filteredData = allActivities.filter(item => {
-                    if (!item.Date) return false;
-                    let eventDate = new Date(item.Date);
-                    return eventDate < today;
+                    let eventDate = parseLocalDate(item.Date);
+                    if (!eventDate) return false;
+                    eventDate.setHours(0, 0, 0, 0);
+                    return eventDate.getTime() < today.getTime();
                 });
+                // เรียงจากล่าสุดไปเก่าสุดสำหรับคลังย้อนหลัง
+                filteredData.sort((a, b) => parseLocalDate(b.Date) - parseLocalDate(a.Date));
             }
 
             renderCards(filteredData);
@@ -544,34 +543,18 @@
 
         function formatDate(dateString) {
             if (!dateString) return '-';
-            try {
-                let d = new Date(dateString);
-                if (isNaN(d.getTime())) return dateString;
-                return d.toLocaleDateString('th-TH', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-            } catch (e) {
-                return dateString;
-            }
+            let d = parseLocalDate(dateString);
+            if (!d) return dateString;
+            return d.toLocaleDateString('th-TH', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
         }
 
         function formatTime(timeString) {
             if (!timeString) return '-';
-            try {
-                let d = new Date(timeString);
-                if (!isNaN(d.getTime())) {
-                    let hours = String(d.getHours()).padStart(2, '0');
-                    let minutes = String(d.getMinutes()).padStart(2, '0');
-                    if (hours !== '00' || minutes !== '00') {
-                        return `${hours}:${minutes} น.`;
-                    }
-                }
-                return timeString;
-            } catch (e) {
-                return timeString;
-            }
+            return timeString.includes('น.') ? timeString : `${timeString} น.`;
         }
 
         function getActivityClass(activityName) {
@@ -611,11 +594,11 @@
                 let formattedDate = formatDate(item.Date);
                 let formattedTime = formatTime(item.Time);
                 
-                let ourAvatarHTML = (item.OurImage && String(item.OurImage).trim().length > 5)
+                let ourAvatarHTML = (item.OurImage && item.OurImage.startsWith('http'))
                     ? `<img src="${item.OurImage}" alt="Our VJ">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
-                let oppAvatarHTML = (item.OpponentImage && String(item.OpponentImage).trim().length > 5)
+                let oppAvatarHTML = (item.OpponentImage && item.OpponentImage.startsWith('http'))
                     ? `<img src="${item.OpponentImage}" alt="Opponent VJ">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
@@ -662,30 +645,6 @@
                     </div>
                 `;
                 cardList.innerHTML += cardHTML;
-            });
-        }
-
-        function renderExternalLinks() {
-            let container = document.getElementById("externalLinksContainer");
-            if (!container) return;
-            container.innerHTML = "";
-
-            if (!externalLinks || externalLinks.length === 0) {
-                container.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">ยังไม่มีลิงก์กิจกรรมเพิ่มเติม</div>`;
-                return;
-            }
-
-            externalLinks.forEach(link => {
-                let name = link.name || "ลิงก์กิจกรรม";
-                let url = link.url || "#";
-
-                let linkHTML = `
-                    <a href="${url}" target="_blank" class="external-link-card">
-                        <span class="external-link-name">🔗 ${name}</span>
-                        <span class="external-link-icon">เปิดดู ➔</span>
-                    </a>
-                `;
-                container.innerHTML += linkHTML;
             });
         }
 
