@@ -528,7 +528,6 @@
 
             let filteredData = [];
 
-            // Helper ค้นหา property แบบไม่สนตัวพิมพ์เล็ก-ใหญ่หรือช่องว่างแหลมคม
             const getVal = (item, keyName) => {
                 let foundKey = Object.keys(item).find(k => k.trim().toLowerCase() === keyName.toLowerCase());
                 return foundKey ? item[foundKey] : '';
@@ -543,14 +542,14 @@
                     return eventDate.getTime() === today.getTime();
                 });
             } else if (currentTab === 'latest') {
-                filteredData = allActivities.filter(item => {
-                    let dateStr = getVal(item, 'Date');
-                    let eventDate = parseLocalDate(dateStr);
-                    if (!eventDate) return false;
-                    eventDate.setHours(0, 0, 0, 0);
-                    return eventDate.getTime() >= today.getTime();
+                // เปลี่ยนเป็นแสดงกิจกรรมล่าสุดทั้งหมด (เรียงจากใหม่ไปเก่า หรือใกล้เคียงที่สุด)
+                filteredData = [...allActivities];
+                filteredData.sort((a, b) => {
+                    let dateA = parseLocalDate(getVal(a, 'Date')) || new Date(0);
+                    let dateB = parseLocalDate(getVal(b, 'Date')) || new Date(0);
+                    return dateB - dateA; // เอาใหม่สุดขึ้นก่อน
                 });
-                filteredData.sort((a, b) => parseLocalDate(getVal(a, 'Date')) - parseLocalDate(getVal(b, 'Date')));
+                filteredData = filteredData.slice(0, 15); // แสดงจำกัด 15 รายการล่าสุด
             } else if (currentTab === 'archive') {
                 filteredData = allActivities.filter(item => {
                     let dateStr = getVal(item, 'Date');
@@ -564,6 +563,7 @@
 
             renderCards(filteredData);
         }
+        
 
         function formatDate(dateString) {
             if (!dateString) return '-';
@@ -634,12 +634,15 @@
                 let formattedDate = formatDate(dateVal);
                 let formattedTime = formatTime(timeVal);
                 
-                let ourAvatarHTML = (ourImgVal && ourImgVal.startsWith('http'))
-                    ? `<img src="${ourImgVal}" alt="Our VJ">` 
+                let ourImgClean = ourImgVal ? ourImgVal.trim() : '';
+                let oppImgClean = oppImgVal ? oppImgVal.trim() : '';
+
+                let ourAvatarHTML = (ourImgClean && (ourImgClean.startsWith('http') || ourImgClean.startsWith('www')))
+                    ? `<img src="${ourImgClean}" alt="Our VJ" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-placeholder-cute\'>?</div>';">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
-                let oppAvatarHTML = (oppImgVal && oppImgVal.startsWith('http'))
-                    ? `<img src="${oppImgVal}" alt="Opponent VJ">` 
+                let oppAvatarHTML = (oppImgClean && (oppImgClean.startsWith('http') || oppImgClean.startsWith('www')))
+                    ? `<img src="${oppImgClean}" alt="Opponent VJ" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-placeholder-cute\'>?</div>';">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
                 let cardHTML = `
