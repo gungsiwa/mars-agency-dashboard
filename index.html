@@ -181,7 +181,6 @@
             gap: 8px;
         }
 
-        /* [FIXED]: Image Avatar CSS for Proper Scaling and Circular Fit */
         .profile-avatar {
             width: 65px;
             height: 65px;
@@ -433,7 +432,8 @@
     <!-- [SECTION]: JAVASCRIPT LOGIC & FUNCTIONS    -->
     <!-- ========================================== -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzoyxPdf9LYOOXsM3-oLHYPsXfINY_U5DvKL-XxJuBImsHo2lENVPzw10V_JlWuR1lNoA/exec";
+        // ใช้ลิงก์ CSV จาก Google Sheets โดยตรง (แทน Apps Script เดิม)
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1TJWD3ykewPoGOtyn8-52fE_mY8GzoSeW2zHJgixSnjs/export?format=csv";
 
         let allActivities = [];
         let externalLinks = [];
@@ -441,13 +441,11 @@
 
         async function loadData() {
             try {
-                // 1. โหลดข้อมูลกิจกรรมหลักจาก Google Apps Script
-                let response = await fetch(API_URL);
-                let data = await response.json();
+                // 1. โหลดข้อมูลกิจกรรมจาก Google Sheets CSV
+                let response = await fetch(SHEET_CSV_URL);
+                let csvText = await response.text();
                 
-                let rawActivities = Array.isArray(data) ? data : (data.activities || []);
-                allActivities = rawActivities.slice().reverse();
-
+                allActivities = parseCSV(csvText);
                 renderCurrentTab();
             } catch (error) {
                 console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลกิจกรรม: ", error);
@@ -463,6 +461,45 @@
                 console.error("ไม่สามารถโหลดไฟล์ links.json ได้: ", error);
                 document.getElementById("externalLinksContainer").innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์กิจกรรมเพิ่มเติม</div>`;
             }
+        }
+
+        // ฟังก์ชันแปลง CSV เป็น Array ของ Object (รองรับการตัดคอมมาในข้อความเครื่องหมายคำพูด)
+        function parseCSV(text) {
+            let lines = text.split('\n');
+            if (lines.length < 2) return [];
+
+            let headers = parseCSVLine(lines[0]);
+            let result = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                let currentLine = parseCSVLine(lines[i]);
+                let obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j].trim()] = currentLine[j] ? currentLine[j].trim() : '';
+                }
+                result.push(obj);
+            }
+            return result.reverse(); // เรียงลำดับจากล่าสุด
+        }
+
+        function parseCSVLine(text) {
+            let result = [];
+            let insideQuotes = false;
+            let entry = '';
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (c === '"') {
+                    insideQuotes = !insideQuotes;
+                } else if (c === ',' && !insideQuotes) {
+                    result.push(entry);
+                    entry = '';
+                } else {
+                    entry += c;
+                }
+            }
+            result.push(entry);
+            return result.map(item => item.replace(/^"|"$/g, '').trim());
         }
 
         function switchTab(tabName, event) {
