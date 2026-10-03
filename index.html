@@ -445,7 +445,7 @@
             let lines = text.split('\n');
             if (lines.length < 2) return [];
 
-            let headers = parseCSVLine(lines[0]);
+            let headers = parseCSVLine(lines[0]).map(h => h.trim());
             let result = [];
 
             for (let i = 1; i < lines.length; i++) {
@@ -453,7 +453,8 @@
                 let currentLine = parseCSVLine(lines[i]);
                 let obj = {};
                 for (let j = 0; j < headers.length; j++) {
-                    obj[headers[j].trim()] = currentLine[j] ? currentLine[j].trim() : '';
+                    let key = headers[j];
+                    obj[key] = currentLine[j] ? currentLine[j].trim() : '';
                 }
                 result.push(obj);
             }
@@ -497,7 +498,7 @@
                 let y = parseInt(parts[0], 10);
                 let m = parseInt(parts[1], 10) - 1;
                 let d = parseInt(parts[2], 10);
-                if (y > 2500) y -= 543; // ป้องกันกรณีปี พ.ศ. เผลอหลุดมา
+                if (y > 2500) y -= 543; // ป้องกันกรณีปี พ.ศ. หลุดมา
                 let dateObj = new Date(y, m, d);
                 if (!isNaN(dateObj.getTime())) return dateObj;
             }
@@ -511,31 +512,38 @@
 
             let filteredData = [];
 
+            // Helper ค้นหา property แบบไม่สนตัวพิมพ์เล็ก-ใหญ่หรือช่องว่างแหลมคม
+            const getVal = (item, keyName) => {
+                let foundKey = Object.keys(item).find(k => k.trim().toLowerCase() === keyName.toLowerCase());
+                return foundKey ? item[foundKey] : '';
+            };
+
             if (currentTab === 'today') {
                 filteredData = allActivities.filter(item => {
-                    let eventDate = parseLocalDate(item.Date);
+                    let dateStr = getVal(item, 'Date');
+                    let eventDate = parseLocalDate(dateStr);
                     if (!eventDate) return false;
                     eventDate.setHours(0, 0, 0, 0);
                     return eventDate.getTime() === today.getTime();
                 });
             } else if (currentTab === 'latest') {
                 filteredData = allActivities.filter(item => {
-                    let eventDate = parseLocalDate(item.Date);
+                    let dateStr = getVal(item, 'Date');
+                    let eventDate = parseLocalDate(dateStr);
                     if (!eventDate) return false;
                     eventDate.setHours(0, 0, 0, 0);
                     return eventDate.getTime() >= today.getTime();
                 });
-                // เรียงจากวันที่ใกล้สุดไปไกลสุด
-                filteredData.sort((a, b) => parseLocalDate(a.Date) - parseLocalDate(b.Date));
+                filteredData.sort((a, b) => parseLocalDate(getVal(a, 'Date')) - parseLocalDate(getVal(b, 'Date')));
             } else if (currentTab === 'archive') {
                 filteredData = allActivities.filter(item => {
-                    let eventDate = parseLocalDate(item.Date);
+                    let dateStr = getVal(item, 'Date');
+                    let eventDate = parseLocalDate(dateStr);
                     if (!eventDate) return false;
                     eventDate.setHours(0, 0, 0, 0);
                     return eventDate.getTime() < today.getTime();
                 });
-                // เรียงจากล่าสุดไปเก่าสุดสำหรับคลังย้อนหลัง
-                filteredData.sort((a, b) => parseLocalDate(b.Date) - parseLocalDate(a.Date));
+                filteredData.sort((a, b) => parseLocalDate(getVal(b, 'Date')) - parseLocalDate(getVal(a, 'Date')));
             }
 
             renderCards(filteredData);
@@ -588,24 +596,40 @@
                 return;
             }
 
+            const getVal = (item, keyName) => {
+                let foundKey = Object.keys(item).find(k => k.trim().toLowerCase() === keyName.toLowerCase());
+                return foundKey ? item[foundKey] : '';
+            };
+
             data.forEach(item => {
-                let actClass = getActivityClass(item.ActivityName);
-                let statusInfo = getStatusInfo(item.Status);
-                let formattedDate = formatDate(item.Date);
-                let formattedTime = formatTime(item.Time);
+                let actName = getVal(item, 'ActivityName');
+                let dateVal = getVal(item, 'Date');
+                let timeVal = getVal(item, 'Time');
+                let statusVal = getVal(item, 'Status');
+                let nameVal = getVal(item, 'Name');
+                let bigoIdVal = getVal(item, 'BigoID');
+                let ourImgVal = getVal(item, 'OurImage');
+                let oppIdVal = getVal(item, 'OpponentID');
+                let oppAgencyVal = getVal(item, 'OpponentAgency');
+                let oppImgVal = getVal(item, 'OpponentImage');
+
+                let actClass = getActivityClass(actName);
+                let statusInfo = getStatusInfo(statusVal);
+                let formattedDate = formatDate(dateVal);
+                let formattedTime = formatTime(timeVal);
                 
-                let ourAvatarHTML = (item.OurImage && item.OurImage.startsWith('http'))
-                    ? `<img src="${item.OurImage}" alt="Our VJ">` 
+                let ourAvatarHTML = (ourImgVal && ourImgVal.startsWith('http'))
+                    ? `<img src="${ourImgVal}" alt="Our VJ">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
-                let oppAvatarHTML = (item.OpponentImage && item.OpponentImage.startsWith('http'))
-                    ? `<img src="${item.OpponentImage}" alt="Opponent VJ">` 
+                let oppAvatarHTML = (oppImgVal && oppImgVal.startsWith('http'))
+                    ? `<img src="${oppImgVal}" alt="Opponent VJ">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
                 let cardHTML = `
                     <div class="activity-card">
                         <div class="card-top">
-                            <span class="activity-badge ${actClass}">${item.ActivityName || 'กิจกรรมทั่วไป'}</span>
+                            <span class="activity-badge ${actClass}">${actName || 'กิจกรรมทั่วไป'}</span>
                             <span style="font-size: 11px; color: var(--text-muted);">${formattedDate} | ${formattedTime}</span>
                         </div>
 
@@ -613,10 +637,10 @@
                             <div class="vj-profile-side">
                                 <div class="profile-avatar">${ourAvatarHTML}</div>
                                 <div class="vj-info-details">
-                                    <div class="vj-name" title="${item.Name || '-'}">${item.Name || '-'}</div>
+                                    <div class="vj-name" title="${nameVal || '-'}">${nameVal || '-'}</div>
                                     <div class="vj-id-row">
-                                        ID: ${item.BigoID || '-'} 
-                                        ${item.BigoID ? `<button class="copy-btn" onclick="copyToClipboard('${item.BigoID}', this)" title="คัดลอก VJ ID">📋</button>` : ''}
+                                        ID: ${bigoIdVal || '-'} 
+                                        ${bigoIdVal ? `<button class="copy-btn" onclick="copyToClipboard('${bigoIdVal}', this)" title="คัดลอก VJ ID">📋</button>` : ''}
                                     </div>
                                     <span class="agency-tag">MARS Agency</span>
                                 </div>
@@ -629,10 +653,10 @@
                                 <div class="vj-info-details">
                                     <div class="vj-name" style="color: var(--text-muted);">คู่แข่ง</div>
                                     <div class="vj-id-row">
-                                        ID: ${item.OpponentID || '-'} 
-                                        ${item.OpponentID ? `<button class="copy-btn" onclick="copyToClipboard('${item.OpponentID}', this)" title="คัดลอก ID คู่แข่ง">📋</button>` : ''}
+                                        ID: ${oppIdVal || '-'} 
+                                        ${oppIdVal ? `<button class="copy-btn" onclick="copyToClipboard('${oppIdVal}', this)" title="คัดลอก ID คู่แข่ง">📋</button>` : ''}
                                     </div>
-                                    <span class="agency-tag" style="color: #f39c12; background: rgba(243, 156, 18, 0.1);">${item.OpponentAgency || 'ระบุสังกัด'}</span>
+                                    <span class="agency-tag" style="color: #f39c12; background: rgba(243, 156, 18, 0.1);">${oppAgencyVal || 'ระบุสังกัด'}</span>
                                 </div>
                             </div>
                         </div>
@@ -648,12 +672,38 @@
             });
         }
 
+        function renderExternalLinks() {
+            let container = document.getElementById("externalLinksContainer");
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (!externalLinks || externalLinks.length === 0) {
+                container.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์กิจกรรมเพิ่มเติม</div>`;
+                return;
+            }
+
+            externalLinks.forEach(link => {
+                let linkHTML = `
+                    <a href="${link.url}" target="_blank" class="external-link-card">
+                        <span class="external-link-name">📌 ${link.name}</span>
+                        <span class="external-link-icon">🔗 ไปยังลิงก์</span>
+                    </a>
+                `;
+                container.innerHTML += linkHTML;
+            });
+        }
+
         function filterCards() {
             let keyword = document.getElementById("searchInput").value.toLowerCase();
+            const getVal = (item, keyName) => {
+                let foundKey = Object.keys(item).find(k => k.trim().toLowerCase() === keyName.toLowerCase());
+                return foundKey ? item[foundKey] : '';
+            };
+
             let filtered = allActivities.filter(item => {
-                let name = (item.Name || '').toLowerCase();
-                let id = (item.BigoID || '').toLowerCase();
-                let oppId = (item.OpponentID || '').toLowerCase();
+                let name = getVal(item, 'Name').toLowerCase();
+                let id = getVal(item, 'BigoID').toLowerCase();
+                let oppId = getVal(item, 'OpponentID').toLowerCase();
                 return name.includes(keyword) || id.includes(keyword) || oppId.includes(keyword);
             });
             renderCards(filtered);
