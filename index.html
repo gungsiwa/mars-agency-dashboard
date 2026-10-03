@@ -432,7 +432,6 @@
     <!-- [SECTION]: JAVASCRIPT LOGIC & FUNCTIONS    -->
     <!-- ========================================== -->
     <script>
-        // ใช้ลิงก์ CSV จาก Google Sheets โดยตรง (แทน Apps Script เดิม)
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1TJWD3ykewPoGOtyn8-52fE_mY8GzoSeW2zHJgixSnjs/export?format=csv";
 
         let allActivities = [];
@@ -441,7 +440,6 @@
 
         async function loadData() {
             try {
-                // 1. โหลดข้อมูลกิจกรรมจาก Google Sheets CSV
                 let response = await fetch(SHEET_CSV_URL);
                 let csvText = await response.text();
                 
@@ -453,7 +451,6 @@
             }
 
             try {
-                // 2. โหลดลิงก์เพิ่มเติมจากไฟล์ links.json บน GitHub โดยตรง
                 let linkRes = await fetch('links.json');
                 externalLinks = await linkRes.json();
                 renderExternalLinks();
@@ -463,7 +460,6 @@
             }
         }
 
-        // ฟังก์ชันแปลง CSV เป็น Array ของ Object (รองรับการตัดคอมมาในข้อความเครื่องหมายคำพูด)
         function parseCSV(text) {
             let lines = text.split('\n');
             if (lines.length < 2) return [];
@@ -480,7 +476,7 @@
                 }
                 result.push(obj);
             }
-            return result.reverse(); // เรียงลำดับจากล่าสุด
+            return result.reverse();
         }
 
         function parseCSVLine(text) {
@@ -648,7 +644,7 @@
                             <div class="vj-profile-side">
                                 <div class="profile-avatar">${oppAvatarHTML}</div>
                                 <div class="vj-info-details">
-                                    <div class="vj-name" title="${item.OpponentName || 'คู่แข่ง'}">${item.OpponentName || 'คู่แข่ง'}</div>
+                                    <div class="vj-name" style="color: var(--text-muted);">คู่แข่ง</div>
                                     <div class="vj-id-row">
                                         ID: ${item.OpponentID || '-'} 
                                         ${item.OpponentID ? `<button class="copy-btn" onclick="copyToClipboard('${item.OpponentID}', this)" title="คัดลอก ID คู่แข่ง">📋</button>` : ''}
@@ -698,9 +694,8 @@
             let filtered = allActivities.filter(item => {
                 let name = (item.Name || '').toLowerCase();
                 let id = (item.BigoID || '').toLowerCase();
-                let oppName = (item.OpponentName || '').toLowerCase();
                 let oppId = (item.OpponentID || '').toLowerCase();
-                return name.includes(keyword) || id.includes(keyword) || oppName.includes(keyword) || oppId.includes(keyword);
+                return name.includes(keyword) || id.includes(keyword) || oppId.includes(keyword);
             });
             renderCards(filtered);
         }
