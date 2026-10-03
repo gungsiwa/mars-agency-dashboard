@@ -493,16 +493,32 @@
 
         function parseLocalDate(dateString) {
             if (!dateString) return null;
-            let parts = dateString.split(/[-/]/);
-            if (parts.length === 3) {
-                let y = parseInt(parts[0], 10);
-                let m = parseInt(parts[1], 10) - 1;
-                let d = parseInt(parts[2], 10);
-                if (y > 2500) y -= 543; // ป้องกันกรณีปี พ.ศ. หลุดมา
+            let cleanStr = dateString.trim();
+            
+            // กรณีรูปแบบ DD/MM/YYYY หรือ D/M/YYYY
+            let slashParts = cleanStr.split('/');
+            if (slashParts.length === 3) {
+                let d = parseInt(slashParts[0], 10);
+                let m = parseInt(slashParts[1], 10) - 1;
+                let y = parseInt(slashParts[2], 10);
+                if (y > 2500) y -= 543; // แปลง พ.ศ. เป็น ค.ศ.
+                if (y < 100) y += 2000; // รองรับปี พ.ศ. สั้น เช่น 69 -> 2026 หรือ ค.ศ. 26 -> 2026
                 let dateObj = new Date(y, m, d);
                 if (!isNaN(dateObj.getTime())) return dateObj;
             }
-            let fallback = new Date(dateString);
+
+            // กรณีรูปแบบ YYYY-MM-DD (มาตรฐานสากล/Google Sheets บางแบบ)
+            let dashParts = cleanStr.split('-');
+            if (dashParts.length === 3) {
+                let y = parseInt(dashParts[0], 10);
+                let m = parseInt(dashParts[1], 10) - 1;
+                let d = parseInt(dashParts[2], 10);
+                if (y > 2500) y -= 543;
+                let dateObj = new Date(y, m, d);
+                if (!isNaN(dateObj.getTime())) return dateObj;
+            }
+
+            let fallback = new Date(cleanStr);
             return isNaN(fallback.getTime()) ? null : fallback;
         }
 
