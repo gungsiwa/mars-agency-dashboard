@@ -494,19 +494,17 @@
             if (!dateString) return null;
             let cleanStr = dateString.trim();
             
-            // กรณีรูปแบบ DD/MM/YYYY หรือ D/M/YYYY
             let slashParts = cleanStr.split('/');
             if (slashParts.length === 3) {
                 let d = parseInt(slashParts[0], 10);
                 let m = parseInt(slashParts[1], 10) - 1;
                 let y = parseInt(slashParts[2], 10);
-                if (y > 2500) y -= 543; // แปลง พ.ศ. เป็น ค.ศ.
-                if (y < 100) y += 2000; // รองรับปี พ.ศ. สั้น เช่น 69 -> 2026 หรือ ค.ศ. 26 -> 2026
+                if (y > 2500) y -= 543; 
+                if (y < 100) y += 2000; 
                 let dateObj = new Date(y, m, d);
                 if (!isNaN(dateObj.getTime())) return dateObj;
             }
 
-            // กรณีรูปแบบ YYYY-MM-DD (มาตรฐานสากล/Google Sheets บางแบบ)
             let dashParts = cleanStr.split('-');
             if (dashParts.length === 3) {
                 let y = parseInt(dashParts[0], 10);
@@ -541,7 +539,6 @@
                     return eventDate.getTime() === today.getTime();
                 });
             } else if (currentTab === 'archive') {
-                // กิจกรรมย้อนหลัง (รวมทุกวันที่ผ่านมาแล้ว)
                 filteredData = allActivities.filter(item => {
                     let dateStr = getVal(item, 'Date');
                     let eventDate = parseLocalDate(dateStr);
@@ -623,15 +620,12 @@
                 let formattedDate = formatDate(dateVal);
                 let formattedTime = formatTime(timeVal);
                 
-                let ourImgClean = ourImgVal ? ourImgVal.trim() : '';
-                let oppImgClean = oppImgVal ? oppImgVal.trim() : '';
-
-                let ourAvatarHTML = (ourImgClean && (ourImgClean.startsWith('http') || ourImgClean.startsWith('www')))
-                    ? `<img src="${ourImgClean}" alt="Our VJ" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-placeholder-cute\'>?</div>';">` 
+                let ourAvatarHTML = ourImgVal 
+                    ? `<img src="${ourImgVal}" alt="Our VJ" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-placeholder-cute\'>?</div>';">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
-                let oppAvatarHTML = (oppImgClean && (oppImgClean.startsWith('http') || oppImgClean.startsWith('www')))
-                    ? `<img src="${oppImgClean}" alt="Opponent VJ" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-placeholder-cute\'>?</div>';">` 
+                let oppAvatarHTML = oppImgVal 
+                    ? `<img src="${oppImgVal}" alt="Opponent" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-placeholder-cute\'>?</div>';">` 
                     : `<div class="avatar-placeholder-cute">?</div>`;
 
                 let cardHTML = `
