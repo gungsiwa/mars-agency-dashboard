@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MARS AGENCY - VJ Activity Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- ========================================== -->
+    <!-- [SECTION]: CSS STYLING                     -->
+    <!-- ========================================== -->
     <style>
         :root {
             --bg-color: #0d0d0d;
@@ -38,6 +42,7 @@
             max-width: 650px;
         }
 
+        /* --- Header & Logo Styles --- */
         .header {
             text-align: center;
             margin-bottom: 25px;
@@ -77,6 +82,7 @@
             color: var(--text-muted);
         }
 
+        /* --- Navigation Tabs & Search Styles --- */
         .dashboard-tabs {
             display: flex;
             gap: 8px;
@@ -126,6 +132,7 @@
             border-color: var(--gold);
         }
 
+        /* --- Activity Card Styles --- */
         .card-list {
             display: flex;
             flex-direction: column;
@@ -174,6 +181,7 @@
             gap: 8px;
         }
 
+        /* [FIXED]: Image Avatar CSS for Proper Scaling and Circular Fit */
         .profile-avatar {
             width: 65px;
             height: 65px;
@@ -185,12 +193,15 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         .profile-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
+            display: block;
         }
 
         .avatar-placeholder-cute {
@@ -291,6 +302,7 @@
         }
         .copy-btn:hover { background: rgba(212, 175, 55, 0.15); }
 
+        /* --- External Links & Footer Section Styles --- */
         .external-links-section {
             margin-top: 35px;
             border-top: 1px solid var(--border-color);
@@ -373,7 +385,11 @@
 </head>
 <body>
 
+    <!-- ========================================== -->
+    <!-- [SECTION]: HTML BODY STRUCTURE             -->
+    <!-- ========================================== -->
     <div class="container">
+        <!-- Header Section -->
         <div class="header">
             <div class="logo-img-container">
                 <img src="marslogo.jpg" alt="MARS Agency Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'75\' height=\'75\'><rect width=\'75\' height=\'75\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'18\' fill=\'%23d4af37\' text-anchor=\'middle\' dominant-baseline=\'central\' font-family=\'sans-serif\'>MARS</text></svg>';">
@@ -382,20 +398,24 @@
             <p>ระบบติดตามสถานะและตารางกิจกรรม VJ</p>
         </div>
 
+        <!-- Dashboard Tabs -->
         <div class="dashboard-tabs">
             <button class="tab-btn active" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
             <button class="tab-btn" onclick="switchTab('latest', event)">⚡ กิจกรรมล่าสุด</button>
             <button class="tab-btn" onclick="switchTab('archive', event)">📂 คลังย้อนหลัง</button>
         </div>
 
+        <!-- Search Box -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." onkeyup="filterCards()">
         </div>
 
+        <!-- Dynamic Card List Container -->
         <div class="card-list" id="cardList">
             <div class="loading-text">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
         </div>
 
+        <!-- External Links Section -->
         <div class="external-links-section">
             <div class="section-title">📌 ลิงก์กิจกรรมและช่องทางสมัครเพิ่มเติม</div>
             <div class="links-grid" id="externalLinksContainer">
@@ -404,10 +424,14 @@
         </div>
     </div>
 
+    <!-- Floating Line Contact Button -->
     <a href="https://line.me/ti/p/~your_line_id" target="_blank" class="floating-line-btn" id="lineContactBtn">
         💬 ติดต่อแอดมิน
     </a>
 
+    <!-- ========================================== -->
+    <!-- [SECTION]: JAVASCRIPT LOGIC & FUNCTIONS    -->
+    <!-- ========================================== -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbzoyxPdf9LYOOXsM3-oLHYPsXfINY_U5DvKL-XxJuBImsHo2lENVPzw10V_JlWuR1lNoA/exec";
 
@@ -431,7 +455,7 @@
             }
 
             try {
-                // 2. โหลดลิงก์เพิ่มเติมจากไฟล์ links.json บน GitHub โดยตรง (ยืดหยุ่นและแก้ปัญหาระยะยาว)
+                // 2. โหลดลิงก์เพิ่มเติมจากไฟล์ links.json บน GitHub โดยตรง
                 let linkRes = await fetch('links.json');
                 externalLinks = await linkRes.json();
                 renderExternalLinks();
