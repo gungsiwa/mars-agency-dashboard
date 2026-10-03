@@ -388,8 +388,7 @@
 
         <div class="dashboard-tabs">
             <button class="tab-btn active" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
-            <button class="tab-btn" onclick="switchTab('latest', event)">⚡ กิจกรรมล่าสุด</button>
-            <button class="tab-btn" onclick="switchTab('archive', event)">📂 คลังย้อนหลัง</button>
+            <button class="tab-btn" onclick="switchTab('archive', event)">📂 กิจกรรมย้อนหลัง</button>
         </div>
 
         <div class="search-box">
@@ -541,16 +540,8 @@
                     eventDate.setHours(0, 0, 0, 0);
                     return eventDate.getTime() === today.getTime();
                 });
-            } else if (currentTab === 'latest') {
-                // เปลี่ยนเป็นแสดงกิจกรรมล่าสุดทั้งหมด (เรียงจากใหม่ไปเก่า หรือใกล้เคียงที่สุด)
-                filteredData = [...allActivities];
-                filteredData.sort((a, b) => {
-                    let dateA = parseLocalDate(getVal(a, 'Date')) || new Date(0);
-                    let dateB = parseLocalDate(getVal(b, 'Date')) || new Date(0);
-                    return dateB - dateA; // เอาใหม่สุดขึ้นก่อน
-                });
-                filteredData = filteredData.slice(0, 15); // แสดงจำกัด 15 รายการล่าสุด
             } else if (currentTab === 'archive') {
+                // กิจกรรมย้อนหลัง (รวมทุกวันที่ผ่านมาแล้ว)
                 filteredData = allActivities.filter(item => {
                     let dateStr = getVal(item, 'Date');
                     let eventDate = parseLocalDate(dateStr);
@@ -563,7 +554,6 @@
 
             renderCards(filteredData);
         }
-        
 
         function formatDate(dateString) {
             if (!dateString) return '-';
@@ -605,8 +595,7 @@
 
             if (data.length === 0) {
                 let emptyMsg = "ยังไม่มีคำขอลงกิจกรรมในวันนี้";
-                if(currentTab === 'latest') emptyMsg = "ไม่มีกิจกรรมล่าสุดในขณะนี้";
-                if(currentTab === 'archive') emptyMsg = "ยังไม่มีประวัติกิจกรรมในคลังย้อนหลัง";
+                if(currentTab === 'archive') emptyMsg = "ยังไม่มีประวัติกิจกรรมย้อนหลัง";
 
                 cardList.innerHTML = `<div class="no-data">📌 ${emptyMsg}</div>`;
                 return;
