@@ -8,13 +8,13 @@
     
     <style>
         :root {
-            --bg-color: #0d0d0d;
-            --card-bg: #161616;
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 27, 39, 0.85);
             --gold: #d4af37;
             --gold-light: #f3e5ab;
             --text-main: #f0f0f0;
-            --text-muted: #888888;
-            --border-color: #2a2a2a;
+            --text-muted: #8b9bb4;
+            --border-color: rgba(255, 255, 255, 0.08);
         }
 
         * {
@@ -32,17 +32,54 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ธีมพื้นหลังอวกาศและละอองดาวเคลื่อนไหวเบาๆ */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(59, 113, 202, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+                linear-gradient(135deg, #05070c 0%, #0d111a 50%, #05070c 100%);
+            z-index: -2;
+        }
+
+        /* เอฟเฟกต์ดาวระยิบระยับจางๆ */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(white 1px, transparent 0);
+            background-size: 50px 50px;
+            opacity: 0.15;
+            z-index: -1;
+            animation: moveStars 60s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes moveStars {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
         }
 
         .container {
             width: 100%;
             max-width: 650px;
+            z-index: 1;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
-            padding-top: 15px;
+            margin-bottom: 20px;
+            padding-top: 10px;
         }
 
         .logo-img-container {
@@ -78,6 +115,40 @@
             color: var(--text-muted);
         }
 
+        /* ป้ายประกาศด่วน (Notice Banner) ดึงจากชีต Announcement */
+        .notice-banner {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(22, 27, 39, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .notice-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .notice-text {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        /* เวลาอัปเดตล่าสุด */
+        .last-updated-box {
+            text-align: right;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-right: 4px;
+        }
+
         .dashboard-tabs {
             display: flex;
             gap: 8px;
@@ -86,6 +157,7 @@
             padding: 5px;
             border-radius: 10px;
             border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
         }
 
         .tab-btn {
@@ -121,6 +193,7 @@
             font-size: 14px;
             outline: none;
             transition: border-color 0.3s;
+            backdrop-filter: blur(10px);
         }
 
         .search-box input:focus {
@@ -140,6 +213,7 @@
             padding: 20px;
             transition: border-color 0.2s;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
         }
 
         .activity-card:hover {
@@ -155,13 +229,13 @@
             padding-bottom: 10px;
         }
 
-        /* ปรับดีไซน์กล่อง VS และแยกโทนสีซ้าย-ขวาแบบนุ่มนวล */
+        /* ดีไซน์แบ่งข้าง PK (ซ้ายทอง - ขวาฟ้า) */
         .pk-match-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(20, 20, 20, 0.8) 50%, rgba(59, 113, 202, 0.08) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.04) 0%, rgba(15, 20, 30, 0.8) 50%, rgba(59, 113, 202, 0.06) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 15px;
@@ -169,7 +243,6 @@
             overflow: hidden;
         }
 
-        /* เพิ่มแสงเรืองจางๆ แยกฝั่งซ้าย (ทอง/อบอุ่น) และขวา (ฟ้า/เย็น) */
         .pk-match-container::before {
             content: '';
             position: absolute;
@@ -177,7 +250,7 @@
             top: 0;
             bottom: 0;
             width: 45%;
-            background: radial-gradient(circle at left, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+            background: radial-gradient(circle at left, rgba(212, 175, 55, 0.07) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -188,7 +261,7 @@
             top: 0;
             bottom: 0;
             width: 45%;
-            background: radial-gradient(circle at right, rgba(59, 113, 202, 0.12) 0%, transparent 70%);
+            background: radial-gradient(circle at right, rgba(59, 113, 202, 0.1) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -216,7 +289,6 @@
             position: relative;
         }
 
-        /* กรอบรูปฝั่งขวา (คู่แข่ง) ใช้โทนสีฟ้าอมเงินตัดกัน */
         .vj-profile-side.opponent-side .profile-avatar {
             border-color: #3b71ca;
             box-shadow: 0 4px 12px rgba(59, 113, 202, 0.25);
@@ -278,7 +350,7 @@
 
         .vj-id-row {
             font-size: 12px;
-            color: #aaa;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -287,19 +359,19 @@
 
         .activity-badge {
             display: inline-block;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             text-align: center;
             white-space: nowrap;
             letter-spacing: 0.5px;
         }
 
-        .act-pk-battle { background-color: #1a3a6b; color: #d0e1fd; border: 1px solid #3b71ca; }
-        .act-super-pk { background-color: #58181f; color: #ffccd2; border: 1px solid #9c2732; }
-        .act-family-pk { background-color: #3b1f58; color: #e5ccff; border: 1px solid #7a329c; }
-        .act-default { background-color: #2a2a2a; color: #ccc; border: 1px solid #444; }
+        .act-pk-battle { background-color: rgba(26, 58, 107, 0.7); color: #d0e1fd; border: 1px solid #3b71ca; }
+        .act-super-pk { background-color: rgba(88, 24, 31, 0.7); color: #ffccd2; border: 1px solid #9c2732; }
+        .act-family-pk { background-color: rgba(59, 31, 88, 0.7); color: #e5ccff; border: 1px solid #7a329c; }
+        .act-default { background-color: rgba(42, 42, 42, 0.7); color: #ccc; border: 1px solid #444; }
 
         .agency-tag {
             font-size: 11px;
@@ -338,31 +410,76 @@
         }
         .copy-btn:hover { background: rgba(212, 175, 55, 0.15); }
 
-        .external-links-section {
+        /* กล่องข้อความติดต่อแอดมิน (แบบสั้นกระชับ) เหนือลิงก์กิจกรรม */
+        .admin-contact-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(6, 199, 85, 0.3);
+            border-radius: 10px;
+            padding: 15px;
             margin-top: 35px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .admin-contact-info h3 {
+            font-size: 13.5px;
+            color: #25d366;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .admin-contact-info p {
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        .admin-action-btn {
+            background-color: #06c755;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 10px rgba(6, 199, 85, 0.3);
+        }
+
+        .admin-action-btn:hover {
+            transform: scale(1.03);
+        }
+
+        /* ส่วนลิงก์กิจกรรมเพิ่มเติมแบบย่อขนาดให้กะทัดรัด */
+        .external-links-section {
             border-top: 1px solid var(--border-color);
-            padding-top: 20px;
+            padding-top: 15px;
         }
 
         .section-title {
-            font-size: 14px;
-            color: var(--gold);
-            font-weight: 600;
-            margin-bottom: 12px;
-            letter-spacing: 1px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
         }
 
         .links-grid {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .external-link-card {
-            background-color: var(--card-bg);
+            background-color: rgba(22, 27, 39, 0.5);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 16px;
+            border-radius: 6px;
+            padding: 8px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -377,16 +494,17 @@
         }
 
         .external-link-name {
-            font-size: 13.5px;
-            font-weight: 500;
-            color: var(--gold-light);
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-main);
         }
 
         .external-link-icon {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
         }
 
+        /* ปุ่มลอยติดต่อแอดมินมุมขวาล่าง */
         .floating-line-btn {
             position: fixed;
             bottom: 20px;
@@ -420,6 +538,10 @@
 </head>
 <body>
 
+    <!-- พื้นหลังอวกาศและละอองดาว -->
+    <div class="space-bg"></div>
+    <div class="stars-container"></div>
+
     <div class="container">
         <div class="header">
             <div class="logo-img-container">
@@ -428,6 +550,12 @@
             <h1>MARS AGENCY</h1>
             <p>ระบบติดตามสถานะและตารางกิจกรรม VJ</p>
         </div>
+
+        <!-- ป้ายประกาศด่วน (ดึงจากชีต Announcement) -->
+        <div id="noticeBannerContainer"></div>
+
+        <!-- เวลาอัปเดตข้อมูลล่าสุด -->
+        <div class="last-updated-box" id="lastUpdatedBox">อัปเดตล่าสุด: กำลังโหลด...</div>
 
         <div class="dashboard-tabs">
             <button class="tab-btn active" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
@@ -442,27 +570,69 @@
             <div class="loading-text">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
         </div>
 
+        <!-- กล่องข้อความติดต่อแอดมิน (แบบสั้นกระชับ) เหนือลิงก์กิจกรรม -->
+        <div class="admin-contact-card">
+            <div class="admin-contact-info">
+                <h3>💬 ติดต่อแอดมินสังกัด MARS</h3>
+                <p>ต้องการลงกิจกรรม แก้ไขตาราง หรือสอบถามข้อมูล</p>
+            </div>
+            <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="admin-action-btn">แชทแอดมิน</a>
+        </div>
+
+        <!-- ลิงก์กิจกรรมเพิ่มเติม (ย่อขนาดให้กะทัดรัด) -->
         <div class="external-links-section">
-            <div class="section-title">📌 ลิงก์กิจกรรมและช่องทางสมัครเพิ่มเติม</div>
+            <div class="section-title">📌 ลิงก์กิจกรรมและช่องทางเพิ่มเติม</div>
             <div class="links-grid" id="externalLinksContainer">
-                <div style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">กำลังโหลดลิงก์กิจกรรม...</div>
+                <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; padding: 5px;">กำลังโหลดลิงก์...</div>
             </div>
         </div>
     </div>
 
-    <!-- อัปเดตลิงก์ LINE แอดมินเรียบร้อยแล้ว -->
+    <!-- ปุ่มลอยติดต่อ LINE ด้านขวาล่าง -->
     <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="floating-line-btn" id="lineContactBtn">
         💬 ติดต่อแอดมิน
     </a>
 
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1314436716&single=true&output=csv";
+        const ANNOUNCEMENT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=768921656&single=true&output=csv";
 
         let allActivities = [];
         let externalLinks = [];
         let currentTab = 'today';
 
         async function loadData() {
+            // โหลดประกาศและเวลาอัปเดตจากชีต Announcement
+            try {
+                let annRes = await fetch(ANNOUNCEMENT_CSV_URL);
+                let annText = await annRes.text();
+                let annData = parseCSV(annText);
+                if (annData.length > 0) {
+                    let noticeText = annData[0]['NoticeText'] || '';
+                    let lastUpdated = annData[0]['LastUpdated'] || '-';
+                    
+                    // แสดงป้ายประกาศถ้ามีข้อความ
+                    let noticeContainer = document.getElementById("noticeBannerContainer");
+                    if (noticeText.trim()) {
+                        noticeContainer.innerHTML = `
+                            <div class="notice-banner">
+                                <span class="notice-icon">📢</span>
+                                <div class="notice-text">${noticeText}</div>
+                            </div>
+                        `;
+                    } else {
+                        noticeContainer.innerHTML = "";
+                    }
+
+                    // แสดงเวลาอัปเดตล่าสุด
+                    document.getElementById("lastUpdatedBox").innerText = `อัปเดตข้อมูลล่าสุด: ${lastUpdated}`;
+                }
+            } catch (error) {
+                console.error("ไม่สามารถโหลดข้อมูลประกาศได้: ", error);
+                document.getElementById("lastUpdatedBox").innerText = `อัปเดตข้อมูลล่าสุด: -`;
+            }
+
+            // โหลดข้อมูลกิจกรรมหลัก
             try {
                 let response = await fetch(SHEET_CSV_URL);
                 let csvText = await response.text();
@@ -474,13 +644,14 @@
                 document.getElementById("cardList").innerHTML = `<div class="no-data" style="color: #ff5252;">⚠️ ไม่สามารถโหลดข้อมูลกิจกรรมได้</div>`;
             }
 
+            // โหลดลิงก์เสริมภายนอก
             try {
                 let linkRes = await fetch('links.json');
                 externalLinks = await linkRes.json();
                 renderExternalLinks();
             } catch (error) {
                 console.error("ไม่สามารถโหลดไฟล์ links.json ได้: ", error);
-                document.getElementById("externalLinksContainer").innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์กิจกรรมเพิ่มเติม</div>`;
+                document.getElementById("externalLinksContainer").innerHTML = `<div style="font-size: 11.5px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์เพิ่มเติม</div>`;
             }
         }
 
@@ -726,7 +897,7 @@
             container.innerHTML = "";
 
             if (!externalLinks || externalLinks.length === 0) {
-                container.innerHTML = `<div style="font-size: 12px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์กิจกรรมเพิ่มเติม</div>`;
+                container.innerHTML = `<div style="font-size: 11.5px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์เพิ่มเติม</div>`;
                 return;
             }
 
@@ -748,13 +919,13 @@
                 return foundKey ? item[foundKey] : '';
             };
 
-            let ไลฟ์สตรีม = allActivities.filter(item => {
+            let filtered = allActivities.filter(item => {
                 let name = getVal(item, 'Name').toLowerCase();
                 let id = getVal(item, 'BigoID').toLowerCase();
                 let oppId = getVal(item, 'OpponentID').toLowerCase();
                 return name.includes(keyword) || id.includes(keyword) || oppId.includes(keyword);
             });
-            renderCards(ไลฟ์สตรีม);
+            renderCards(filtered);
         }
 
         function copyToClipboard(text, btn) {
