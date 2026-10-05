@@ -151,6 +151,37 @@ function resetInterval() {
     clearInterval(slideInterval);
     startAutoSlide();
 }
+
+// ฟังก์ชันสร้างเสียงคลิกสั้นๆ ด้วย Web Audio API (ไม่ต้องใช้ไฟล์เสียง)
+function playClickSound() {
+    try {
+        // รองรับเบราว์เซอร์ทุกค่าย
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        
+        const ctx = new AudioContext();
+        
+        // สร้าง Oscillator (ตัวกำเนิดคลื่นเสียง) เป็นคลื่น Sine ให้เสียงนุ่มนวล
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'sine'; // ใช้คลื่น sine นุ่มนวลเหมือนเดิม
+        osc.frequency.setValueAtTime(800, ctx.currentTime); // เริ่มที่ความถี่สูงขึ้น (สว่างขึ้น)
+        osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.05);
+
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 0.05);
+    } catch (e) {
+        // ป้องกันกรณีเบราว์เซอร์บล็อกหรือยังไม่มี User Interaction
+        console.log("Audio Context prevented or not supported", e);
+    }
+}
 // ---------------------------------
 
 function parseCSV(text) {
@@ -440,5 +471,14 @@ function copyToClipboard(text, btn) {
         console.error('คัดลอกไม่สำเร็จ: ', err);
     });
 }
+
+// ดักจับการคลิกปุ่มหรือลิงก์ทั่วทั้งเว็บอัตโนมัติ
+document.addEventListener('click', (event) => {
+    // ตรวจสอบว่าสิ่งที่คลิกคือปุ่ม, ลิงก์, หรือองค์ประกอบที่มีการกดใช้งาน
+    const target = event.target.closest('button, a, .card, .tab-btn, .filter-btn');
+    if (target) {
+        playClickSound();
+    }
+});
 
 window.onload = loadData;
