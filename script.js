@@ -1,5 +1,6 @@
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1314436716&single=true&output=csv";
 const ANNOUNCEMENT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=768921656&single=true&output=csv";
+const GALLERY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=448950557&single=true&output=csv";
 
 let allActivities = [];
 let externalLinks = [];
@@ -61,15 +62,35 @@ async function loadData() {
         document.getElementById("externalLinksContainer").innerHTML = `<div style="font-size: 11.5px; color: var(--text-muted); text-align: center;">ยังไม่มีลิงก์เพิ่มเติม</div>`;
     }
 
-    // 4. โหลดรูปภาพแบนเนอร์กิจกรรม (banners.json)
+    // 4. โหลดรูปภาพแบนเนอร์จาก Google Sheets (Gallery)
     try {
-        let bannerRes = await fetch('banners.json');
-        bannerImages = await bannerRes.json();
+        let galleryRes = await fetch(GALLERY_CSV_URL);
+        let galleryText = await galleryRes.text();
+        let rawGalleryData = parseCSV(galleryText);
+        
+        const getVal = (item, keyName) => {
+            let foundKey = Object.keys(item).find(k => k.trim().toLowerCase() === keyName.toLowerCase());
+            return foundKey ? item[foundKey] : '';
+        };
+
+        // กรองเฉพาะแถวที่ Section เป็น 'banner' (ไม่สนตัวพิมพ์เล็ก-ใหญ่) หรือปล่อยว่างไว้
+        bannerImages = rawGalleryData
+            .filter(item => {
+                let section = getVal(item, 'Section').toLowerCase();
+                return section === 'banner' || section === '';
+            })
+            .map(item => ({
+                image: getVal(item, 'ImageURL'),
+                alt: getVal(item, 'AltText')
+            }))
+            .filter(item => item.image); // กรองเอาเฉพาะแถวที่มีลิงก์รูปจริงๆ
+
         initBannerSlider();
     } catch (error) {
-        console.error("ไม่สามารถโหลดไฟล์ banners.json ได้: ", error);
+        console.error("ไม่สามารถโหลดแบนเนอร์จาก Google Sheets ได้: ", error);
     }
 }
+    
 
 // --- ระบบจัดการ Banner Slider ---
 function initBannerSlider() {
