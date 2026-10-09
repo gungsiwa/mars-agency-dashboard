@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MARS AGENCY - VJ Activity Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- เชื่อมโยงไฟล์ CSS ภายนอก -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,26 +22,27 @@
             <p>ระบบติดตามสถานะและตารางกิจกรรม VJ</p>
         </div>
 
-        <!-- ป้ายประกาศด่วน (ดึงจากชีต Announcement) -->
+        <!-- ป้ายประกาศด่วน (ข้อความวิ่ง Marquee) -->
         <div id="noticeBannerContainer"></div>
 
         <!-- เวลาอัปเดตข้อมูลล่าสุด -->
         <div class="last-updated-box" id="lastUpdatedBox">อัปเดตล่าสุด: กำลังโหลด...</div>
 
         <div class="dashboard-tabs">
-            <button class="tab-btn active" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
-            <button class="tab-btn" onclick="switchTab('archive', event)">📂 กิจกรรมย้อนหลัง</button>
+            <button class="tab-btn active" id="tab-today" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
+            <button class="tab-btn" id="tab-archive" onclick="switchTab('archive', event)">📂 กิจกรรมย้อนหลัง</button>
         </div>
 
+        <!-- ช่องค้นหาข้อมูล VJ -->
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." onkeyup="filterCards()">
+            <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." autocomplete="off">
         </div>
 
         <div class="card-list" id="cardList">
             <div class="loading-text">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
         </div>
 
-        <!-- กล่องข้อความติดต่อแอดมิน (แบบสั้นกระชับ) เหนือลิงก์กิจกรรม -->
+        <!-- กล่องข้อความติดต่อแอดมิน -->
         <div class="admin-contact-card">
             <div class="admin-contact-info">
                 <h3>💬 ติดต่อแอดมินสังกัด MARS</h3>
@@ -53,18 +53,73 @@
 
         <!-- แบนเนอร์สไลด์กิจกรรม -->
         <div class="banner-slider-container">
-            <div class="banner-slider-track" id="bannerSliderTrack">
-                <!-- รูปภาพจะถูกโหลดเข้ามาอัตโนมัติผ่าน JavaScript -->
-            </div>
+            <div class="banner-slider-track" id="bannerSliderTrack"></div>
             <div class="banner-dots" id="bannerDots"></div>
         </div>
 
-        <!-- ลิงก์กิจกรรมเพิ่มเติม (ย่อขนาดให้กะทัดรัด) -->
+        <!-- ลิงก์กิจกรรมเพิ่มเติม (แสดงแบบ 2 คอลัมน์) -->
         <div class="external-links-section">
             <div class="section-title">📌 ลิงก์กิจกรรมและช่องทางเพิ่มเติม</div>
             <div class="links-grid" id="externalLinksContainer">
-                <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; padding: 5px;">กำลังโหลดลิงก์...</div>
+                <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; padding: 5px; grid-column: span 2;">กำลังโหลดลิงก์...</div>
             </div>
+        </div>
+    </div>
+
+    <!-- ส่วนปุ่มแม่กุญแจ และเมนูป๊อปอัปแอดมิน (มุมซ้ายล่าง) -->
+    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
+        <!-- เมนูป๊อปอัปจัดการหลังบ้าน -->
+        <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 55px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff;">
+            <div style="font-size: 13px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
+                👤 เข้าสู่ระบบโดย: <span id="admin-logged-user" style="color: #4ade80; font-weight: 600;">Admin</span>
+            </div>
+            <button onclick="openAdminManager('banner')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🖼️ จัดการแบนเนอร์ภาพสไลด์</button>
+            <button onclick="openAdminManager('link')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🔗 จัดการลิงก์ภายนอก</button>
+            <button onclick="openAdminManager('notice')" style="width: 100%; padding: 8px 12px; margin-bottom: 12px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">📢 จัดการข้อความแจ้งเตือน</button>
+            <button id="logout-btn" style="width: 100%; padding: 8px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">ออกจากระบบ</button>
+        </div>
+
+        <!-- ปุ่มไอคอนแม่กุญแจ -->
+        <div id="admin-trigger" style="cursor: pointer; opacity: 0.6; transition: opacity 0.3s; font-size: 24px; background: rgba(0,0,0,0.6); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #444;" title="Admin Menu">
+            🔒
+        </div>
+    </div>
+
+    <!-- Modal สำหรับเข้าสู่ระบบแอดมิน -->
+    <div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: #1e1e1e; padding: 30px; border-radius: 12px; width: 300px; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; font-family: sans-serif;">
+            <h3 style="margin-top: 0; margin-bottom: 5px;">Admin Login</h3>
+            <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">เข้าสู่ระบบเพื่อจัดการข้อมูล</p>
+            
+            <input type="email" id="admin-email" placeholder="Email" autocomplete="off" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="admin-password" placeholder="Password" autocomplete="new-password" style="width: 100%; padding: 10px; margin-bottom: 15px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
+            
+            <div style="display: flex; justify-content: space-between;">
+                <button id="login-btn" style="background: #4f46e5; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 48%;">ตกลง</button>
+                <button id="close-modal-btn" style="background: #444; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 48%;">ยกเลิก</button>
+            </div>
+            <p id="login-error" style="color: #f87171; font-size: 12px; margin-top: 10px; text-align: center; display: none;"></p>
+        </div>
+    </div>
+
+    <!-- Modal หน้าต่างจัดการแยกตามประเภท -->
+    <div id="admin-manager-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1001; justify-content: center; align-items: center;">
+        <div style="background: #1e1e1e; padding: 25px; border-radius: 12px; width: 480px; max-width: 90%; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.5); max-height: 85vh; overflow-y: auto;">
+            
+            <h3 id="manager-title" style="margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 10px;">จัดการข้อมูล</h3>
+            
+            <div style="background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;">
+                <div id="form-fields-container"></div>
+                
+                <button id="manager-save-btn" onclick="saveNewItem()" style="width: 100%; padding: 10px; background: #198754; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-top: 12px; font-weight: 600; font-size: 14px;">💾 บันทึกข้อมูล</button>
+            </div>
+
+            <div id="manager-list-section">
+                <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #bbb;">📋 รายการปัจจุบัน</h4>
+                <div id="manager-item-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #333; border-radius: 6px; padding: 8px; background: #161616;"></div>
+            </div>
+
+            <button onclick="closeAdminManager()" style="width: 100%; padding: 10px; background: #444; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">✕ ปิดหน้าต่าง</button>
         </div>
     </div>
 
@@ -73,7 +128,8 @@
         💬 ติดต่อแอดมิน
     </a>
 
-    <!-- เชื่อมโยงไฟล์ JavaScript ภายนอก -->
-    <script src="script.js"></script>
+    <!-- Supabase JS SDK และโมดูลไฟล์ JavaScript ย่อย -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>

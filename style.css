@@ -110,7 +110,7 @@ body {
     color: var(--text-muted);
 }
 
-/* 1. ส่วนป้ายประกาศวิ่ง (เอาขอบกล่องออก เหลือแต่ข้อความวิ่งคลีนๆ) */
+/* ส่วนป้ายประกาศวิ่ง (Marquee) */
 .notice-banner {
     background: transparent;
     border: none;
@@ -228,206 +228,153 @@ body {
     gap: 16px;
 }
 
-/* ปรับปรุงการ์ดกิจกรรมให้มีมิติและลูกเล่นสนุกๆ (Hover Glow & Floating) */
-.activity-card {
-    background-color: var(--card-bg);
+/* รูปแบบการ์ดกิจกรรม */
+.pk-card {
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 20px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     position: relative;
 }
 
-.activity-card:hover {
-    border-color: rgba(212, 175, 55, 0.6);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.15);
-}
-
-.card-top {
+.pk-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
 }
 
-.pk-match-container {
+.match-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.04) 0%, rgba(15, 20, 30, 0.85) 50%, rgba(59, 113, 202, 0.06) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
+    padding: 5px 0;
     position: relative;
-    overflow: hidden;
+    gap: 8px;
 }
 
-.vj-profile-side {
+.player-box {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    flex: 1;
     gap: 8px;
-    z-index: 1;
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.profile-avatar {
-    width: 65px;
-    height: 65px;
+.left-box {
+    background: linear-gradient(135deg, rgba(6, 199, 85, 0.08) 0%, rgba(22, 27, 39, 0.4) 100%);
+}
+
+.right-box {
+    background: linear-gradient(135deg, rgba(59, 113, 202, 0.08) 0%, rgba(22, 27, 39, 0.4) 100%);
+}
+
+.avatar-container {
+    width: 86px;
+    height: 86px;
     border-radius: 50%;
-    border: 2px solid var(--gold);
     overflow: hidden;
+    border: 2.5px solid var(--gold);
     background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-    transition: transform 0.3s;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
 }
 
-.activity-card:hover .profile-avatar {
-    transform: scale(1.05);
-}
-
-.vj-profile-side.opponent-side .profile-avatar {
-    border-color: #3b71ca;
-    box-shadow: 0 4px 15px rgba(59, 113, 202, 0.3);
-}
-
-.profile-avatar img {
+.avatar-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    display: block;
-}
-
-.avatar-placeholder-cute {
-    font-size: 26px;
-    color: var(--gold);
-    font-weight: 600;
-    background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(0,0,0,0.5) 100%);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.vs-badge {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--gold-light);
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(212, 175, 55, 0.4);
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
-    margin: 0 4px;
-    animation: pulseVs 2s infinite;
-}
-
-@keyframes pulseVs {
-    0% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-    50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
-    100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-}
-
-.vj-info-details {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 100%;
 }
 
 .vj-name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--gold-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--text-main);
 }
 
 .vj-id-row {
-    font-size: 12px;
-    color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--text-muted);
 }
-
-.activity-badge {
-    display: inline-block;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 11.5px;
-    font-weight: 600;
-    text-align: center;
-    white-space: nowrap;
-    letter-spacing: 0.5px;
-}
-
-.act-pk-battle { background-color: rgba(26, 58, 107, 0.7); color: #d0e1fd; border: 1px solid #3b71ca; }
-.act-super-pk { background-color: rgba(88, 24, 31, 0.7); color: #ffccd2; border: 1px solid #9c2732; }
-.act-family-pk { background-color: rgba(59, 31, 88, 0.7); color: #e5ccff; border: 1px solid #7a329c; }
-.act-default { background-color: rgba(42, 42, 42, 0.7); color: #ccc; border: 1px solid #444; }
-
-.agency-tag {
-    font-size: 11px;
-    color: #2ecc71;
-    background: rgba(46, 204, 113, 0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-    display: inline-block;
-    margin-top: 2px;
-}
-
-.status-badge {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.status-success { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid rgba(40, 167, 69, 0.4); }
-.status-scheduled { background: rgba(23, 162, 184, 0.2); color: #17a2b8; border: 1px solid rgba(23, 162, 184, 0.4); }
-.status-waiting { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.4); }
-.status-failed { background: rgba(255, 75, 75, 0.2); color: #ff5252; border: 1px solid rgba(255, 75, 75, 0.2); }
 
 .copy-btn {
     background: transparent;
     border: none;
-    color: var(--gold);
     cursor: pointer;
-    font-size: 12px;
-    padding: 2px 4px;
-    border-radius: 4px;
+    font-size: 13px;
+    padding: 2px;
     transition: transform 0.2s;
 }
-.copy-btn:hover { 
-    background: rgba(212, 175, 55, 0.15); 
+
+.copy-btn:hover {
     transform: scale(1.2);
 }
 
-/* กล่องติดต่อแอดมินด้านล่าง */
+.agency-tag {
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.mars-agency {
+    background: rgba(6, 199, 85, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(6, 199, 85, 0.3);
+}
+
+.opponent-agency {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.vs-badge {
+    width: 38px;
+    height: 38px;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--gold-light);
+    flex-shrink: 0;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.pk-card-footer {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+}
+
+.status-badge {
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid;
+}
+
+/* ส่วนอื่นๆ ของหน้าเว็บ */
 .admin-contact-card {
     background: var(--card-bg);
     border: 1px solid rgba(6, 199, 85, 0.3);
@@ -473,7 +420,6 @@ body {
     background-color: #05b34c;
 }
 
-/* ส่วนลิงก์กิจกรรมอื่น ๆ (เหลือแค่ข้อความคลีนๆ ไม่มีไอคอน และมีเอฟเฟกต์เด้งตอนชี้) */
 .external-links-section {
     border-top: 1px solid var(--border-color);
     padding-top: 20px;
@@ -488,40 +434,35 @@ body {
 }
 
 .links-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
 }
 
-.external-link-card {
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 6px 0;
-    display: inline-block; /* ให้ขนาดความกว้างสิ้นสุดแค่ตัวข้อความ */
+.external-link-btn {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
     text-decoration: none;
     color: var(--text-main);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 12.5px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.external-link-card:hover {
+.external-link-btn:hover {
+    border-color: rgba(212, 175, 55, 0.6);
     color: var(--gold-light);
-    transform: translateX(6px); /* ขยับพุ่งไปทางขวาเล็กน้อยเมื่อเอาเมาส์ชี้ */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
 }
 
-.external-link-name {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--text-main);
-    transition: color 0.2s;
-}
-
-.external-link-card:hover .external-link-name {
-    color: var(--gold-light);
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
-}
-
-/* ปุ่มลอยติดต่อ LINE ด้านขวาล่าง */
 .floating-line-btn {
     position: fixed;
     bottom: 20px;
@@ -550,10 +491,11 @@ body {
     color: var(--text-muted);
     padding: 30px;
     font-size: 14px;
+    grid-column: span 2;
 }
-/* --- ส่วนของ Banner Slider (ขนาดกะทัดรัด มีขอบเว้นซ้ายขวา) --- */
+
 .banner-slider-container {
-    margin: 24px 16px; /* เว้นขอบซ้ายขวาและบนล่างให้ดูโปร่ง ไม่เต็มจอจนอึดอัด */
+    margin: 24px 0;
     position: relative;
     border-radius: 12px;
     overflow: hidden;
@@ -566,7 +508,7 @@ body {
     display: flex;
     transition: transform 0.5s ease-in-out;
     width: 100%;
-    height: 220px; /* กำหนดความสูงพอดีๆ บนมือถือ ไม่สูงเกินไป */
+    height: 220px;
 }
 
 .banner-slide {
@@ -581,10 +523,9 @@ body {
 .banner-slide img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* ปรับภาพให้อยู่ในกรอบโดยไม่เสียสัดส่วน และไม่ถูกตัดขอบสำคัญ */
+    object-fit: contain;
 }
 
-/* จุดบอกตำแหน่งสไลด์ (Dots) ด้านล่าง */
 .banner-dots {
     position: absolute;
     bottom: 8px;
@@ -595,7 +536,7 @@ body {
     z-index: 2;
 }
 
-.banner-dot {
+.dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -604,7 +545,7 @@ body {
     transition: all 0.3s;
 }
 
-.banner-dot.active {
+.dot.active {
     width: 18px;
     border-radius: 4px;
     background-color: var(--gold-light, #d4af37);
