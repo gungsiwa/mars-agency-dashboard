@@ -143,13 +143,14 @@ function renderActivities(dataToRender = allActivities) {
 
         const status = item.Status && item.Status.trim() !== '' ? item.Status : '';
 
+        // กำหนดสีชื่อกิจกรรม (รองรับทั้ง Battle Royal และ Battle Royale)
         let activityBg = 'rgba(108, 35, 56, 0.8)';
         let activityColor = '#ffcccc';
         let activityBorder = 'rgba(255, 100, 100, 0.3)';
         
         const actLower = activityName.toLowerCase();
-        if (actLower.includes('pk battle royale')) {
-            activityBg = 'rgba(30, 144, 255, 0.25)'; // สีฟ้าสำหรับ Battle Royale
+        if (actLower.includes('pk battle royal')) {
+            activityBg = 'rgba(30, 144, 255, 0.25)'; // สีฟ้าสำหรับ Battle Royal
             activityColor = '#87cefa';
             activityBorder = 'rgba(30, 144, 255, 0.4)';
         } else if (actLower.includes('family super pk')) {
@@ -162,9 +163,33 @@ function renderActivities(dataToRender = allActivities) {
             activityBorder = 'rgba(255, 100, 100, 0.3)';
         }
 
-        let statusBg = item.StatusColor && item.StatusColor.trim() !== '' ? item.StatusColor : 'rgba(16, 185, 129, 0.15)';
+        // กำหนดสีสถานะตามข้อความจริงในตาราง
+        let statusBg = 'rgba(16, 185, 129, 0.15)';
         let statusColor = '#34d399';
         let statusBorder = 'rgba(16, 185, 129, 0.3)';
+
+        const statusLower = status.toLowerCase();
+        if (statusLower.includes('ลงทะเบียนแล้ว') || statusLower.includes('รอตาราง')) {
+            // 1. ลงทะเบียนแล้ว (รอตาราง) -> โทนสีเหลือง/ส้ม
+            statusBg = 'rgba(245, 158, 11, 0.2)';
+            statusColor = '#fbbf24';
+            statusBorder = 'rgba(245, 158, 11, 0.4)';
+        } else if (statusLower.includes('ได้ตารางแล้ว')) {
+            // 2. ได้ตารางแล้ว -> โทนสีฟ้า
+            statusBg = 'rgba(30, 144, 255, 0.25)';
+            statusColor = '#87cefa';
+            statusBorder = 'rgba(30, 144, 255, 0.4)';
+        } else if (statusLower.includes('สำเร็จ') || statusLower.includes('กิจกรรมจบแล้ว')) {
+            // 3. สำเร็จ (กิจกรรมจบแล้ว) -> โทนสีเขียว
+            statusBg = 'rgba(16, 185, 129, 0.15)';
+            statusColor = '#34d399';
+            statusBorder = 'rgba(16, 185, 129, 0.3)';
+        } else if (statusLower.includes('ไม่สำเร็จ') || statusLower.includes('ยกเลิก')) {
+            // 4. ไม่สำเร็จ / ยกเลิก -> โทนสีชมพู/แดง
+            statusBg = 'rgba(239, 68, 68, 0.2)';
+            statusColor = '#f87171';
+            statusBorder = 'rgba(239, 68, 68, 0.4)';
+        }
 
         const leftAvatarHtml = leftAvatar !== '' 
             ? `<img src="${leftAvatar}" alt="${leftName}" class="avatar-img">`
