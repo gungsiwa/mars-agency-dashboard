@@ -1,0 +1,63 @@
+/* --- 🎃 ธีมฮาโลวีน (ตุลาคม) --- */
+body.halloween-theme {
+    --gold: #ff7518 !important; /* เปลี่ยนสีทองเป็นสีส้มฟักทอง */
+    --gold-light: #ffaa55 !important;
+}
+body.halloween-theme .space-bg {
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255, 117, 24, 0.2) 0%, transparent 40%),
+        linear-gradient(135deg, #0a050f 0%, #150a1a 50%, #050208 100%) !important;
+}
+
+/* ปรับแต่งโลโก้ + ใส่หมวกฟักทองจิ๋ว */
+body.halloween-theme .logo-img-container {
+    position: relative !important;
+    border-color: #ff7518 !important;
+    box-shadow: 0 0 20px rgba(255, 117, 24, 0.5) !important;
+    overflow: visible !important; /* เปิดให้หมวกโผล่ออกมานอกขอบวงกลมได้ */
+}
+
+body.halloween-theme .logo-img-container::before {
+    content: '🎃' !important; /* หรือเปลี่ยนเป็น '🧙‍♀️' / '🎩' ได้ตามชอบ */
+    position: absolute !important;
+    top: -16px !important;     /* ปรับตำแหน่งความสูงของหมวก/ฟักทอง */
+    right: -8px !important;    /* ปรับตำแหน่งมุมขวาบนของโลโก้ */
+    font-size: 26px !important;  /* ขนาดหมวกจิ๋ว */
+    transform: rotate(20deg) !important; /* เอียงหมวกนิดนึงให้ดูมีลูกเล่น */
+    z-index: 10 !important;
+    pointer-events: none !important;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6)) !important;
+}
+
+/* --- ❄️ ธีมหน้าหนาว (พฤศจิกายน - กุมภาพันธ์) --- */
+body.winter-theme {
+    --gold: #38bdf8 !important; /* เปลี่ยนสีทองเป็นฟ้าไอซ์บลู */
+    --gold-light: #bae6fd !important;
+}
+body.winter-theme .space-bg {
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(14, 165, 233, 0.1) 0%, transparent 40%),
+        linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%) !important;
+}
+
+body.winter-theme .logo-img-container {
+    position: relative !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.5) !important;
+    overflow: visible !important;
+}
+
+/* สวมหมวกซานต้า/หมวกไหมพรมช่วงหน้าหนาว */
+body.winter-theme .logo-img-container::before {
+    content: '🎅' !important; /* หรือใช้ '⛄' / '❄️' */
+    position: absolute !important;
+    top: -16px !important;
+    right: -8px !important;
+    font-size: 26px !important;
+    transform: rotate(15deg) !important;
+    z-index: 10 !important;
+    pointer-events: none !important;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6)) !important;
+}
