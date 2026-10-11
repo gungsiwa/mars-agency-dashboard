@@ -143,7 +143,7 @@
         .reset-btn { background-color: #475569; color: white; }
         .reset-btn:hover { background-color: #64748b; }
 
-        /* Custom Modal สำหรับแจ้งผ่านด่าน (แทน Alert แบบเดิม) */
+        /* Custom Modal สำหรับแจ้งผ่านด่าน */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -214,7 +214,7 @@
 <body>
 
     <!-- ปุ่มกากบาทออกหน้าหลัก -->
-    <a href="index.html" class="close-btn" title="กลับหน้าแรก">✕</a>
+    <a href="javascript:void(0);" onclick="goBackHome()" class="close-btn" title="ออกสู่หน้าหลัก">✕</a>
 
     <h1>🎮 จับคู่ VJ MARS Agency</h1>
 
@@ -235,12 +235,12 @@
         <button class="action-btn reset-btn" onclick="restartLevel()">เริ่มด่านนี้ใหม่</button>
     </div>
 
-    <!-- Modal แจ้งเตือนเมื่อผ่านด่าน (หยุดเวลาเป๊ะๆ และสวยงาม) -->
+    <!-- Modal แจ้งเตือนเมื่อผ่านด่าน -->
     <div class="modal-overlay" id="level-modal">
         <div class="modal-box">
             <h2 id="modal-title">ผ่านด่านสำเร็จ!</h2>
-            <p id="modal-desc">ยอดเยี่ยม! ไปลุยด่านถัดުރกันต่อเลย</p>
-            <button class="modal-btn" id="modal-action-btn" onclick="handleModalAction()">ไปด่านถัดไป ➔</button>
+            <p id="modal-desc">ยอดเยี่ยม! ไปลุยด่านถัดไปกันต่อเลย</p>
+            <button class="modal-btn" id="modal-action-btn" onclick="nextLevel()">ไปด่านถัดไป ➔</button>
         </div>
     </div>
 
@@ -264,16 +264,14 @@
     </div>
 
     <script>
-        // ----------------------------------------------------
-        // 1. ตั้งค่าการเชื่อมต่อ Supabase
-        // ----------------------------------------------------
+        function goBackHome() {
+            window.location.replace('index.html');
+        }
+
         const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ----------------------------------------------------
-        // 2. ข้อมูลเกมและรูปภาพ VJ (8 รูปทั้งหมด)
-        // ----------------------------------------------------
         const allVjImages = [
             'images/vj1.png',
             'images/vj2.png',
@@ -298,7 +296,6 @@
         let clickCount = 0;
         let playerName = '';
         
-        // ตัวแปรจับเวลาและเก็บสถิติรวมตลอดการเล่น
         let timerInterval = null;
         let totalSeconds = 0;
         let totalClicksAccumulated = 0;
@@ -316,7 +313,6 @@
         const modalDesc = document.getElementById('modal-desc');
         const modalActionBtn = document.getElementById('modal-action-btn');
 
-        // จัดการชื่อผู้เล่นและแสดงกติกาตอนเริ่มต้น
         function initPlayer() {
             let savedName = localStorage.getItem('vj_game_player_name');
             if (!savedName || savedName.trim() === '') {
@@ -340,18 +336,15 @@
             }
         }
 
-        // เริ่มต้นด่าน พร้อมระบบสุ่มรูปภาพ (Randomized Images)
         function startLevel(levelIdx) {
             const levelConfig = levels[levelIdx];
             levelTitle.innerText = levelConfig.name;
             levelModal.style.display = 'none';
             totalMatchesDisplay.innerText = levelConfig.pairs;
 
-            // สลับตำแหน่งรูปทั้งหมด แล้วตัดมาตามจำนวนคู่ของแต่ละเลเวล
             const shuffledAllImages = [...allVjImages].sort(() => Math.random() - 0.5);
             const selectedImages = shuffledAllImages.slice(0, levelConfig.pairs);
 
-            // คูณสองเพื่อทำเป็นคู่ แล้วสลับตำแหน่งบนกระดาน
             cards = [...selectedImages, ...selectedImages].sort(() => Math.random() - 0.5);
 
             board.innerHTML = '';
@@ -361,7 +354,6 @@
             clicksDisplay.innerText = clickCount;
             matchesDisplay.innerText = matchedCount;
 
-            // ⚠️ [จุดที่เพิ่มเข้ามาตรงนี้ครับ] วนลูปสร้างการ์ดลงในบอร์ดเกม
             cards.forEach((imgUrl) => {
                 const card = document.createElement('div');
                 card.classList.add('card');
@@ -423,27 +415,23 @@
                 flippedCards = [];
 
                 if (matchedCount === levels[currentLevelIdx].pairs) {
-                    // หยุดเวลาทันทีเมื่อเคลียร์ด่านสำเร็จ เพื่อความเที่ยงตรง
                     stopTimer();
 
                     setTimeout(() => {
                         if (currentLevelIdx < levels.length - 1) {
-                            // ผ่านด่าน 1 หรือ 2
                             modalTitle.innerText = `🎉 ผ่าน Level ${levels[currentLevelIdx].level} แล้ว!`;
                             modalDesc.innerText = `เวลาสะสมตอนนี้: ${timerDisplay.innerText} | เตรียมตัวลุยด่านถัดไปกันต่อเลย`;
                             modalActionBtn.innerText = 'ไปด่านถัดไป ➔';
                             modalActionBtn.onclick = nextLevel;
                             levelModal.style.display = 'flex';
                         } else {
-                            // ชนะด่านสุดท้าย (Level 3)
                             triggerConfetti();
                             modalTitle.innerText = `🏆 ยินดีด้วย! จบเกมครบทุกเลเวล`;
-                            modalDesc.innerText = `เวลาวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนลงบอร์ดเรียบร้อยแล้ว!`;
+                            modalDesc.innerText = `เวลารวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนลงบอร์ดเรียบร้อยแล้ว!`;
                             modalActionBtn.innerText = 'เล่นใหม่อีกครั้ง 🔄';
                             modalActionBtn.onclick = resetEntireGame;
                             levelModal.style.display = 'flex';
 
-                            // ส่งคะแนนขึ้น Supabase ทันที
                             submitScoreToSupabase(levels[currentLevelIdx].level, totalClicksAccumulated, totalSeconds);
                         }
                     }, 400);
@@ -473,7 +461,6 @@
             startLevel(0);
         }
 
-        // เอฟเฟกต์พลุฉลองตอนชนะด่านสุดท้าย
         function triggerConfetti() {
             if (typeof confetti === 'function') {
                 confetti({
@@ -484,9 +471,6 @@
             }
         }
 
-        // ----------------------------------------------------
-        // 3. ฟังก์ชันเชื่อมต่อ Supabase (บันทึกและดึง Leaderboard)
-        // ----------------------------------------------------
         async function submitScoreToSupabase(maxLevel, clicks, timeSec) {
             try {
                 const { error } = await supabaseClient
@@ -557,7 +541,6 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // เริ่มต้นการทำงานเมื่อโหลดหน้าเว็บ
         initPlayer();
         startLevel(0);
         fetchLeaderboard();
