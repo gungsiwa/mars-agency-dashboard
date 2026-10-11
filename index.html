@@ -66,10 +66,9 @@
         </div>
     </div>
 
-    <!-- ส่วนปุ่มแม่กุญแจ และเมนูป๊อปอัปแอดมิน (มุมซ้ายล่าง) -->
-    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999;">
-        <!-- เมนูป๊อปอัปจัดการหลังบ้าน -->
-        <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 55px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff;">
+    <!-- 🔒 เมนูป๊อปอัปจัดการหลังบ้าน (ถูกซ่อนไว้ เรียกใช้งานผ่าน Footer ลับ) -->
+    <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; pointer-events: none;">
+        <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 55px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff; pointer-events: auto;">
             <div style="font-size: 13px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
                 👤 เข้าสู่ระบบโดย: <span id="admin-logged-user" style="color: #4ade80; font-weight: 600;">Admin</span>
             </div>
@@ -77,11 +76,6 @@
             <button onclick="openAdminManager('link')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🔗 จัดการลิงก์ภายนอก</button>
             <button onclick="openAdminManager('notice')" style="width: 100%; padding: 8px 12px; margin-bottom: 12px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">📢 จัดการข้อความแจ้งเตือน</button>
             <button id="logout-btn" style="width: 100%; padding: 8px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">ออกจากระบบ</button>
-        </div>
-
-        <!-- ปุ่มไอคอนแม่กุญแจ -->
-        <div id="admin-trigger" style="cursor: pointer; opacity: 0.6; transition: opacity 0.3s; font-size: 24px; background: rgba(0,0,0,0.6); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #444;" title="Admin Menu">
-            🔒
         </div>
     </div>
 
@@ -124,65 +118,77 @@
     </div>
 
     <!-- ========================================== -->
-<!-- ศูนย์บริการวีเจ & ความบันเทิง (VJ Hub & Entertainment) -->
-<!-- ========================================== -->
-<div style="margin-top: 40px; padding: 20px 15px; border-top: 1px solid #334155; background-color: #0b1120;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        
-        <!-- ชื่อหัวข้อ Layer (ปรับขนาดให้เล็กลงพอดีตา) -->
-        <h2 style="color: #f8fafc; font-size: 1.2rem; text-align: center; margin-bottom: 20px; font-weight: bold;">
-            🏢 ศูนย์บริการวีเจ & ความบันเทิง
-        </h2>
-        
-        <!-- พื้นที่จัดวางการ์ดแบบกะทัดรัด -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+    <!-- ศูนย์บริการวีเจ & ความบันเทิง (VJ Hub & Entertainment) -->
+    <!-- ========================================== -->
+    <div style="margin-top: 40px; padding: 15px 15px; border-top: 1px solid #334155; background-color: #0b1120;">
+        <div style="max-width: 650px; margin: 0 auto;">
             
-            <!-- การ์ดเกมจับคู่ภาพ VJ (ย่อขนาดให้เล็กลง ไม่เด่นจนเกินไป) -->
-            <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 12px; padding: 15px; width: 220px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); position: relative; transition: transform 0.2s;"
-                 onmouseover="this.style.transform='translateY(-3px)';"
+            <!-- ชื่อหัวข้อ Layer แบบกระชับ -->
+            <h2 style="color: #f8fafc; font-size: 1.1rem; text-align: center; margin-bottom: 15px; font-weight: bold;">
+                🏢 ศูนย์บริการวีเจ & ความบันเทิง
+            </h2>
+            
+            <!-- พื้นที่จัดวางแบบแนวนอน (Compact List Item) -->
+            <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 12px; padding: 12px 18px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); transition: transform 0.2s;"
+                 onmouseover="this.style.transform='translateY(-2px)';"
                  onmouseout="this.style.transform='translateY(0)';">
                 
-                <!-- ป้ายแท็ก Mini-Game -->
-                <span style="position: absolute; top: 10px; right: 10px; background-color: #3b82f6; color: white; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 8px;">
-                    🎮 Mini-Game
-                </span>
+                <!-- ฝั่งซ้าย: รูปภาพ + ข้อความและคำอธิบาย -->
+                <div style="display: flex; align-items: center; gap: 15px; position: relative;">
+                    
+                    <!-- ภาพปกขนาดเล็ก (สี่เหลี่ยมจัตุรัส มุมโค้งมน) -->
+                    <div style="width: 55px; height: 55px; min-width: 55px; border-radius: 8px; overflow: hidden; border: 1.5px solid #38bdf8; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                        <img src="images/picture.png" alt="เกมจับคู่ภาพวีเจ" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
 
-                <!-- ภาพโปรไฟล์ / การ์ดอิมเมจ (ย่อขนาดให้พอดี 90x90px) -->
-                <div style="width: 90px; height: 90px; margin: 5px auto 12px auto; border-radius: 10px; overflow: hidden; border: 2px solid #38bdf8; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                    <img src="images/picture.png" alt="เกมจับคู่ภาพวีเจ" style="width: 100%; height: 100%; object-fit: cover;">
+                    <!-- ข้อความชื่อเกมและคำอธิบาย -->
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
+                            <h3 style="color: #38bdf8; margin: 0; font-size: 0.95rem; font-weight: bold;">
+                                เกมจับคู่ภาพวีเจ
+                            </h3>
+                            <!-- ป้ายแท็ก Mini-Game แบบย่อ -->
+                            <span style="background-color: #3b82f6; color: white; font-size: 0.65rem; font-weight: bold; padding: 1px 5px; border-radius: 6px;">
+                                🎮 Mini-Game
+                            </span>
+                        </div>
+                        <p style="color: #94a3b8; font-size: 0.75rem; margin: 0; line-height: 1.3;">
+                            ทดสอบความจำ ไต่อันดับขึ้นบอร์ด Leaderboard ชิงความเป็นหนึ่ง
+                        </p>
+                    </div>
                 </div>
 
-                <!-- ชื่อหัวข้อ -->
-                <h3 style="color: #38bdf8; margin: 0 0 6px 0; font-size: 1rem; font-weight: bold;">
-                    เกมจับคู่ภาพวีเจ
-                </h3>
+                <!-- ฝั่งขวา: ปุ่มกดเข้าเล่นเกม -->
+                <div style="margin-left: 15px; min-width: 90px;">
+                    <a href="game.html" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 0.8rem; box-shadow: 0 2px 8px rgba(34,197,94,0.3); white-space: nowrap;">
+                        🚀 เล่นเกม
+                    </a>
+                </div>
 
-                <!-- คำอธิบาย (ตัวหนังสือเล็ก) -->
-                <p style="color: #94a3b8; font-size: 0.78rem; margin-bottom: 15px; line-height: 1.3;">
-                    ทดสอบความจำ ไต่อันดับขึ้นบอร์ด Leaderboard ชิงความเป็นหนึ่ง!
-                </p>
-
-                <!-- ปุ่มกดเข้าเล่นเกม -->
-                <a href="game.html" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; font-size: 0.85rem; box-shadow: 0 3px 10px rgba(34,197,94,0.3);">
-                    🚀 เข้าเล่นเกม
-                </a>
             </div>
-
         </div>
     </div>
-</div>
 
     <!-- ปุ่มลอยติดต่อ LINE ด้านขวาล่าง -->
     <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="floating-line-btn" id="lineContactBtn">
         💬 ติดต่อแอดมิน
     </a>
 
+    <!-- ========================================== -->
+    <!-- ส่วนท้ายสุดของเว็บไซต์ (Footer) พร้อมทางเข้าแอดมินลับ -->
+    <!-- ========================================== -->
+    <footer style="text-align: center; padding: 25px 20px; margin-top: 20px; color: #64748b; font-size: 0.8rem;">
+        <p style="margin: 0;">
+            © 2026 <span id="secret-admin-trigger" style="cursor: pointer; color: #64748b;" title="System Portal">MARS Agency</span>. All rights reserved.
+        </p>
+    </footer>
+
     <!-- Supabase JS SDK และโมดูลไฟล์ JavaScript ย่อย -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="main.js"></script>
 
     <!-- แปะตรงนี้ตอนถึงเทศกาล -->
-<link rel="stylesheet" href="seasonal-theme.css">
-<script src="seasonal-effect.js"></script>
+    <link rel="stylesheet" href="seasonal-theme.css">
+    <script src="seasonal-effect.js"></script>
 </body>
 </html>

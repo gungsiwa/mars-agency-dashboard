@@ -3,7 +3,7 @@
 let activeManagerType = '';
 
 export function initAdminModule(supabase, onDataChanged) {
-    const trigger = document.getElementById('admin-trigger');
+    const secretTrigger = document.getElementById('secret-admin-trigger');
     const menuPopup = document.getElementById('admin-menu-popup');
     const modal = document.getElementById('login-modal');
     const closeBtn = document.getElementById('close-modal-btn');
@@ -15,8 +15,9 @@ export function initAdminModule(supabase, onDataChanged) {
 
     let isAdminLoggedIn = false;
 
-    if (trigger) {
-        trigger.addEventListener('click', (e) => {
+    // คลิกที่คำว่า MARS Agency ที่ Footer เพื่อเปิดหน้า Login หรือ เมนู Admin
+    if (secretTrigger) {
+        secretTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!isAdminLoggedIn) {
                 if (modal) {
@@ -87,10 +88,10 @@ export function initAdminModule(supabase, onDataChanged) {
 
     function enableAdminMode(email = 'Admin') {
         isAdminLoggedIn = true;
-        if (trigger) {
-            trigger.textContent = '🔓';
-            trigger.style.opacity = '1';
-            trigger.style.borderColor = '#4ade80';
+        if (secretTrigger) {
+            // เปลี่ยนสีข้อความที่ Footer เล็กน้อยเพื่อให้รู้ว่าอยู่ในโหมด Admin
+            secretTrigger.style.color = '#4ade80';
+            secretTrigger.title = `Admin Logged in (${email})`;
         }
         const loggedUser = document.getElementById('admin-logged-user');
         if (loggedUser) loggedUser.textContent = email;
@@ -98,10 +99,9 @@ export function initAdminModule(supabase, onDataChanged) {
 
     function disableAdminMode() {
         isAdminLoggedIn = false;
-        if (trigger) {
-            trigger.textContent = '🔒';
-            trigger.style.opacity = '0.6';
-            trigger.style.borderColor = '#444';
+        if (secretTrigger) {
+            secretTrigger.style.color = '#64748b';
+            secretTrigger.title = 'System Portal';
         }
         if (menuPopup) menuPopup.style.display = 'none';
     }
