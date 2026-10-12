@@ -96,7 +96,7 @@ async function loadBanners() {
         slide.style.minWidth = '100%';
         slide.style.height = '100%';
         slide.style.position = 'relative';
-        slide.innerHTML = `<img src="${banner.image_url}" alt="Banner" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/800x160/1e293b/f59e0b?text=MARS+BANNER';">`;
+        slide.innerHTML = `<img src="${banner.image_url}" alt="Banner" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='https://via.placeholder.com/800x160/1e293b/f59e0b?text=MARS+BANNER';">`;
         track.appendChild(slide);
 
         if (dotsContainer) {
