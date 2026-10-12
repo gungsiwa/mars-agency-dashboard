@@ -151,6 +151,9 @@ function renderActivities(dataToRender = allActivities) {
             ? `<img src="${rightAvatar}" alt="${rightName}">`
             : `<img src="https://via.placeholder.com/64" alt="${rightName}">`;
 
+        // ดึงวันที่จากข้อมูล (รองรับฟิลด์ DateTime หรือ Date)
+        const activityDateStr = item.DateTime || item.Date || '';
+
         html += `
         <div class="pk-match-card">
             <div class="match-arena">
@@ -186,8 +189,9 @@ function renderActivities(dataToRender = allActivities) {
                 </div>
             </div>
 
-            <div class="card-footer-status" style="color: #fbbf24; background: rgba(245, 158, 11, 0.08);">
-                📌 สถานะ: ${status}
+            <div class="card-footer-status" style="display: flex; justify-content: space-between; align-items: center; color: #fbbf24; background: rgba(245, 158, 11, 0.08); padding: 6px 12px; font-size: 12px;">
+                <span>📅 วันที่: ${activityDateStr}</span>
+                <span>📌 สถานะ: ${status}</span>
             </div>
         </div>
         `;
