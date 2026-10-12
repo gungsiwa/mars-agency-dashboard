@@ -516,21 +516,35 @@
                 }
 
                 tbody.innerHTML = '';
-                data.forEach((row, index) => {
-                    const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
-                    const s = (row.total_time % 60).toString().padStart(2, '0');
-                    const timeStr = `${m}:${s}`;
+        
+        // กรองให้เหลือผู้เล่นคนละ 1 รายการที่ดีที่สุด (ไม่ให้ชื่อซ้ำหลายรอบ)
+        const uniquePlayers = [];
+        const seenNames = new Set();
+        for (const row of data) {
+            const playerName = row.player_name || 'Anonymous';
+            if (!seenNames.has(playerName)) {
+                seenNames.add(playerName);
+                uniquePlayers.push(row);
+            }
+            if (uniquePlayers.length >= 10) break; // แสดงท็อป 10 อันดับ
+        }
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${escapeHtml(row.player_name)}</td>
-                        <td>Lv.${row.max_level}</td>
-                        <td>${row.total_clicks}</td>
-                        <td>${timeStr}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+        uniquePlayers.forEach((row, index) => {
+            const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
+            const s = (row.total_time % 60).toString().padStart(2, '0');
+            const timeStr = `${m}:${s}`;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${escapeHtml(row.player_name)}</td>
+                <td>Lv.${row.max_level}</td>
+                <td>${row.total_clicks}</td>
+                <td>${timeStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
             } catch (err) {
                 console.error('Fetch error:', err);
                 tbody.innerHTML = `<tr><td colspan="5" style="color: #ef4444;">เกิดข้อผิดพลาดในการเชื่อมต่อ</td></tr>`;

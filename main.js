@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupAdminPortal();
 });
 
-// ================= 🏆 ดึงข้อมูล Leaderboard เกมจับคู่ VJ =================
+// ================= 🏆 ดึงข้อมูล Leaderboard เกมจับคู่ VJ (แสดงผลครบถ้วน: ด่าน, จำนวนคลิก, เวลา) =================
 async function loadMainLeaderboard() {
     const tbody = document.getElementById('leaderboardBody');
     if (!tbody) return;
@@ -36,21 +36,36 @@ async function loadMainLeaderboard() {
     }
 
     try {
+        // ดึงข้อมูลมาเรียงลำดับจาก เลเวลสูงสุด -> จำนวนคลิกน้อยที่สุด -> เวลาน้อยที่สุด
         const { data, error } = await supabaseClient
             .from('vj_game_leaderboard')
             .select('*')
             .order('max_level', { ascending: false })
             .order('total_clicks', { ascending: true })
             .order('total_time', { ascending: true })
-            .limit(10);
+            .limit(50);
 
         if (error || !data || data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center;">ยังไม่มีประวัติคะแนนเกม</td></tr>`;
             return;
         }
 
+        // กรองให้เหลือผู้เล่นคนละ 1 รายการที่ดีที่สุด (ไม่ให้ชื่อซ้ำหลายรอบ)
+        const uniquePlayers = [];
+        const seenNames = new Set();
+        for (const row of data) {
+            const playerName = row.player_name || 'Anonymous';
+            if (!seenNames.has(playerName)) {
+                seenNames.has(playerName);
+                seenNames.add(playerName);
+                uniquePlayers.push(row);
+            }
+            if (uniquePlayers.length >= 10) break; // แสดงท็อป 10 อันดับแรก
+        }
+
         let html = '';
-        data.forEach((row, index) => {
+        uniquePlayers.forEach((row, index) => {
+            // จัดรูปแบบเวลา (วินาที -> นาที:วินาที)
             const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
             const s = (row.total_time % 60).toString().padStart(2, '0');
             const timeStr = `${m}:${s}`;
@@ -59,7 +74,7 @@ async function loadMainLeaderboard() {
                 <tr>
                     <td>${index + 1}</td>
                     <td>${escapeHtml(row.player_name || 'Anonymous')}</td>
-                    <td>Lv.${row.max_level}</td>
+                    <td>Lv.${row.max_level} (${row.total_clicks} คลิก)</td>
                     <td>${timeStr}</td>
                 </tr>
             `;
