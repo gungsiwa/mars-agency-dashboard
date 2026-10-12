@@ -120,7 +120,7 @@ function renderActivities(dataToRender = allActivities) {
     });
 
     if (tabFiltered.length === 0) {
-        cardList.innerHTML = `<div class="no-data" style="text-align: center; color: var(--text-muted); padding: 30px;">📌 ว่าง (ลงสมัครได้สำเร็จ) "${currentTab === 'today' ? 'กิจกรรมวันนี้' : 'กิจกรรมย้อนหลัง'}"</div>`;
+        cardList.innerHTML = `<div class="no-data" style="text-align: center; color: var(--text-muted); padding: 30px;">📌 ว่าง (ลงสมัครได้เลย) "${currentTab === 'today' ? 'กิจกรรมวันนี้' : 'กิจกรรมย้อนหลัง'}"</div>`;
         return;
     }
 
