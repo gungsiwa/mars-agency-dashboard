@@ -89,7 +89,6 @@ export function initAdminModule(supabase, onDataChanged) {
     function enableAdminMode(email = 'Admin') {
         isAdminLoggedIn = true;
         if (secretTrigger) {
-            // เปลี่ยนสีข้อความที่ Footer เล็กน้อยเพื่อให้รู้ว่าอยู่ในโหมด Admin
             secretTrigger.style.color = '#4ade80';
             secretTrigger.title = `Admin Logged in (${email})`;
         }
@@ -100,7 +99,7 @@ export function initAdminModule(supabase, onDataChanged) {
     function disableAdminMode() {
         isAdminLoggedIn = false;
         if (secretTrigger) {
-            secretTrigger.style.color = '#64748b';
+            secretTrigger.style.color = 'var(--text-muted)';
             secretTrigger.title = 'System Portal';
         }
         if (menuPopup) menuPopup.style.display = 'none';
@@ -122,12 +121,12 @@ export function initAdminModule(supabase, onDataChanged) {
             if (fieldsContainer) {
                 fieldsContainer.innerHTML = `
                     <div style="margin-bottom: 10px;">
-                        <label style="display: block; font-size: 12px; color: #aaa; margin-bottom: 4px;">เลือกไฟล์รูปภาพ:</label>
+                        <label style="display: block; font-size: 12px; color: #aaa; margin-bottom: 4px;">เลือกไฟล์รูปภาพจากเครื่อง/มือถือ:</label>
                         <input type="file" id="input-banner-file" accept="image/*" style="width: 100%; color: #ccc; font-size: 13px; background: #1e1e1e; padding: 6px; border: 1px solid #444; border-radius: 4px;">
                     </div>
                     <div>
-                        <label style="display: block; font-size: 12px; color: #aaa; margin-bottom: 4px;">URL ลิงก์เมื่อคลิกภาพ (ถ้ามี):</label>
-                        <input type="text" id="input-banner-link" placeholder="https://example.com" style="width: 100%; padding: 8px; background: #1e1e1e; border: 1px solid #444; color: #fff; border-radius: 4px; font-size: 13px;">
+                        <label style="display: block; font-size: 12px; color: #aaa; margin-bottom: 4px;">ชื่อแบนเนอร์ / หัวข้อ (ถ้ามี):</label>
+                        <input type="text" id="input-banner-title" placeholder="ชื่อแบนเนอร์" style="width: 100%; padding: 8px; background: #1e1e1e; border: 1px solid #444; color: #fff; border-radius: 4px; font-size: 13px;">
                     </div>
                 `;
             }
@@ -170,10 +169,10 @@ export function initAdminModule(supabase, onDataChanged) {
         try {
             if (activeManagerType === 'banner') {
                 const fileInput = document.getElementById('input-banner-file');
-                const linkInput = document.getElementById('input-banner-link');
+                const titleInput = document.getElementById('input-banner-title');
 
                 if (!fileInput.files || fileInput.files.length === 0) {
-                    alert('กรุณาเลือกไฟล์รูปภาพจากเครื่อง');
+                    alert('กรุณาเลือกไฟล์รูปภาพจากเครื่องหรือมือถือ');
                     return;
                 }
 
@@ -182,19 +181,20 @@ export function initAdminModule(supabase, onDataChanged) {
                 const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
                 const filePath = `banners/${fileName}`;
 
+                // ทำการอัปโหลดไฟล์ไปที่ Storage bucket ชื่อ 'site-assets'
                 const { error: uploadError } = await supabase.storage.from('site-assets').upload(filePath, file);
                 if (uploadError) throw uploadError;
 
                 const { data: publicUrlData } = supabase.storage.from('site-assets').getPublicUrl(filePath);
                 const imageUrl = publicUrlData.publicUrl;
-                const linkUrl = linkInput.value.trim();
+                const bannerTitle = titleInput.value.trim() || 'MARS AGENCY';
 
-                const { error: dbError } = await supabase.from('site_banners').insert([{ image_url: imageUrl, link_url: linkUrl }]);
+                const { error: dbError } = await supabase.from('site_banners').insert([{ title: bannerTitle, image_url: imageUrl }]);
                 if (dbError) throw dbError;
 
-                alert('อัปโหลดและบันทึกแบนเนอร์สำเร็จ!');
+                alert('อัปโหลดภาพและบันทึกแบนเนอร์สำเร็จ!');
                 fileInput.value = '';
-                linkInput.value = '';
+                titleInput.value = '';
                 loadManagerItemList(supabase);
                 if (onDataChanged) onDataChanged('banner');
 
@@ -216,9 +216,10 @@ export function initAdminModule(supabase, onDataChanged) {
                 if (onDataChanged) onDataChanged('link');
 
             } else if (activeManagerType === 'notice') {
-                const message = document.getElementById('input-notice-text').value.trim();
+                const content = document.getElementById('input-notice-text').value.trim();
+                // ล้างข้อมูลเก่าออกก่อน แล้ว insert ใหม่ให้ตรงกับฟิลด์ content ที่ main.js เรียกใช้
                 await supabase.from('site_notices').delete().neq('id', 0);
-                const { error: dbError } = await supabase.from('site_notices').insert([{ message: message }]);
+                const { error: dbError } = await supabase.from('site_notices').insert([{ content: content }]);
                 if (dbError) throw dbError;
 
                 alert('บันทึกข้อความแจ้งเตือนสำเร็จ!');
@@ -268,10 +269,10 @@ async function loadManagerItemList(supabase) {
                 html += `
                     <div style="display: flex; align-items: center; justify-content: space-between; background: #222; padding: 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid #333;">
                         <div style="display: flex; align-items: center; gap: 10px; overflow: hidden;">
-                            <img src="${item.image_url}" style="width: 40px; height: 30px; object-fit: cover; border-radius: 3px;">
-                            <span style="font-size: 12px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${item.link_url || 'ไม่มีลิงก์'}</span>
+                            <img src="${item.image_url}" style="width: 40px; height: 30px; object-fit: cover; border-radius: 3px;" onerror="this.src='https://via.placeholder.com/40x30/1e293b/f59e0b?text=IMG';">
+                            <span style="font-size: 12px; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${item.title || 'แบนเนอร์'}</span>
                         </div>
-                        <button onclick="deleteItem('${item.id}')" style="background: #dc3545; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">ลบ</button>
+                        <button onclick="deleteItem(${item.id})" style="background: #dc3545; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">ลบ</button>
                     </div>
                 `;
             } else {
@@ -281,7 +282,7 @@ async function loadManagerItemList(supabase) {
                             <div style="font-weight: 600; color: #fff;">${item.title}</div>
                             <div style="font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${item.url}</div>
                         </div>
-                        <button onclick="deleteItem('${item.id}')" style="background: #dc3545; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">ลบ</button>
+                        <button onclick="deleteItem(${item.id})" style="background: #dc3545; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;">ลบ</button>
                     </div>
                 `;
             }

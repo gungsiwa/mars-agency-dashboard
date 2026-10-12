@@ -4,71 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MARS AGENCY - VJ Activity Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- พื้นหลังอวกาศและละอองดาว -->
     <div class="space-bg"></div>
     <div class="stars-container"></div>
 
-    <div class="container">
-        <div class="header">
-            <div class="logo-img-container">
-                <img src="marslogo.png" alt="MARS Agency Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'75\' height=\'75\'><rect width=\'75\' height=\'75\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'18\' fill=\'%23d4af37\' text-anchor=\'middle\' dominant-baseline=\'central\' font-family=\'sans-serif\'>MARS</text></svg>';">
+    <div class="dashboard-layout">
+        
+        <!-- ปุ่มเปิดเมนูสำหรับมือถือ -->
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+            <span>☰</span> เมนูสังกัด
+        </button>
+
+        <!-- ฉากหลังจางๆ เมื่อเปิดเมนูบนมือถือ -->
+        <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+        <!-- ================= 1. SIDEBAR LEFT (เมนูด้านซ้าย) ================= -->
+        <aside class="sidebar-left glass-panel">
+            <button class="close-menu-btn" onclick="toggleSidebar()">✕ ปิด</button>
+            <div class="brand-box">
+                <div class="brand-logo">
+                    <img src="marslogo.png" alt="MARS Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'65\' height=\'65\'><rect width=\'65\' height=\'65\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%23f59e0b\' text-anchor=\'middle\' dominant-baseline=\'central\'>MARS</text></svg>';">
+                </div>
+                <h1>MARS AGENCY</h1>
+                <p>VJ Status & Activity Hub</p>
             </div>
-            <h1>MARS AGENCY</h1>
-            <p>ระบบติดตามสถานะและตารางกิจกรรม VJ</p>
-        </div>
 
-        <!-- ป้ายประกาศด่วน (ข้อความวิ่ง Marquee) -->
-        <div id="noticeBannerContainer"></div>
+            <nav class="nav-menu">
+                <button class="tab-btn nav-btn active" id="tab-today" onclick="switchTab('today', event); toggleSidebar();">📅 กิจกรรมวันนี้</button>
+                <button class="tab-btn nav-btn" id="tab-archive" onclick="switchTab('archive', event); toggleSidebar();">📂 กิจกรรมย้อนหลัง</button>
+                <a href="game.html" class="nav-btn">🎮 มินิเกมจับคู่ VJ <span style="font-size: 10px; background: #3b82f6; padding: 1px 5px; border-radius: 4px; margin-left: auto; color:#fff;">New</span></a>
+            </nav>
+        </aside>
 
-        <!-- เวลาอัปเดตข้อมูลล่าสุด -->
-        <div class="last-updated-box" id="lastUpdatedBox">อัปเดตล่าสุด: กำลังโหลด...</div>
-
-        <div class="dashboard-tabs">
-            <button class="tab-btn active" id="tab-today" onclick="switchTab('today', event)">📅 กิจกรรมวันนี้</button>
-            <button class="tab-btn" id="tab-archive" onclick="switchTab('archive', event)">📂 กิจกรรมย้อนหลัง</button>
-        </div>
-
-        <!-- ช่องค้นหาข้อมูล VJ -->
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 ค้นหาด้วยชื่อ VJ หรือ Bigo ID..." autocomplete="off">
-        </div>
-
-        <div class="card-list" id="cardList">
-            <div class="loading-text">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
-        </div>
-
-        <!-- กล่องข้อความติดต่อแอดมิน -->
-        <div class="admin-contact-card">
-            <div class="admin-contact-info">
-                <h3>💬 ติดต่อแอดมินสังกัด MARS</h3>
-                <p>ต้องการลงกิจกรรม แก้ไขตาราง หรือสอบถามข้อมูล</p>
+        <!-- ================= 2. MAIN CONTENT (เนื้อหาตรงกลาง) ================= -->
+        <main class="main-content">
+            
+            <div class="hero-team-banner">
+                <img src="herobanner.jpg" alt="MARS Agency Team" onerror="this.src='https://via.placeholder.com/800x280/1e293b/f59e0b?text=MARS+AGENCY+TEAM';">
+                <div class="hero-overlay">
+                    <div class="hero-title">
+                        <h2>MARS AGENCY COMMUNITY</h2>
+                        <p>ศูนย์รวมข้อมูลและความบันเทิงของเหล่า VJ สังกัดเรา</p>
+                    </div>
+                </div>
             </div>
-            <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="admin-action-btn">แชทแอดมิน</a>
-        </div>
 
-        <!-- แบนเนอร์สไลด์กิจกรรม -->
-        <div class="banner-slider-container">
-            <div class="banner-slider-track" id="bannerSliderTrack"></div>
-            <div class="banner-dots" id="bannerDots"></div>
-        </div>
+            <!-- ป้ายประกาศด่วน (Marquee) โหลดอัตโนมัติจาก main.js -->
+            <div id="noticeBannerContainer"></div>
 
-        <!-- ลิงก์กิจกรรมเพิ่มเติม (แสดงแบบ 2 คอลัมน์) -->
-        <div class="external-links-section">
-            <div class="section-title">📌 ลิงก์กิจกรรมและช่องทางเพิ่มเติม</div>
-            <div class="links-grid" id="externalLinksContainer">
-                <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; padding: 5px; grid-column: span 2;">กำลังโหลดลิงก์...</div>
+            <div class="control-bar">
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" id="tab-today-bar" onclick="switchTab('today', event)">วันนี้</button>
+                    <button class="tab-btn" id="tab-archive-bar" onclick="switchTab('archive', event)">ย้อนหลัง</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อ VJ, Bigo ID หรือคู่แข่ง..." autocomplete="off">
+                </div>
             </div>
-        </div>
+
+            <!-- เวลาอัปเดตข้อมูลล่าสุด -->
+            <div class="last-updated-box" id="lastUpdatedBox" style="font-size: 11px; color: var(--text-muted); padding-left: 4px;">อัปเดตล่าสุด: กำลังโหลด...</div>
+
+            <!-- จุดแสดงการ์ดรายการ PK โหลดอัตโนมัติจาก activity.js -->
+            <div class="card-list pk-card-list" id="cardList">
+                <div class="loading-text" style="grid-column: span 2; text-align: center; color: var(--text-muted); padding: 30px;">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
+            </div>
+
+            <div class="admin-contact-card">
+                <div class="admin-contact-info">
+                    <h3>💬 ติดต่อแอดมินสังกัด MARS</h3>
+                    <p>ต้องการลงกิจกรรม แก้ไขตาราง หรือสอบถามข้อมูลเพิ่มเติม</p>
+                </div>
+                <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="admin-action-btn">แชทแอดมิน</a>
+            </div>
+
+            <!-- ปุ่มทางเข้าเกมสำหรับ Desktop (แสดงอยู่ใต้ส่วนติดต่อแอดมิน) -->
+            <div class="center-game-btn-container desktop-game-btn-bottom">
+                <a href="game.html" class="play-game-cta-card">
+                    <div class="game-thumbnail-wrapper">
+                        <img src="images/picture.png" alt="เกมจับคู่ VJ" onerror="this.src='https://via.placeholder.com/300x150/1e293b/38bdf8?text=VJ+Match+Game';">
+                    </div>
+                    <div class="game-cta-text-info">
+                        <span class="game-badge">🎮 มินิเกมสนุกๆ</span>
+                        <h4>เกมจับคู่ VJ</h4>
+                        <p>คลิกเพื่อเล่นเกม</p>
+                    </div>
+                </a>
+            </div>
+
+        </main>
+
+        <!-- ================= 3. SIDEBAR RIGHT (เมนูด้านขวา) ================= -->
+        <aside class="sidebar-right">
+            
+            <!-- แบนเนอร์สไลด์จากระบบเดิม -->
+            <div class="banner-slider-container glass-panel" style="padding: 0; margin: 0; overflow: hidden; position: relative;">
+                <div class="banner-slider-track" id="bannerSliderTrack" style="display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 160px;"></div>
+                <div class="banner-dots" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2;" id="bannerDots"></div>
+            </div>
+
+            <div class="glass-panel" style="padding: 14px;">
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">📌 ลิงก์และช่องทางสำคัญ</div>
+                <div class="links-grid" id="externalLinksContainer">
+                    <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; padding: 5px; grid-column: span 2;">กำลังโหลดลิงก์...</div>
+                </div>
+            </div>
+
+            <!-- ปุ่มทางเข้าเกมบนมือถือ (ย้ายมาอยู่ใต้ลิงก์สำคัญ และอยู่เหนือท็อปแรงค์เกม) -->
+            <div class="mobile-game-btn-slot">
+                <a href="game.html" class="play-game-cta-card">
+                    <div class="game-thumbnail-wrapper">
+                        <img src="images/picture.png" alt="เกมจับคู่ VJ" onerror="this.src='https://via.placeholder.com/300x150/1e293b/38bdf8?text=VJ+Match+Game';">
+                    </div>
+                    <div class="game-cta-text-info">
+                        <span class="game-badge">🎮 มินิเกมสนุกๆ</span>
+                        <h4>เกมจับคู่ VJ</h4>
+                        <p>คลิกเพื่อเล่นเกม</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="leaderboard-widget glass-panel">
+                <h3>🏆 ท็อปแรงค์เกมจับคู่ VJ</h3>
+                <table class="lb-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ผู้เล่น</th>
+                            <th>ด่าน</th>
+                            <th>เวลา</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <tr><td colspan="4" style="color: var(--text-muted); text-align: center;">กำลังโหลด...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </aside>
+
     </div>
 
-    <!-- 🔒 เมนูป๊อปอัปจัดการหลังบ้าน (ถูกซ่อนไว้ เรียกใช้งานผ่าน Footer ลับ) -->
+    <!-- ปุ่มลอยติดต่อ LINE ขวาล่าง -->
+    <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="floating-line-btn">
+        💬 ติดต่อแอดมิน
+    </a>
+
+    <!-- ทางเข้าโหมดแอดมิน (Footer ลับ รองรับทั้ง Desktop และ Mobile) -->
+    <footer class="site-footer-admin">
+        © 2026 <span id="secret-admin-trigger" class="admin-trigger-text" title="System Portal">MARS Agency</span>. All rights reserved.
+    </footer>
+
+    <!-- ================= MODAL & ADMIN PANELS (ระบบหลังบ้านเดิม) ================= -->
     <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; pointer-events: none;">
-        <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 55px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff; pointer-events: auto;">
+        <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 35px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff; pointer-events: auto;">
             <div style="font-size: 13px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
                 👤 เข้าสู่ระบบโดย: <span id="admin-logged-user" style="color: #4ade80; font-weight: 600;">Admin</span>
             </div>
@@ -79,15 +172,12 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับเข้าสู่ระบบแอดมิน -->
     <div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;">
         <div style="background: #1e1e1e; padding: 30px; border-radius: 12px; width: 300px; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; font-family: sans-serif;">
             <h3 style="margin-top: 0; margin-bottom: 5px;">Admin Login</h3>
             <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">เข้าสู่ระบบเพื่อจัดการข้อมูล</p>
-            
             <input type="email" id="admin-email" placeholder="Email" autocomplete="off" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
             <input type="password" id="admin-password" placeholder="Password" autocomplete="new-password" style="width: 100%; padding: 10px; margin-bottom: 15px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box;">
-            
             <div style="display: flex; justify-content: space-between;">
                 <button id="login-btn" style="background: #4f46e5; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 48%;">ตกลง</button>
                 <button id="close-modal-btn" style="background: #444; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 48%;">ยกเลิก</button>
@@ -96,99 +186,38 @@
         </div>
     </div>
 
-    <!-- Modal หน้าต่างจัดการแยกตามประเภท -->
     <div id="admin-manager-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1001; justify-content: center; align-items: center;">
         <div style="background: #1e1e1e; padding: 25px; border-radius: 12px; width: 480px; max-width: 90%; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.5); max-height: 85vh; overflow-y: auto;">
-            
             <h3 id="manager-title" style="margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 10px;">จัดการข้อมูล</h3>
-            
             <div style="background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;">
                 <div id="form-fields-container"></div>
-                
                 <button id="manager-save-btn" onclick="saveNewItem()" style="width: 100%; padding: 10px; background: #198754; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-top: 12px; font-weight: 600; font-size: 14px;">💾 บันทึกข้อมูล</button>
             </div>
-
             <div id="manager-list-section">
                 <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #bbb;">📋 รายการปัจจุบัน</h4>
                 <div id="manager-item-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #333; border-radius: 6px; padding: 8px; background: #161616;"></div>
             </div>
-
             <button onclick="closeAdminManager()" style="width: 100%; padding: 10px; background: #444; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">✕ ปิดหน้าต่าง</button>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ศูนย์บริการวีเจ & ความบันเทิง (VJ Hub & Entertainment) -->
-    <!-- ========================================== -->
-    <div style="margin-top: 40px; padding: 15px 15px; border-top: 1px solid #334155; background-color: #0b1120;">
-        <div style="max-width: 650px; margin: 0 auto;">
-            
-            <!-- ชื่อหัวข้อ Layer แบบกระชับ -->
-            <h2 style="color: #f8fafc; font-size: 1.1rem; text-align: center; margin-bottom: 15px; font-weight: bold;">
-                🏢 ศูนย์บริการวีเจ & ความบันเทิง
-            </h2>
-            
-            <!-- พื้นที่จัดวางแบบแนวนอน (Compact List Item) -->
-            <div style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 12px; padding: 12px 18px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); transition: transform 0.2s;"
-                 onmouseover="this.style.transform='translateY(-2px)';"
-                 onmouseout="this.style.transform='translateY(0)';">
-                
-                <!-- ฝั่งซ้าย: รูปภาพ + ข้อความและคำอธิบาย -->
-                <div style="display: flex; align-items: center; gap: 15px; position: relative;">
-                    
-                    <!-- ภาพปกขนาดเล็ก (สี่เหลี่ยมจัตุรัส มุมโค้งมน) -->
-                    <div style="width: 55px; height: 55px; min-width: 55px; border-radius: 8px; overflow: hidden; border: 1.5px solid #38bdf8; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
-                        <img src="images/picture.png" alt="เกมจับคู่ภาพวีเจ" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-
-                    <!-- ข้อความชื่อเกมและคำอธิบาย -->
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 3px;">
-                            <h3 style="color: #38bdf8; margin: 0; font-size: 0.95rem; font-weight: bold;">
-                                เกมจับคู่ภาพวีเจ
-                            </h3>
-                            <!-- ป้ายแท็ก Mini-Game แบบย่อ -->
-                            <span style="background-color: #3b82f6; color: white; font-size: 0.65rem; font-weight: bold; padding: 1px 5px; border-radius: 6px;">
-                                🎮 Mini-Game
-                            </span>
-                        </div>
-                        <p style="color: #94a3b8; font-size: 0.75rem; margin: 0; line-height: 1.3;">
-                            ทดสอบความจำ ไต่อันดับขึ้นบอร์ด Leaderboard ชิงความเป็นหนึ่ง
-                        </p>
-                    </div>
-                </div>
-
-                <!-- ฝั่งขวา: ปุ่มกดเข้าเล่นเกม -->
-                <div style="margin-left: 15px; min-width: 90px;">
-                    <a href="game.html" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 0.8rem; box-shadow: 0 2px 8px rgba(34,197,94,0.3); white-space: nowrap;">
-                        🚀 เล่นเกม
-                    </a>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- ปุ่มลอยติดต่อ LINE ด้านขวาล่าง -->
-    <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="floating-line-btn" id="lineContactBtn">
-        💬 ติดต่อแอดมิน
-    </a>
-
-    <!-- ========================================== -->
-    <!-- ส่วนท้ายสุดของเว็บไซต์ (Footer) พร้อมทางเข้าแอดมินลับ -->
-    <!-- ========================================== -->
-    <footer style="text-align: center; padding: 25px 20px; margin-top: 20px; color: #64748b; font-size: 0.8rem;">
-        <p style="margin: 0;">
-            © 2026 <span id="secret-admin-trigger" style="cursor: pointer; color: #64748b;" title="System Portal">MARS Agency</span>. All rights reserved.
-        </p>
-    </footer>
-
-    <!-- Supabase JS SDK และโมดูลไฟล์ JavaScript ย่อย -->
+    <!-- ================= JAVASCRIPT & MODULES ================= -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="main.js"></script>
 
-    <!-- แปะตรงนี้ตอนถึงเทศกาล -->
+    <!-- ธีมตามเทศกาลเดิม -->
     <link rel="stylesheet" href="seasonal-theme.css">
     <script src="seasonal-effect.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar-left');
+            const backdrop = document.querySelector('.sidebar-backdrop');
+            if(sidebar && backdrop) {
+                sidebar.classList.toggle('active');
+                backdrop.classList.toggle('active');
+            }
+        }
+    </script>
 </body>
 </html>
