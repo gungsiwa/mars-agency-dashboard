@@ -503,7 +503,7 @@
                     .order('max_level', { ascending: false })
                     .order('total_clicks', { ascending: true })
                     .order('total_time', { ascending: true })
-                    .limit(10);
+                    .limit(50);
 
                 if (error) {
                     tbody.innerHTML = `<tr><td colspan="5" style="color: #ef4444;">โหลดข้อมูลไม่สำเร็จ</td></tr>`;
@@ -526,7 +526,7 @@
                 seenNames.add(playerName);
                 uniquePlayers.push(row);
             }
-            if (uniquePlayers.length >= 10) break; // แสดงท็อป 10 อันดับ
+            if (uniquePlayers.length >= 50) break; // แสดงท็อป 50 อันดับ
         }
 
         uniquePlayers.forEach((row, index) => {
