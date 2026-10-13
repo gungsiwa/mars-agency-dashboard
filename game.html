@@ -9,6 +9,10 @@
     <!-- นำเข้าไลบรารี Canvas Confetti สำหรับทำเอฟเฟกต์พลุ -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: #0f172a;
@@ -17,7 +21,7 @@
             flex-direction: column;
             align-items: center;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             min-height: 100vh;
             position: relative;
         }
@@ -25,15 +29,15 @@
         /* ปุ่มกากบาทออกหน้าหลัก (มุมขวาบน) */
         .close-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: #1e293b;
             color: #ef4444;
             border: 2px solid #ef4444;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             display: flex;
             justify-content: center;
@@ -41,6 +45,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s;
+            z-index: 10;
         }
         .close-btn:hover {
             background-color: #ef4444;
@@ -48,7 +53,7 @@
             transform: scale(1.05);
         }
 
-        h1 { color: #f8fafc; margin-bottom: 5px; font-size: 1.8rem; text-align: center; }
+        h1 { color: #f8fafc; margin-top: 10px; margin-bottom: 5px; font-size: 1.6rem; text-align: center; }
 
         /* ส่วนแสดงข้อมูลผู้เล่น */
         .player-bar {
@@ -59,7 +64,7 @@
             padding: 6px 15px;
             border-radius: 20px;
             margin-bottom: 10px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             border: 1px solid #334155;
         }
         .player-bar span { color: #38bdf8; font-weight: bold; }
@@ -68,7 +73,7 @@
             border: none;
             color: #94a3b8;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             text-decoration: underline;
             padding: 0;
         }
@@ -79,20 +84,54 @@
             color: #fff;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             margin-bottom: 10px;
             font-weight: bold;
         }
 
-        .score-board { font-size: 0.95rem; margin-bottom: 20px; color: #94a3b8; text-align: center; }
+        .score-board { font-size: 0.9rem; margin-bottom: 15px; color: #94a3b8; text-align: center; }
         
-        /* กระดานเกม */
+        /* 🎮 บอร์ดเกมและการจัดการคอลัมน์ (มาตรฐานบนจอคอมพิวเตอร์) */
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            max-width: 480px;
+            gap: 8px;
             width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .game-board.level-4 {
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            max-width: 560px;
+        }
+
+        .game-board.level-5 {
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            max-width: 680px;
+        }
+
+        /* 📱 รองรับการแสดงผลบนมือถือ (ความกว้างไม่เกิน 768px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .game-board {
+                max-width: 100% !important;
+                gap: 6px !important;
+                padding: 0 4px;
+            }
+            .game-board.level-4 {
+                grid-template-columns: repeat(4, 1fr) !important;
+                max-width: 100% !important;
+            }
+            .game-board.level-5 {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 8px !important;
+                max-width: 100% !important;
+            }
         }
 
         /* ดีไซน์การ์ด */
@@ -100,13 +139,15 @@
             aspect-ratio: 1 / 1;
             background: linear-gradient(135deg, #1e293b, #334155);
             border: 2px solid #475569;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
             transition: transform 0.2s, background-color 0.2s;
+            position: relative;
+            overflow: hidden;
         }
         .card:active { transform: scale(0.95); }
         
@@ -120,7 +161,7 @@
             width: 85%;
             height: 85%;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 6px;
             display: none;
         }
         .card.flipped img { display: block; }
@@ -128,12 +169,12 @@
         .btn-container {
             display: flex;
             gap: 10px;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         button.action-btn {
-            padding: 10px 20px;
-            font-size: 0.95rem;
+            padding: 8px 18px;
+            font-size: 0.9rem;
             font-weight: bold;
             border: none;
             border-radius: 8px;
@@ -157,53 +198,53 @@
         .modal-box {
             background: #1e293b;
             border: 1px solid #334155;
-            padding: 25px;
-            border-radius: 16px;
-            max-width: 360px;
+            padding: 20px;
+            border-radius: 14px;
+            max-width: 340px;
             width: 90%;
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-        .modal-box h2 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; }
-        .modal-box p { color: #cbd5e1; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.5; }
+        .modal-box h2 { color: #38bdf8; margin-top: 0; margin-bottom: 12px; font-size: 1.3rem; }
+        .modal-box p { color: #cbd5e1; margin-bottom: 18px; font-size: 0.9rem; line-height: 1.4; }
         .modal-btn {
             background-color: #22c55e;
             color: white;
-            padding: 10px 20px;
+            padding: 9px 18px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         .modal-btn:hover { background-color: #16a34a; }
 
         /* ส่วนแสดง Leaderboard */
         .leaderboard-container {
-            margin-top: 35px;
+            margin-top: 25px;
             max-width: 480px;
             width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             box-sizing: border-box;
         }
         .leaderboard-container h3 {
             margin-top: 0;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #38bdf8;
             border-bottom: 1px solid #334155;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             text-align: center;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         th, td {
-            padding: 8px;
+            padding: 6px;
             text-align: center;
             border-bottom: 1px solid #283548;
         }
@@ -218,7 +259,7 @@
 
     <h1>🎮 จับคู่ VJ MARS Agency</h1>
 
-    <!-- แถบแสดงชื่อผู้เล่น -->
+    <!-- แถบแสดงข้อมูลผู้เล่น -->
     <div class="player-bar">
         ผู้เล่น: <span id="player-name-display">ไม่ระบุชื่อ</span>
         <button class="edit-name-btn" onclick="promptChangeName()">[แก้ไขชื่อ]</button>
@@ -280,13 +321,23 @@
             'images/vj5.png',
             'images/vj6.png',
             'images/vj7.png',
-            'images/vj8.png'
+            'images/vj8.png',
+            'images/vj9.png',
+            'images/vj10.png',
+            'images/vj11.png',
+            'images/vj12.png',
+            'images/vj13.png',
+            'images/vj14.png',
+            'images/vj15.png',
+            'images/vj16.png'
         ];
 
         const levels = [
             { level: 1, pairs: 4, name: 'Level 1: ง่าย (4 คู่)' },
             { level: 2, pairs: 6, name: 'Level 2: ปานกลาง (6 คู่)' },
-            { level: 3, pairs: 8, name: 'Level 3: ท้าทาย (8 คู่)' }
+            { level: 3, pairs: 8, name: 'Level 3: ท้าทาย (8 คู่)' },
+            { level: 4, pairs: 12, name: 'Level 4: ยาก (12 คู่)' },
+            { level: 5, pairs: 16, name: 'Level 5: สูงสุด (16 คู่)' }
         ];
 
         let currentLevelIdx = 0;
@@ -316,7 +367,7 @@
         function initPlayer() {
             let savedName = localStorage.getItem('vj_game_player_name');
             if (!savedName || savedName.trim() === '') {
-                alert('💡 กติกาเกม:\n- เกมนี้มีทั้งหมด 3 เลเวล (Level 1 - 3)\n- ระบบจะจับเวลาและนับคลิกต่อเนื่องยาวไปจนจบ Level 3\n- สถิติจะถูกส่งขึ้นบอร์ดจัดอันดับ (Leaderboard) เมื่อเล่นจบ Level 3 เท่านั้น!');
+                alert('💡 กติกาเกม:\n- เกมนี้มีทั้งหมด 5 เลเวล (Level 1 - 5)\n- ระบบจะจับเวลาและนับคลิกต่อเนื่องยาวไปในแต่ละด่าน\n- สถิติจะถูกบันทึกส่งขึ้นบอร์ดจัดอันดับ (Leaderboard) ทันทีทุกครั้งที่คุณผ่านแต่ละด่าน!');
                 savedName = prompt('กรุณาใส่ชื่อเล่นหรือฉายาของคุณ:', 'VJ_Player');
                 if (!savedName || savedName.trim() === '') {
                     savedName = 'Anonymous';
@@ -338,6 +389,14 @@
 
         function startLevel(levelIdx) {
             const levelConfig = levels[levelIdx];
+            // จัดการคลาสเลเวลของบอร์ดเกม (รองรับเลเวล 4 และ 5)
+            board.classList.remove('level-4', 'level-5');
+            if (levelConfig.level === 4) {
+                board.classList.add('level-4');
+            } else if (levelConfig.level === 5) {
+                board.classList.add('level-5');
+            }
+
             levelTitle.innerText = levelConfig.name;
             levelModal.style.display = 'none';
             totalMatchesDisplay.innerText = levelConfig.pairs;
@@ -417,22 +476,23 @@
                 if (matchedCount === levels[currentLevelIdx].pairs) {
                     stopTimer();
 
+                    // 🚀 บันทึกคะแนนขึ้น Supabase ทันทีทุกครั้งที่ผ่านในแต่ละด่าน
+                    submitScoreToSupabase(levels[currentLevelIdx].level, totalClicksAccumulated, totalSeconds);
+
                     setTimeout(() => {
                         if (currentLevelIdx < levels.length - 1) {
                             modalTitle.innerText = `🎉 ผ่าน Level ${levels[currentLevelIdx].level} แล้ว!`;
-                            modalDesc.innerText = `เวลาสะสมตอนนี้: ${timerDisplay.innerText} | เตรียมตัวลุยด่านถัดไปกันต่อเลย`;
+                            modalDesc.innerText = `เวลาสะสมตอนนี้: ${timerDisplay.innerText} | บันทึกสถิติด่านนี้ลงบอร์ดแล้ว! ลุยต่อด่านถัดไปกันเลย`;
                             modalActionBtn.innerText = 'ไปด่านถัดไป ➔';
                             modalActionBtn.onclick = nextLevel;
                             levelModal.style.display = 'flex';
                         } else {
                             triggerConfetti();
                             modalTitle.innerText = `🏆 ยินดีด้วย! จบเกมครบทุกเลเวล`;
-                            modalDesc.innerText = `เวลารวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนลงบอร์ดเรียบร้อยแล้ว!`;
+                            modalDesc.innerText = `เวลารวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนสูงสุดลงบอร์ดเรียบร้อยแล้ว!`;
                             modalActionBtn.innerText = 'เล่นใหม่อีกครั้ง 🔄';
                             modalActionBtn.onclick = resetEntireGame;
                             levelModal.style.display = 'flex';
-
-                            submitScoreToSupabase(levels[currentLevelIdx].level, totalClicksAccumulated, totalSeconds);
                         }
                     }, 400);
                 }
@@ -517,33 +577,32 @@
 
                 tbody.innerHTML = '';
         
-        // กรองให้เหลือผู้เล่นคนละ 1 รายการที่ดีที่สุด (ไม่ให้ชื่อซ้ำหลายรอบ)
-        const uniquePlayers = [];
-        const seenNames = new Set();
-        for (const row of data) {
-            const playerName = row.player_name || 'Anonymous';
-            if (!seenNames.has(playerName)) {
-                seenNames.add(playerName);
-                uniquePlayers.push(row);
-            }
-            if (uniquePlayers.length >= 50) break; // แสดงท็อป 50 อันดับ
-        }
+                const uniquePlayers = [];
+                const seenNames = new Set();
+                for (const row of data) {
+                    const playerName = row.player_name || 'Anonymous';
+                    if (!seenNames.has(playerName)) {
+                        seenNames.add(playerName);
+                        uniquePlayers.push(row);
+                    }
+                    if (uniquePlayers.length >= 50) break;
+                }
 
-        uniquePlayers.forEach((row, index) => {
-            const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
-            const s = (row.total_time % 60).toString().padStart(2, '0');
-            const timeStr = `${m}:${s}`;
+                uniquePlayers.forEach((row, index) => {
+                    const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
+                    const s = (row.total_time % 60).toString().padStart(2, '0');
+                    const timeStr = `${m}:${s}`;
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${escapeHtml(row.player_name)}</td>
-                <td>Lv.${row.max_level}</td>
-                <td>${row.total_clicks}</td>
-                <td>${timeStr}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${escapeHtml(row.player_name)}</td>
+                        <td>Lv.${row.max_level}</td>
+                        <td>${row.total_clicks}</td>
+                        <td>${timeStr}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
         
             } catch (err) {
                 console.error('Fetch error:', err);
@@ -556,8 +615,8 @@
         }
 
         initPlayer();
-        startLevel(0);
         fetchLeaderboard();
+        startLevel(0);
     </script>
 </body>
 </html>
