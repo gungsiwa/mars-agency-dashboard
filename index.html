@@ -36,7 +36,8 @@
             <nav class="nav-menu">
                 <button class="tab-btn nav-btn active" id="tab-today" onclick="switchTab('today', event); toggleSidebar();">📅 กิจกรรมวันนี้</button>
                 <button class="tab-btn nav-btn" id="tab-archive" onclick="switchTab('archive', event); toggleSidebar();">📂 กิจกรรมย้อนหลัง</button>
-                <a href="https://app.notion.com/p/c520bcb81f904353aea3c6de12a80ff0?source=copy_link" target="_blank" class="nav-btn">📊 รายได้และโบนัสวีเจ</a>
+                <!-- 🎯 จุดที่ 1: เปลี่ยนลิงก์เมนูด้านซ้ายมาเข้าหน้าเรตโบนัสของเรา -->
+                <a href="bonus-view.html" class="nav-btn">📊 รายได้และโบนัสวีเจ</a>
                 <a href="game.html" class="nav-btn">🎮 มินิเกมจับคู่ VJ <span style="font-size: 10px; background: #3b82f6; padding: 1px 5px; border-radius: 4px; margin-left: auto; color:#fff;">New</span></a>
             </nav>
         </aside>
@@ -83,26 +84,26 @@
                 <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="admin-action-btn">แชทแอดมิน</a>
             </div>
 
-            <!-- การ์ด Shortcut ลิงก์ Notion สำหรับ Desktop (ซ่อนบนมือถืออัตโนมัติ) -->
+            <!-- 🎯 จุดที่ 2: การ์ด Shortcut ตรงกลางหน้าจอสำหรับ Desktop -->
             <div class="center-notion-btn-container desktop-notion-box" style="margin-top: 5px;">
                 <style>
                     @media (max-width: 767px) {
                         .desktop-notion-box { display: none !important; }
                     }
                 </style>
-                <a href="https://app.notion.com/p/c520bcb81f904353aea3c6de12a80ff0?source=copy_link" target="_blank" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35);">
+                <a href="bonus-view.html" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35);">
                     <div class="game-thumbnail-wrapper" style="display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3);">
                         <span style="font-size: 24px;">📊</span>
                     </div>
                     <div class="game-cta-text-info">
                         <span class="game-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b;">เอกสารสังกัด</span>
                         <h4>รายได้และโบนัสวีเจ</h4>
-                        <p>คลิกเพื่ออ่านรายละเอียดโครงสร้างรายได้บน Notion</p>
+                        <p>คลิกเพื่ออ่านรายละเอียดตารางเรตโบนัสสังกัด</p>
                     </div>
                 </a>
             </div>
 
-            <!-- ปุ่มทางเข้าเกมสำหรับ Desktop (แสดงอยู่ใต้ส่วนรายได้และโบนัสวีเจ) -->
+            <!-- ปุ่มทางเข้าเกมสำหรับ Desktop -->
             <div class="center-game-btn-container desktop-game-btn-bottom">
                 <a href="game.html" class="play-game-cta-card">
                     <div class="game-thumbnail-wrapper">
@@ -134,21 +135,21 @@
                 </div>
             </div>
 
-            <!-- ปุ่มทางเข้า Notion บนมือถือ (แสดงใต้ลิงก์สำคัญ และอยู่เหนือเกม) -->
+            <!-- 🎯 จุดที่ 3: ปุ่ม Shortcut แสดงบนโทรศัพท์มือถือ -->
             <div class="mobile-game-btn-slot">
-                <a href="https://app.notion.com/p/c520bcb81f904353aea3c6de12a80ff0?source=copy_link" target="_blank" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35); margin-bottom: 10px;">
+                <a href="bonus-view.html" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35); margin-bottom: 10px;">
                     <div class="game-thumbnail-wrapper" style="display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3);">
                         <span style="font-size: 24px;">📊</span>
                     </div>
                     <div class="game-cta-text-info">
                         <span class="game-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b;">เอกสารสังกัด</span>
                         <h4 style="margin-top: 2px;">รายได้และโบนัสวีเจ</h4>
-                        <p>คลิกเพื่ออ่านรายละเอียดบน Notion</p>
+                        <p>คลิกเพื่ออ่านรายละเอียดตารางเรตโบนัส</p>
                     </div>
                 </a>
             </div>
 
-            <!-- ปุ่มทางเข้าเกมบนมือถือ (ย้ายมาอยู่ใต้ลิงก์สำคัญ และอยู่เหนือท็อปแรงค์เกม) -->
+            <!-- ปุ่มทางเข้าเกมบนมือถือ -->
             <div class="mobile-game-btn-slot">
                 <a href="game.html" class="play-game-cta-card">
                     <div class="game-thumbnail-wrapper">
@@ -188,12 +189,12 @@
         💬 ติดต่อแอดมิน
     </a>
 
-    <!-- ทางเข้าโหมดแอดมิน (Footer ลับ รองรับทั้ง Desktop และ Mobile) -->
+    <!-- ทางเข้าโหมดแอดมิน (Footer ลับ) -->
     <footer class="site-footer-admin">
         © 2026 <span id="secret-admin-trigger" class="admin-trigger-text" title="System Portal">MARS Agency</span>. All rights reserved.
     </footer>
 
-    <!-- ================= MODAL & ADMIN PANELS (ระบบหลังบ้านเดิม) ================= -->
+    <!-- ================= MODAL & ADMIN PANELS ================= -->
     <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; pointer-events: none;">
         <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 35px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff; pointer-events: auto;">
             <div style="font-size: 13px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
@@ -201,7 +202,10 @@
             </div>
             <button onclick="openAdminManager('banner')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🖼️ จัดการแบนเนอร์ภาพสไลด์</button>
             <button onclick="openAdminManager('link')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🔗 จัดการลิงก์ภายนอก</button>
-            <button onclick="openAdminManager('notice')" style="width: 100%; padding: 8px 12px; margin-bottom: 12px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">📢 จัดการข้อความแจ้งเตือน</button>
+            <button onclick="openAdminManager('notice')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">📢 จัดการข้อความแจ้งเตือน</button>
+            
+            <button onclick="openAdminManager('bonus')" style="width: 100%; padding: 8px 12px; margin-bottom: 12px; background: #3b82f6; color: #fff; border: 1px solid #60a5fa; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600;">📝 จัดการหน้ากระดาษเรตโบนัส</button>
+
             <button id="logout-btn" style="width: 100%; padding: 8px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">ออกจากระบบ</button>
         </div>
     </div>
@@ -220,23 +224,22 @@
         </div>
     </div>
 
-    <div id="admin-manager-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1001; justify-content: center; align-items: center;">
-        <div style="background: #1e1e1e; padding: 25px; border-radius: 12px; width: 480px; max-width: 90%; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.5); max-height: 85vh; overflow-y: auto;">
-            <h3 id="manager-title" style="margin-top: 0; margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 10px;">จัดการข้อมูล</h3>
-            <div style="background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;">
-                <div id="form-fields-container"></div>
-                <button id="manager-save-btn" onclick="saveNewItem()" style="width: 100%; padding: 10px; background: #198754; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-top: 12px; font-weight: 600; font-size: 14px;">💾 บันทึกข้อมูล</button>
-            </div>
-            <div id="manager-list-section">
+    <div id="admin-manager-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10001; justify-content: center; align-items: center;">
+        <div style="background: #1e1e1e; padding: 20px; border-radius: 12px; width: 95%; max-width: 1100px; color: #fff; box-shadow: 0 4px 25px rgba(0,0,0,0.7); max-height: 90vh; display: flex; flex-direction: column;">
+            <h3 id="manager-title" style="margin-top: 0; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 8px;">จัดการข้อมูล</h3>
+            <div id="form-fields-container" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;"></div>
+            <div id="manager-list-section" style="margin-top: 10px;">
                 <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #bbb;">📋 รายการปัจจุบัน</h4>
-                <div id="manager-item-list" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #333; border-radius: 6px; padding: 8px; background: #161616;"></div>
+                <div id="manager-item-list" style="max-height: 150px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #333; border-radius: 6px; padding: 8px; background: #161616;"></div>
             </div>
-            <button onclick="closeAdminManager()" style="width: 100%; padding: 10px; background: #444; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;">✕ ปิดหน้าต่าง</button>
+            <button id="manager-save-btn" onclick="saveNewItem()" style="width: 100%; padding: 10px; background: #198754; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">💾 บันทึกข้อมูล</button>
+            <button onclick="closeAdminManager()" style="width: 100%; padding: 8px; background: #444; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 8px;">✕ ปิดหน้าต่าง</button>
         </div>
     </div>
-
+    
     <!-- ================= JAVASCRIPT & MODULES ================= -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin.js"></script>
     <script type="module" src="main.js"></script>
 
     <!-- ธีมตามเทศกาลเดิม -->
