@@ -1,8 +1,11 @@
-// --- admin.js: จัดการระบบหลังบ้าน, แบนเนอร์, ลิงก์, ประกาศ และ Visual Editor หน้ากระดาษเรตโบนัสแบบแผ่นยาวพิมพ์สด ---
+// --- admin.js: จัดการระบบหลังบ้าน, แบนเนอร์, ลลิงก์, ประกาศ และ Visual Editor หน้ากระดาษเรตโบนัสแบบแผ่นยาวพิมพ์สด ---
 
 let activeManagerType = '';
+let currentSupabaseClient = null;
 
 window.initAdminModule = function(supabaseClient) {
+    currentSupabaseClient = supabaseClient;
+    
     const trigger = document.getElementById('secret-admin-trigger');
     const popup = document.getElementById('admin-menu-popup');
     const loginModal = document.getElementById('login-modal');
@@ -113,7 +116,7 @@ window.initAdminModule = function(supabaseClient) {
             // 📝 ระบบ Visual Editor หน้ากระดาษเรตโบนัสแบบแผ่นยาวพิมพ์สด (Rich Text)
             titleEl.innerText = '📝 จัดการหน้ากระดาษเรตโบนัส (Visual Editor)';
             fieldsContainer.innerHTML = `
-                <!-- แถบเครื่องมือช่วยพิมพ์ (ใช้งานกับข้อความที่คลุมดำ หรือตำแหน่งเคอร์เซอร์) -->
+                <!-- แถบเครื่องมือช่วยพิมพ์ -->
                 <div style="background: #0f172a; padding: 10px 14px; border-radius: 8px 8px 0 0; border: 1px solid #334155; border-bottom: none; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                     <button type="button" onclick="document.execCommand('bold', false, null)" style="padding: 5px 12px; background: #334155; color: #fff; border: 1px solid #475569; border-radius: 4px; cursor: pointer; font-weight: bold;">B</button>
                     <button type="button" onclick="document.execCommand('italic', false, null)" style="padding: 5px 12px; background: #334155; color: #fff; border: 1px solid #475569; border-radius: 4px; cursor: pointer; font-style: italic;">I</button>
@@ -136,6 +139,7 @@ window.initAdminModule = function(supabaseClient) {
                     <span style="color: #475569;">|</span>
 
                     <button type="button" onclick="window.insertImageToCanvas()" style="padding: 5px 14px; background: #38bdf8; color: #0f172a; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px;">🖼️ แทรกรูปภาพ</button>
+                    <button type="button" onclick="window.loadVisualCanvasData()" style="padding: 5px 12px; background: #10b981; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; margin-left: auto;">🔄 ดึงข้อมูลใหม่</button>
                 </div>
 
                 <!-- หน้ากระดาษขาวยาวแผ่นเดียวสำหรับพิมพ์เนื้อหา -->
@@ -150,7 +154,7 @@ window.initAdminModule = function(supabaseClient) {
             if (listSection) listSection.style.display = 'none';
             if (defaultSaveBtn) defaultSaveBtn.style.display = 'none';
             
-            loadVisualCanvasData(supabaseClient);
+            window.loadVisualCanvasData();
         }
     };
 
@@ -244,22 +248,45 @@ async function loadManagerItemList(supabaseClient, type) {
 }
 
 // ================= 📝 ระบบจัดการหน้ากระดาษเรตโบนัส (Rich Text Editor) =================
-async function loadVisualCanvasData(supabaseClient) {
-    if (!supabaseClient) return;
+window.loadVisualCanvasData = async function() {
     const paper = document.getElementById('bonus-paper-editor');
     if (!paper) return;
 
+    paper.innerHTML = '<p style="color: #94a3b8; text-align: center; margin-top: 50px;">กำลังโหลดข้อมูล...</p>';
+
+    // ใช้ client ตัวกลาง หรือสร้างใหม่กรณีจำเป็น
+    let client = currentSupabaseClient;
+    if (!client && window.supabase) {
+        client = window.supabase.createClient('https://ngdshyexremewbpnlrae.supabase.co', 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o');
+    }
+
+    if (!client) {
+        paper.innerHTML = '<p style="color: #ef4444; text-align: center;">ไม่พบการเชื่อมต่อฐานข้อมูล</p>';
+        return;
+    }
+
     try {
-        const { data, error } = await supabaseClient.from('agency_bonus_page').select('*').limit(1);
-        if (!error && data && data.length > 0) {
-            paper.innerHTML = data[0].content || 'พิมพ์รายละเอียดเรตโบนัสประจำสังกัดที่นี่...';
+        const { data, error } = await client
+            .from('agency_bonus_page')
+            .select('*');
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            const validRow = data.find(item => item.content) || data[0];
+            if (validRow && validRow.content) {
+                paper.innerHTML = validRow.content;
+            } else {
+                paper.innerHTML = '<p>พิมพ์รายละเอียดเรตโบนัสประจำสังกัดที่นี่...</p>';
+            }
         } else {
             paper.innerHTML = '<p>พิมพ์รายละเอียดเรตโบนัสประจำสังกัดที่นี่...</p>';
         }
     } catch (err) {
-        paper.innerHTML = '<p>พิมพ์รายละเอียดเรตโบนัสประจำสังกัดที่นี่...</p>';
+        console.error("Load error:", err);
+        paper.innerHTML = '<p style="color: #ef4444; text-align: center;">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
     }
-}
+};
 
 window.insertImageToCanvas = function() {
     const url = prompt('กรุณาวาง URL ของรูปภาพ (เช่น https://...):');
@@ -269,14 +296,31 @@ window.insertImageToCanvas = function() {
 };
 
 window.saveVisualCanvas = async function() {
-    const supabaseClient = window.supabase ? window.supabase.createClient('https://ngdshyexremewbpnlrae.supabase.co', 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o') : null;
+    let client = currentSupabaseClient;
+    if (!client && window.supabase) {
+        client = window.supabase.createClient('https://ngdshyexremewbpnlrae.supabase.co', 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o');
+    }
+
     const paper = document.getElementById('bonus-paper-editor');
-    if (!supabaseClient || !paper) return;
+    if (!client || !paper) return;
 
     try {
         const htmlContent = paper.innerHTML;
-        await supabaseClient.from('agency_bonus_page').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        await supabaseClient.from('agency_bonus_page').insert([{ content: htmlContent, element_type: 'html' }]);
+
+        // ดึงรายการเดิมมาลบอย่างปลอดภัยโดยใช้ UUID จริง
+        const { data: existingRows } = await client.from('agency_bonus_page').select('id');
+        if (existingRows && existingRows.length > 0) {
+            const idsToDelete = existingRows.map(row => row.id);
+            await client.from('agency_bonus_page').delete().in('id', idsToDelete);
+        }
+
+        // บันทึกข้อมูลใหม่
+        const { error } = await client.from('agency_bonus_page').insert([{ 
+            content: htmlContent, 
+            element_type: 'html' 
+        }]);
+
+        if (error) throw error;
 
         alert('💾 บันทึกหน้ากระดาษเรตโบนัสเรียบร้อยแล้ว!');
         closeAdminManager();
