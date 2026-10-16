@@ -14,15 +14,13 @@
 
     <div class="dashboard-layout">
         
-        <!-- ปุ่มเปิดเมนูสำหรับมือถือ -->
         <button class="mobile-menu-toggle" onclick="toggleSidebar()">
             <span>☰</span> เมนูสังกัด
         </button>
 
-        <!-- ฉากหลังจางๆ เมื่อเปิดเมนูบนมือถือ -->
         <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
-        <!-- ================= 1. SIDEBAR LEFT (เมนูด้านซ้าย) ================= -->
+        <!-- ================= 1. SIDEBAR LEFT ================= -->
         <aside class="sidebar-left glass-panel">
             <button class="close-menu-btn" onclick="toggleSidebar()">✕ ปิด</button>
             <div class="brand-box">
@@ -36,13 +34,12 @@
             <nav class="nav-menu">
                 <button class="tab-btn nav-btn active" id="tab-today" onclick="switchTab('today', event); toggleSidebar();">📅 กิจกรรมวันนี้</button>
                 <button class="tab-btn nav-btn" id="tab-archive" onclick="switchTab('archive', event); toggleSidebar();">📂 กิจกรรมย้อนหลัง</button>
-                <!-- 🎯 จุดที่ 1: เปลี่ยนลิงก์เมนูด้านซ้ายมาเข้าหน้าเรตโบนัสของเรา -->
                 <a href="bonus-view.html" class="nav-btn">📊 รายได้และโบนัสวีเจ</a>
                 <a href="game.html" class="nav-btn">🎮 มินิเกมจับคู่ VJ <span style="font-size: 10px; background: #3b82f6; padding: 1px 5px; border-radius: 4px; margin-left: auto; color:#fff;">New</span></a>
             </nav>
         </aside>
 
-        <!-- ================= 2. MAIN CONTENT (เนื้อหาตรงกลาง) ================= -->
+        <!-- ================= 2. MAIN CONTENT ================= -->
         <main class="main-content">
             
             <div class="hero-team-banner">
@@ -55,7 +52,6 @@
                 </div>
             </div>
 
-            <!-- ป้ายประกาศด่วน (Marquee) โหลดอัตโนมัติจาก main.js -->
             <div id="noticeBannerContainer"></div>
 
             <div class="control-bar">
@@ -68,10 +64,8 @@
                 </div>
             </div>
 
-            <!-- เวลาอัปเดตข้อมูลล่าสุด -->
             <div class="last-updated-box" id="lastUpdatedBox" style="font-size: 11px; color: var(--text-muted); padding-left: 4px;">อัปเดตล่าสุด: กำลังโหลด...</div>
 
-            <!-- จุดแสดงการ์ดรายการ PK โหลดอัตโนมัติจาก activity.js -->
             <div class="card-list pk-card-list" id="cardList">
                 <div class="loading-text" style="grid-column: span 2; text-align: center; color: var(--text-muted); padding: 30px;">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
             </div>
@@ -84,7 +78,6 @@
                 <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="admin-action-btn">แชทแอดมิน</a>
             </div>
 
-            <!-- 🎯 จุดที่ 2: การ์ด Shortcut ตรงกลางหน้าจอสำหรับ Desktop -->
             <div class="center-notion-btn-container desktop-notion-box" style="margin-top: 5px;">
                 <style>
                     @media (max-width: 767px) {
@@ -103,7 +96,6 @@
                 </a>
             </div>
 
-            <!-- ปุ่มทางเข้าเกมสำหรับ Desktop -->
             <div class="center-game-btn-container desktop-game-btn-bottom">
                 <a href="game.html" class="play-game-cta-card">
                     <div class="game-thumbnail-wrapper">
@@ -119,10 +111,9 @@
 
         </main>
 
-        <!-- ================= 3. SIDEBAR RIGHT (เมนูด้านขวา) ================= -->
+        <!-- ================= 3. SIDEBAR RIGHT ================= -->
         <aside class="sidebar-right">
             
-            <!-- แบนเนอร์สไลด์จากระบบเดิม -->
             <div class="banner-slider-container glass-panel" style="padding: 0; margin: 0; overflow: hidden; position: relative;">
                 <div class="banner-slider-track" id="bannerSliderTrack" style="display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 160px;"></div>
                 <div class="banner-dots" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2;" id="bannerDots"></div>
@@ -135,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- 🎯 จุดที่ 3: ปุ่ม Shortcut แสดงบนโทรศัพท์มือถือ -->
             <div class="mobile-game-btn-slot">
                 <a href="bonus-view.html" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35); margin-bottom: 10px;">
                     <div class="game-thumbnail-wrapper" style="display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3);">
@@ -149,7 +139,6 @@
                 </a>
             </div>
 
-            <!-- ปุ่มทางเข้าเกมบนมือถือ -->
             <div class="mobile-game-btn-slot">
                 <a href="game.html" class="play-game-cta-card">
                     <div class="game-thumbnail-wrapper">
@@ -184,17 +173,14 @@
 
     </div>
 
-    <!-- ปุ่มลอยติดต่อ LINE ขวาล่าง -->
     <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="floating-line-btn">
         💬 ติดต่อแอดมิน
     </a>
 
-    <!-- ทางเข้าโหมดแอดมิน (Footer ลับ) -->
     <footer class="site-footer-admin">
         © 2026 <span id="secret-admin-trigger" class="admin-trigger-text" title="System Portal">MARS Agency</span>. All rights reserved.
     </footer>
 
-    <!-- ================= MODAL & ADMIN PANELS ================= -->
     <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; pointer-events: none;">
         <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 35px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff; pointer-events: auto;">
             <div style="font-size: 13px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
@@ -203,9 +189,7 @@
             <button onclick="openAdminManager('banner')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🖼️ จัดการแบนเนอร์ภาพสไลด์</button>
             <button onclick="openAdminManager('link')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">🔗 จัดการลิงก์ภายนอก</button>
             <button onclick="openAdminManager('notice')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">📢 จัดการข้อความแจ้งเตือน</button>
-            
             <button onclick="openAdminManager('bonus')" style="width: 100%; padding: 8px 12px; margin-bottom: 12px; background: #3b82f6; color: #fff; border: 1px solid #60a5fa; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600;">📝 จัดการหน้ากระดาษเรตโบนัส</button>
-
             <button id="logout-btn" style="width: 100%; padding: 8px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">ออกจากระบบ</button>
         </div>
     </div>
@@ -237,12 +221,9 @@
         </div>
     </div>
     
-    <!-- ================= JAVASCRIPT & MODULES ================= -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="admin.js"></script>
     <script type="module" src="main.js"></script>
-
-    <!-- ธีมตามเทศกาลเดิม -->
     <link rel="stylesheet" href="seasonal-theme.css">
     <script src="seasonal-effect.js"></script>
 
