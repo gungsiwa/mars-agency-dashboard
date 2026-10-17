@@ -1,4 +1,4 @@
-// --- main.js: ควบคุมการทำงานหลักของหน้าเว็บและโหลดข้อมูล (คงการทำงานเดิม 100%) ---
+// --- main.js: ควบคุมการทำงานหลักของหน้าเว็บ, ระบบแอดมิน และโหลด Leaderboard แบบยืนบนแท่น ---
 
 const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
@@ -29,12 +29,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// ================= 🏆 ดึงข้อมูล Leaderboard เกมจับคู่ VJ =================
+// ================= 🏆 ดึงข้อมูล Leaderboard เกมจับคู่ VJ (Podium 1-3 ขวาล่าง + ตาราง 4+) =================
 async function loadMainLeaderboard() {
+    const podiumContainer = document.getElementById('mainPodiumContainer');
     const tbody = document.getElementById('leaderboardBody');
     if (!tbody) return;
 
     if (!supabaseClient) {
+        if (podiumContainer) podiumContainer.innerHTML = '';
         tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center;">ไม่พบการเชื่อมต่อฐานข้อมูล</td></tr>`;
         return;
     }
@@ -49,6 +51,7 @@ async function loadMainLeaderboard() {
             .limit(50);
 
         if (error || !data || data.length === 0) {
+            if (podiumContainer) podiumContainer.innerHTML = '';
             tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center;">ยังไม่มีประวัติคะแนนเกม</td></tr>`;
             return;
         }
@@ -64,22 +67,72 @@ async function loadMainLeaderboard() {
             if (uniquePlayers.length >= 10) break;
         }
 
-        let html = '';
-        uniquePlayers.forEach((row, index) => {
-            const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
-            const s = (row.total_time % 60).toString().padStart(2, '0');
-            const timeStr = `${m}:${s}`;
+        // --- 1. เรนเดอร์ Top 3 Podium (เหรียญกับชื่ออยู่ด้านนอกแท่น) ---
+        if (podiumContainer) {
+            let podiumHtml = '';
+            const top3 = [uniquePlayers[1], uniquePlayers[0], uniquePlayers[2]]; // [Rank 2, Rank 1, Rank 3]
+            const medals = ['🥈', '👑', '🥉'];
+            const rankClasses = ['rank-2', 'rank-1', 'rank-3'];
+            const displayNumbers = ['2', '1', '3'];
 
-            html += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${escapeHtml(row.player_name || 'Anonymous')}</td>
-                    <td>Lv.${row.max_level} (${row.total_clicks} คลิก)</td>
-                    <td>${timeStr}</td>
-                </tr>
-            `;
-        });
-        tbody.innerHTML = html;
+            top3.forEach((row, i) => {
+                if (row) {
+                    const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
+                    const s = (row.total_time % 60).toString().padStart(2, '0');
+                    podiumHtml += `
+                        <div class="main-podium-column ${rankClasses[i]}">
+                            <div class="podium-header-outside">
+                                <div class="podium-medal">${medals[i]}</div>
+                                <div class="podium-name" title="${escapeHtml(row.player_name)}">${escapeHtml(row.player_name)}</div>
+                            </div>
+                            <div class="podium-block">
+                                <div class="podium-number">${displayNumbers[i]}</div>
+                                <div class="podium-info">Lv.${row.max_level}</div>
+                                <div class="podium-stat">🖱️ ${row.total_clicks}</div>
+                                <div class="podium-stat">⏱️ ${m}:${s}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    podiumHtml += `
+                        <div class="main-podium-column ${rankClasses[i]}" style="opacity: 0.3;">
+                            <div class="podium-header-outside">
+                                <div class="podium-medal">${medals[i]}</div>
+                                <div class="podium-name">-</div>
+                            </div>
+                            <div class="podium-block">
+                                <div class="podium-number">${displayNumbers[i]}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            podiumContainer.innerHTML = podiumHtml;
+        }
+
+        // --- 2. เรนเดอร์อันดับที่ 4 ลงไปในตาราง ---
+        let html = '';
+        const restPlayers = uniquePlayers.slice(3);
+        if (restPlayers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center;">ไม่มีอันดับเพิ่มเติม</td></tr>`;
+        } else {
+            restPlayers.forEach((row, index) => {
+                const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
+                const s = (row.total_time % 60).toString().padStart(2, '0');
+                const timeStr = `${m}:${s}`;
+
+                html += `
+                    <tr>
+                        <td>${index + 4}</td>
+                        <td>${escapeHtml(row.player_name || 'Anonymous')}</td>
+                        <td>Lv.${row.max_level} (${row.total_clicks} คลิก)</td>
+                        <td>${timeStr}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
     } catch (err) {
         console.error('Error loading leaderboard:', err);
         tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center;">เกิดข้อผิดพลาดในการโหลด</td></tr>`;
