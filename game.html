@@ -9,9 +9,7 @@
     <!-- นำเข้าไลบรารี Canvas Confetti สำหรับทำเอฟเฟกต์พลุ -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -26,324 +24,126 @@
             position: relative;
         }
 
-        /* ปุ่มกากบาทออกหน้าหลัก (มุมขวาบน) */
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #1e293b;
-            color: #ef4444;
-            border: 2px solid #ef4444;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s;
-            z-index: 10;
+            top: 15px; right: 15px;
+            background: #1e293b; color: #ef4444; border: 2px solid #ef4444;
+            width: 38px; height: 38px; border-radius: 50%;
+            font-size: 1.1rem; font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; text-decoration: none; transition: all 0.2s; z-index: 10;
         }
-        .close-btn:hover {
-            background-color: #ef4444;
-            color: #fff;
-            transform: scale(1.05);
-        }
+        .close-btn:hover { background-color: #ef4444; color: #fff; transform: scale(1.05); }
 
         h1 { color: #f8fafc; margin-top: 10px; margin-bottom: 5px; font-size: 1.6rem; text-align: center; }
 
-        /* ส่วนแสดงข้อมูลผู้เล่น */
         .player-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #1e293b;
-            padding: 6px 15px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            font-size: 0.88rem;
-            border: 1px solid #334155;
+            display: flex; align-items: center; gap: 10px;
+            background: #1e293b; padding: 6px 15px; border-radius: 20px;
+            margin-bottom: 10px; font-size: 0.88rem; border: 1px solid #334155;
         }
         .player-bar span { color: #38bdf8; font-weight: bold; }
-        .edit-name-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 0.82rem;
-            text-decoration: underline;
-            padding: 0;
-        }
+        .edit-name-btn { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 0.82rem; text-decoration: underline; padding: 0; }
         .edit-name-btn:hover { color: #fff; }
 
         .level-badge {
-            background-color: #3b82f6;
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.88rem;
-            margin-bottom: 10px;
-            font-weight: bold;
+            background-color: #3b82f6; color: #fff; padding: 4px 12px;
+            border-radius: 20px; font-size: 0.88rem; margin-bottom: 10px; font-weight: bold;
         }
 
         .score-board { font-size: 0.9rem; margin-bottom: 15px; color: #94a3b8; text-align: center; }
         
-        /* 🎮 บอร์ดเกมและการจัดการคอลัมน์ */
         .game-board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; width: 100%; max-width: 420px; margin: 0 auto;
         }
-
-        .game-board.level-4 {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-            max-width: 560px;
-        }
-
-        .game-board.level-5 {
-            grid-template-columns: repeat(8, 1fr);
-            gap: 4px;
-            max-width: 680px;
-        }
+        .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 560px; }
+        .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 4px; max-width: 680px; }
 
         @media (max-width: 768px) {
             body { padding: 10px; }
             .game-board { max-width: 100% !important; gap: 6px !important; padding: 0 4px; }
-            .game-board.level-4 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
-            .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; max-width: 100% !important; }
+            .game-board.level-4, .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
         }
 
-        /* ดีไซน์การ์ด */
         .card {
             aspect-ratio: 1 / 1;
             background: linear-gradient(135deg, #1e293b, #334155);
-            border: 2px solid #475569;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-            transition: transform 0.2s, background-color 0.2s;
-            position: relative;
-            overflow: hidden;
+            border: 2px solid #475569; border-radius: 10px; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3); transition: transform 0.2s, background-color 0.2s;
+            position: relative; overflow: hidden;
         }
         .card:active { transform: scale(0.95); }
-        
-        .card.flipped {
-            background: #ffffff;
-            border-color: #38bdf8;
-            cursor: default;
-        }
-
-        .card img {
-            width: 85%;
-            height: 85%;
-            object-fit: cover;
-            border-radius: 6px;
-            display: none;
-        }
+        .card.flipped { background: #ffffff; border-color: #38bdf8; cursor: default; }
+        .card img { width: 85%; height: 85%; object-fit: cover; border-radius: 6px; display: none; }
         .card.flipped img { display: block; }
         
-        .btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        button.action-btn {
-            padding: 8px 18px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+        .btn-container { display: flex; gap: 10px; margin-top: 20px; }
+        button.action-btn { padding: 8px 18px; font-size: 0.9rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
         .reset-btn { background-color: #475569; color: white; }
         .reset-btn:hover { background-color: #64748b; }
 
-        /* Custom Modal สำหรับแจ้งผ่านด่าน */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center;
+            z-index: 1000; display: none;
         }
         .modal-box {
-            background: #1e293b;
-            border: 1px solid #334155;
-            padding: 20px;
-            border-radius: 14px;
-            max-width: 340px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 14px;
+            max-width: 340px; width: 90%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
         .modal-box h2 { color: #38bdf8; margin-top: 0; margin-bottom: 12px; font-size: 1.3rem; }
         .modal-box p { color: #cbd5e1; margin-bottom: 18px; font-size: 0.9rem; line-height: 1.4; }
-        .modal-btn {
-            background-color: #22c55e;
-            color: white;
-            padding: 9px 18px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
+        .modal-btn { background-color: #22c55e; color: white; padding: 9px 18px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
         .modal-btn:hover { background-color: #16a34a; }
 
-        /* ================= 🏆 ส่วนแสดง Leaderboard (ฟีลยืนอยู่บนแท่น) ================= */
+        /* ================= 🏆 ส่วนแสดง Leaderboard & แท่น Podium นอกกล่อง ================= */
         .leaderboard-container {
-            margin-top: 35px;
-            max-width: 560px;
-            width: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 16px;
-            padding: 16px;
-            box-sizing: border-box;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            margin-top: 35px; max-width: 560px; width: 100%;
+            background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px; padding: 16px; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
         }
         .leaderboard-container h3 {
-            margin-top: 0;
-            font-size: 1.1rem;
-            color: #f59e0b;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 8px;
-            text-align: center;
-            letter-spacing: 0.5px;
+            margin-top: 0; font-size: 1.1rem; color: #f59e0b; border-bottom: 1px solid #334155;
+            padding-bottom: 8px; text-align: center; letter-spacing: 0.5px;
         }
 
-        /* โครงสร้างกลุ่ม Podium */
         .podium-section {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 12px;
-            margin: 25px 0 15px 0;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; justify-content: center; align-items: flex-end;
+            gap: 12px; margin: 25px 0 15px 0; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08);
         }
+        .podium-column { display: flex; flex-direction: column; align-items: center; width: 32%; max-width: 160px; }
 
-        /* เสาหลักของแต่ละอันดับ */
-        .podium-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 32%;
-            max-width: 160px;
-        }
+        /* ข้อมูลข้างนอกแท่น: เรียงลำดับ ตราเหรียญ ➔ ชื่อ ➔ เลเวลและคลิก ➔ เวลา */
+        .podium-header-outside { text-align: center; margin-bottom: 6px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .podium-medal { font-size: 26px; margin-bottom: 2px; }
+        .podium-name { font-size: 0.9rem; font-weight: bold; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        
+        /* ข้อมูลรายละเอียดบนหัวแท่นเพิ่มเติม */
+        .podium-info-outside { font-size: 0.78rem; color: #38bdf8; font-weight: 600; width: 100%; }
+        .podium-stat-outside { font-size: 0.72rem; color: #94a3b8; width: 100%; }
 
-        /* ส่วนหัวที่อยู่ "ข้างนอก/ด้านบน" แท่น (เหรียญ + ชื่อผู้เล่น) */
-        .podium-header-outside {
-            text-align: center;
-            margin-bottom: 6px;
-            width: 100%;
-        }
-
-        .podium-medal {
-            font-size: 26px;
-            margin-bottom: 2px;
-        }
-
-        .podium-name {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #f8fafc;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-
-        /* ตัวบล็อกแท่นยืน (ด้านล่าง) */
+        /* ตัวบล็อกแท่นยืน (ขยับความสูง-ต่ำลดหลั่นตามอันดับชัดเจน) */
         .podium-block {
-            background: linear-gradient(180deg, #1e293b, #0f172a);
-            border: 2px solid #475569;
-            border-radius: 10px 10px 4px 4px;
-            padding: 12px 6px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-            width: 100%;
+            background: linear-gradient(180deg, #1e293b, #0f172a); border: 2px solid #475569;
+            border-radius: 10px 10px 4px 4px; padding: 12px 6px; text-align: center;
+            display: flex; flex-direction: column; align-items: center; position: relative;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5); width: 100%;
         }
+        .podium-column.rank-1 .podium-block { border-color: #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.2), #1e293b); min-height: 80px; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
+        .podium-column.rank-1 { transform: translateY(-8px); }
+        .podium-column.rank-2 .podium-block { border-color: #94a3b8; min-height: 62px; }
+        .podium-column.rank-3 .podium-block { border-color: #b45309; min-height: 48px; }
 
-        /* ความสูงและความโดดเด่นของแต่ละอันดับ (อันดับ 1 สูงสุด ตรงกลาง) */
-        .podium-column.rank-1 .podium-block {
-            border-color: #f59e0b;
-            background: linear-gradient(180deg, rgba(245, 158, 11, 0.2), #1e293b);
-            min-height: 110px;
-            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
-        }
-        .podium-column.rank-1 {
-            transform: translateY(-8px);
-        }
-        .podium-column.rank-2 .podium-block {
-            border-color: #94a3b8;
-            min-height: 95px;
-        }
-        .podium-column.rank-3 .podium-block {
-            border-color: #b45309;
-            min-height: 85px;
-        }
-
-        /* ตัวเลขบล็อกแท่นรางวัลขนาดใหญ่จางๆ ด้านหลัง */
         .podium-number {
-            position: absolute;
-            bottom: 2px;
-            font-size: 3rem;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.04);
-            font-family: 'Orbitron', sans-serif;
-            pointer-events: none;
-            line-height: 1;
+            position: absolute; bottom: 2px; font-size: 2.5rem; font-weight: 900;
+            color: rgba(255, 255, 255, 0.04); font-family: 'Orbitron', sans-serif; pointer-events: none; line-height: 1;
         }
 
-        .podium-info {
-            font-size: 0.75rem;
-            color: #38bdf8;
-            margin-bottom: 2px;
-            font-weight: 600;
-            z-index: 2;
-        }
-
-        .podium-stat {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            z-index: 2;
-        }
-
-        /* ตารางอันดับ 4 ลงไป */
-        .lb-table-wrapper {
-            max-height: 220px;
-            overflow-y: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-        }
-        th, td {
-            padding: 7px 8px;
-            text-align: center;
-            border-bottom: 1px solid #1e293b;
-        }
+        .lb-table-wrapper { max-height: 220px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th, td { padding: 7px 8px; text-align: center; border-bottom: 1px solid #1e293b; }
         th { color: #94a3b8; font-weight: 600; background: rgba(30, 41, 59, 0.5); }
         td:nth-child(2) { text-align: left; color: #f8fafc; font-weight: 500; }
         td:nth-child(1) { color: #f59e0b; font-weight: bold; width: 35px; }
@@ -351,12 +151,10 @@
 </head>
 <body>
 
-    <!-- ปุ่มกากบาทออกหน้าหลัก -->
     <a href="javascript:void(0);" onclick="goBackHome()" class="close-btn" title="ออกสู่หน้าหลัก">✕</a>
 
     <h1>🎮 จับคู่ VJ MARS Agency</h1>
 
-    <!-- แถบแสดงข้อมูลผู้เล่น -->
     <div class="player-bar">
         ผู้เล่น: <span id="player-name-display">ไม่ระบุชื่อ</span>
         <button class="edit-name-btn" onclick="promptChangeName()">[แก้ไขชื่อ]</button>
@@ -373,7 +171,6 @@
         <button class="action-btn reset-btn" onclick="restartLevel()">เริ่มด่านนี้ใหม่</button>
     </div>
 
-    <!-- Modal แจ้งเตือนเมื่อผ่านด่าน -->
     <div class="modal-overlay" id="level-modal">
         <div class="modal-box">
             <h2 id="modal-title">ผ่านด่านสำเร็จ!</h2>
@@ -382,16 +179,11 @@
         </div>
     </div>
 
-    <!-- ตารางจัดอันดับ Leaderboard แบบยืนบนแท่น -->
     <div class="leaderboard-container">
         <h3>🏆 บอร์ดจัดอันดับสูงสุด (Leaderboard)</h3>
         
-        <!-- โซนแท่นรางวัล Top 3 -->
-        <div class="podium-section" id="podium-section">
-            <!-- เรนเดอร์ด้วย JavaScript -->
-        </div>
+        <div class="podium-section" id="podium-section"></div>
 
-        <!-- โซนตารางอันดับ 4 ลงไป -->
         <div class="lb-table-wrapper">
             <table>
                 <thead>
@@ -411,9 +203,7 @@
     </div>
 
     <script>
-        function goBackHome() {
-            window.location.replace('index.html');
-        }
+        function goBackHome() { window.location.replace('index.html'); }
 
         const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
@@ -435,16 +225,9 @@
         ];
 
         let currentLevelIdx = 0;
-        let cards = [];
-        let flippedCards = [];
-        let matchedCount = 0;
-        let clickCount = 0;
-        let playerName = '';
-        
-        let timerInterval = null;
-        let totalSeconds = 0;
-        let totalClicksAccumulated = 0;
-        let gameStarted = false;
+        let cards = [], flippedCards = [];
+        let matchedCount = 0, clickCount = 0, playerName = '';
+        let timerInterval = null, totalSeconds = 0, totalClicksAccumulated = 0, gameStarted = false;
 
         const board = document.getElementById('board');
         const clicksDisplay = document.getElementById('clicks');
@@ -461,11 +244,8 @@
         function initPlayer() {
             let savedName = localStorage.getItem('vj_game_player_name');
             if (!savedName || savedName.trim() === '') {
-                alert('💡 กติกาเกม:\n- เกมนี้มีทั้งหมด 5 เลเวล (Level 1 - 5)\n- ระบบจะจับเวลาและนับคลิกต่อเนื่องยาวไปในแต่ละด่าน\n- สถิติจะถูกบันทึกส่งขึ้นบอร์ดจัดอันดับทันทีทุกครั้งที่คุณผ่านแต่ละด่าน!');
                 savedName = prompt('กรุณาใส่ชื่อเล่นหรือฉายาของคุณ:', 'VJ_Player');
-                if (!savedName || savedName.trim() === '') {
-                    savedName = 'Anonymous';
-                }
+                if (!savedName || savedName.trim() === '') savedName = 'Anonymous';
                 localStorage.setItem('vj_game_player_name', savedName.trim());
             }
             playerName = savedName.trim();
@@ -484,25 +264,19 @@
         function startLevel(levelIdx) {
             const levelConfig = levels[levelIdx];
             board.classList.remove('level-4', 'level-5');
-            if (levelConfig.level === 4) {
-                board.classList.add('level-4');
-            } else if (levelConfig.level === 5) {
-                board.classList.add('level-5');
-            }
+            if (levelConfig.level === 4) board.classList.add('level-4');
+            else if (levelConfig.level === 5) board.classList.add('level-5');
 
             levelTitle.innerText = levelConfig.name;
             levelModal.style.display = 'none';
             totalMatchesDisplay.innerText = levelConfig.pairs;
 
-            const shuffledAllImages = [...allVjImages].sort(() => Math.random() - 0.5);
-            const selectedImages = shuffledAllImages.slice(0, levelConfig.pairs);
-
+            const selectedImages = [...allVjImages].sort(() => Math.random() - 0.5).slice(0, levelConfig.pairs);
             cards = [...selectedImages, ...selectedImages].sort(() => Math.random() - 0.5);
 
             board.innerHTML = '';
             flippedCards = [];
-            matchedCount = 0;
-            clickCount = 0;
+            matchedCount = 0; clickCount = 0;
             clicksDisplay.innerText = clickCount;
             matchesDisplay.innerText = matchedCount;
 
@@ -516,11 +290,8 @@
             });
 
             if (levelIdx === 0) {
-                totalSeconds = 0;
-                totalClicksAccumulated = 0;
-                gameStarted = false;
-                stopTimer();
-                timerDisplay.innerText = '00:00';
+                totalSeconds = 0; totalClicksAccumulated = 0; gameStarted = false;
+                stopTimer(); timerDisplay.innerText = '00:00';
             }
         }
 
@@ -536,23 +307,17 @@
             }, 1000);
         }
 
-        function stopTimer() {
-            clearInterval(timerInterval);
-            gameStarted = false;
-        }
+        function stopTimer() { clearInterval(timerInterval); gameStarted = false; }
 
         function flipCard() {
-            if (!gameStarted) {
-                startTimer();
-            }
+            if (!gameStarted) startTimer();
             if (flippedCards.length === 2 || this.classList.contains('flipped')) return;
 
             this.classList.add('flipped');
             flippedCards.push(this);
 
             if (flippedCards.length === 2) {
-                clickCount++;
-                totalClicksAccumulated++;
+                clickCount++; totalClicksAccumulated++;
                 clicksDisplay.innerText = clickCount;
                 checkMatch();
             }
@@ -560,27 +325,22 @@
 
         function checkMatch() {
             const [card1, card2] = flippedCards;
-
             if (card1.dataset.value === card2.dataset.value) {
-                matchedCount++;
-                matchesDisplay.innerText = matchedCount;
-                flippedCards = [];
-
+                matchedCount++; matchesDisplay.innerText = matchedCount; flippedCards = [];
                 if (matchedCount === levels[currentLevelIdx].pairs) {
                     stopTimer();
                     submitScoreToSupabase(levels[currentLevelIdx].level, totalClicksAccumulated, totalSeconds);
-
                     setTimeout(() => {
                         if (currentLevelIdx < levels.length - 1) {
                             modalTitle.innerText = `🎉 ผ่าน Level ${levels[currentLevelIdx].level} แล้ว!`;
-                            modalDesc.innerText = `เวลาสะสมตอนนี้: ${timerDisplay.innerText} | บันทึกสถิติด่านนี้ลงบอร์ดแล้ว! ลุยต่อด่านถัดไปกันเลย`;
+                            modalDesc.innerText = `เวลาสะสม: ${timerDisplay.innerText} | บันทึกสถิติด่านนี้ลงบอร์ดแล้ว!`;
                             modalActionBtn.innerText = 'ไปด่านถัดไป ➔';
                             modalActionBtn.onclick = nextLevel;
                             levelModal.style.display = 'flex';
                         } else {
-                            triggerConfetti();
+                            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
                             modalTitle.innerText = `🏆 ยินดีด้วย! จบเกมครบทุกเลเวล`;
-                            modalDesc.innerText = `เวลารวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนสูงสุดลงบอร์ดเรียบร้อยแล้ว!`;
+                            modalDesc.innerText = `เวลารวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนสูงสุดเรียบร้อย!`;
                             modalActionBtn.innerText = 'เล่นใหม่อีกครั้ง 🔄';
                             modalActionBtn.onclick = resetEntireGame;
                             levelModal.style.display = 'flex';
@@ -588,11 +348,7 @@
                     }, 400);
                 }
             } else {
-                setTimeout(() => {
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
-                    flippedCards = [];
-                }, 900);
+                setTimeout(() => { card1.classList.remove('flipped'); card2.classList.remove('flipped'); flippedCards = []; }, 900);
             }
         }
 
@@ -600,27 +356,16 @@
         function nextLevel() { if (currentLevelIdx < levels.length - 1) { currentLevelIdx++; startLevel(currentLevelIdx); } }
         function resetEntireGame() { currentLevelIdx = 0; startLevel(0); }
 
-        function triggerConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-            }
-        }
-
         async function submitScoreToSupabase(maxLevel, clicks, timeSec) {
             try {
-                const { error } = await supabaseClient
-                    .from('vj_game_leaderboard')
-                    .insert([{ player_name: playerName, max_level: maxLevel, total_clicks: clicks, total_time: timeSec }]);
-
-                if (error) console.error('Error inserting score:', error);
-                else fetchLeaderboard();
-            } catch (err) { console.error('Connection error:', err); }
+                await supabaseClient.from('vj_game_leaderboard').insert([{ player_name: playerName, max_level: maxLevel, total_clicks: clicks, total_time: timeSec }]);
+                fetchLeaderboard();
+            } catch (err) { console.error(err); }
         }
 
         async function fetchLeaderboard() {
             const podiumSection = document.getElementById('podium-section');
             const tbody = document.getElementById('leaderboard-body');
-            
             try {
                 const { data, error } = await supabaseClient
                     .from('vj_game_leaderboard')
@@ -630,13 +375,7 @@
                     .order('total_time', { ascending: true })
                     .limit(50);
 
-                if (error) {
-                    podiumSection.innerHTML = '';
-                    tbody.innerHTML = `<tr><td colspan="5" style="color: #ef4444;">โหลดข้อมูลไม่สำเร็จ</td></tr>`;
-                    return;
-                }
-
-                if (!data || data.length === 0) {
+                if (error || !data || data.length === 0) {
                     podiumSection.innerHTML = '';
                     tbody.innerHTML = `<tr><td colspan="5" style="color: #94a3b8;">ยังไม่มีประวัติคะแนน</td></tr>`;
                     return;
@@ -646,14 +385,10 @@
                 const seenNames = new Set();
                 for (const row of data) {
                     const name = row.player_name || 'Anonymous';
-                    if (!seenNames.has(name)) {
-                        seenNames.add(name);
-                        uniquePlayers.push(row);
-                    }
+                    if (!seenNames.has(name)) { seenNames.add(name); uniquePlayers.push(row); }
                     if (uniquePlayers.length >= 50) break;
                 }
 
-                // จัดเรียง Top 3 สำหรับ Podium (อันดับ 2, 1, 3) โดยแยกส่วนหัว (เหรียญ + ชื่อ) ไว้ด้านนอกแท่น
                 let podiumHtml = '';
                 const top3 = [uniquePlayers[1], uniquePlayers[0], uniquePlayers[2]]; 
                 const medals = ['🥈', '👑', '🥉'];
@@ -669,12 +404,11 @@
                                 <div class="podium-header-outside">
                                     <div class="podium-medal">${medals[i]}</div>
                                     <div class="podium-name" title="${escapeHtml(row.player_name)}">${escapeHtml(row.player_name)}</div>
+                                    <div class="podium-info-outside">Lv.${row.max_level} | 🖱️ ${row.total_clicks}คลิก</div>
+                                    <div class="podium-stat-outside">⏱️ ${m}:${s}</div>
                                 </div>
                                 <div class="podium-block">
                                     <div class="podium-number">${displayNumbers[i]}</div>
-                                    <div class="podium-info">Lv.${row.max_level}</div>
-                                    <div class="podium-stat">🖱️ ${row.total_clicks} คลิก</div>
-                                    <div class="podium-stat">⏱️ ${m}:${s}</div>
                                 </div>
                             </div>
                         `;
@@ -694,7 +428,6 @@
                 });
                 podiumSection.innerHTML = podiumHtml;
 
-                // เรนเดอร์อันดับที่ 4 ลงไปในตาราง
                 tbody.innerHTML = '';
                 const restPlayers = uniquePlayers.slice(3);
                 if (restPlayers.length === 0) {
@@ -704,21 +437,11 @@
                         const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
                         const s = (row.total_time % 60).toString().padStart(2, '0');
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${index + 4}</td>
-                            <td>${escapeHtml(row.player_name)}</td>
-                            <td>Lv.${row.max_level}</td>
-                            <td>${row.total_clicks}</td>
-                            <td>${m}:${s}</td>
-                        `;
+                        tr.innerHTML = `<td>${index + 4}</td><td>${escapeHtml(row.player_name)}</td><td>Lv.${row.max_level}</td><td>${row.total_clicks}</td><td>${m}:${s}</td>`;
                         tbody.appendChild(tr);
                     });
                 }
-        
-            } catch (err) {
-                console.error('Fetch error:', err);
-                tbody.innerHTML = `<tr><td colspan="5" style="color: #ef4444;">เกิดข้อผิดพลาดในการเชื่อมต่อ</td></tr>`;
-            }
+            } catch (err) { console.error(err); }
         }
 
         function escapeHtml(str) {

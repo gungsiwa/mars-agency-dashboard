@@ -67,7 +67,7 @@ async function loadMainLeaderboard() {
             if (uniquePlayers.length >= 10) break;
         }
 
-        // --- 1. เรนเดอร์ Top 3 Podium (เหรียญกับชื่ออยู่ด้านนอกแท่น) ---
+        // --- 1. เรนเดอร์ Top 3 Podium (ดึงข้อมูลทั้งหมดมาไว้ข้างนอกแท่น เรียงตามลำดับ) ---
         if (podiumContainer) {
             let podiumHtml = '';
             const top3 = [uniquePlayers[1], uniquePlayers[0], uniquePlayers[2]]; // [Rank 2, Rank 1, Rank 3]
@@ -84,12 +84,11 @@ async function loadMainLeaderboard() {
                             <div class="podium-header-outside">
                                 <div class="podium-medal">${medals[i]}</div>
                                 <div class="podium-name" title="${escapeHtml(row.player_name)}">${escapeHtml(row.player_name)}</div>
+                                <div class="podium-info-outside">Lv.${row.max_level} | 🖱️ ${row.total_clicks}คลิก</div>
+                                <div class="podium-stat-outside">⏱️ ${m}:${s}</div>
                             </div>
                             <div class="podium-block">
                                 <div class="podium-number">${displayNumbers[i]}</div>
-                                <div class="podium-info">Lv.${row.max_level}</div>
-                                <div class="podium-stat">🖱️ ${row.total_clicks}</div>
-                                <div class="podium-stat">⏱️ ${m}:${s}</div>
                             </div>
                         </div>
                     `;

@@ -21,7 +21,7 @@
         <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
         <!-- ================= 1. SIDEBAR LEFT ================= -->
-        <aside class="sidebar-left glass-panel">
+        <aside class="sidebar-left">
             <button class="close-menu-btn" onclick="toggleSidebar()">✕ ปิด</button>
             <div class="brand-box">
                 <div class="brand-logo">
@@ -42,6 +42,10 @@
         <!-- ================= 2. MAIN CONTENT ================= -->
         <main class="main-content">
             
+            <!-- ข้อความวิ่งย้ายมาอยู่ด้านบนสุด -->
+            <div id="noticeBannerContainer"></div>
+
+            <!-- ภาพปกทีมย้ายลงมาอยู่ใต้ข้อความวิ่ง -->
             <div class="hero-team-banner">
                 <img src="herobanner.jpg" alt="MARS Agency Team" onerror="this.src='https://via.placeholder.com/800x280/1e293b/f59e0b?text=MARS+AGENCY+TEAM';">
                 <div class="hero-overlay">
@@ -51,8 +55,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="noticeBannerContainer"></div>
 
             <div class="control-bar">
                 <div class="dashboard-tabs">
@@ -155,7 +157,7 @@
             <div class="leaderboard-widget glass-panel">
                 <h3>🏆 ท็อปแรงค์เกมจับคู่ VJ</h3>
                 
-                <!-- โซนแท่น Podium ยืนข้างนอกบนหน้าแรก -->
+                <!-- โซนแท่น Podium ยืนข้างนอก (เรียง: เหรียญ ➔ ชื่อ ➔ เลเวล/คลิก ➔ เวลา) -->
                 <div class="main-podium-section" id="mainPodiumContainer"></div>
 
                 <table class="lb-table">
@@ -228,8 +230,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="admin.js"></script>
     <script type="module" src="main.js"></script>
-    <link rel="stylesheet" href="seasonal-theme.css">
-    <script src="seasonal-effect.js"></script>
 
     <script>
         function toggleSidebar() {
