@@ -2,7 +2,14 @@
    MARS Agency - Full Complete Style CSS (Clean Light Theme)
    - บีบช่องไฟชิดสุดๆ Gap 4px ทั้งหน้าคอมและโมบาย
    - แท่น Podium หน้าแรก: ย้ายข้อมูลมาไว้ข้างนอก & ขยับความสูง-ต่ำลดหลั่นตามอันดับ
+   - Search Box: เอฟเฟกต์แสงวิ่งหมุนนีออนรอบกล่องค้นหา
    ========================================================== */
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
 
 :root {
     --bg-light: #f1f5f9;
@@ -130,12 +137,56 @@ html, body {
 .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 5px 10px; font-size: 11px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: all 0.2s; }
 .tab-btn.active { background: #dbeafe; color: #1d4ed8; font-weight: 600; }
 
-.search-box { flex: 1; min-width: 150px; }
-.search-box input { 
-    width: 100%; padding: 8px 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; 
-    color: var(--text-main); font-size: 11px; outline: none; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+/* ================= 🔍 Search Box (เอฟเฟกต์แสงวิ่งหมุนรอบ) ================= */
+.search-box { 
+    flex: 1; 
+    min-width: 150px; 
+    position: relative;
+    height: 34px;
+    background: conic-gradient(from var(--angle), #2563eb, #38bdf8, #22c55e, #f59e0b, #2563eb);
+    border-radius: 10px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spin 4s linear infinite;
 }
-.search-box input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12); }
+
+.search-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: conic-gradient(from var(--angle), #2563eb, #38bdf8, #22c55e, #f59e0b, #2563eb);
+    border-radius: 10px;
+    filter: blur(6px);
+    opacity: 0.35;
+    z-index: 0;
+}
+
+.search-box input { 
+    width: 100%; 
+    height: 100%;
+    padding: 0 12px; 
+    background: #ffffff; 
+    border: none; 
+    border-radius: 8px; 
+    color: var(--text-main); 
+    font-size: 11px; 
+    outline: none; 
+    position: relative;
+    z-index: 1;
+    font-family: 'Prompt', sans-serif;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+@keyframes spin {
+    to {
+        --angle: 360deg;
+    }
+}
 
 .pk-card-list { display: flex; flex-direction: column; gap: 4px; }
 
