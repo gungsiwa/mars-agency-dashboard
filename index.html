@@ -24,9 +24,10 @@
         <aside class="sidebar-left">
             <button class="close-menu-btn" onclick="toggleSidebar()">✕ ปิด</button>
             <div class="brand-box">
-                <div class="brand-logo">
-                    <img src="marslogo.png" alt="MARS Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'65\' height=\'65\'><rect width=\'65\' height=\'65\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%23f59e0b\' text-anchor=\'middle\' dominant-baseline=\'central\'>MARS</text></svg>';">
-                </div>
+                <div class="brand-logo" style="overflow: hidden; border-radius: 50%;">
+    <video src="marslogo.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"></video>
+    <img src="marslogo.png" alt="MARS Logo" style="display: none; width: 100%; height: 100%; object-fit: cover;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'65\' height=\'65\'><rect width=\'65\' height=\'65\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%23f59e0b\' text-anchor=\'middle\' dominant-baseline=\'central\'>MARS</text></svg>';">
+</div>
                 <h1>MARS AGENCY</h1>
                 <p>VJ Status & Activity Hub</p>
             </div>
