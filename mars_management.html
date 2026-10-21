@@ -26,7 +26,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-mars-500 selection:text-white min-h-screen flex flex-col">
 
-    <!-- MAIN APP WRAPPER (มี Sidebar ด้านข้างเหมือนโปรเจกต์เดิม) -->
+    <!-- MAIN APP WRAPPER -->
     <div id="app-wrapper" class="flex flex-1 overflow-hidden">
         <!-- SIDEBAR -->
         <aside class="w-20 lg:w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transition-all z-20">
@@ -170,10 +170,10 @@
         <span id="toast-message" class="text-sm font-medium">บันทึกสำเร็จ</span>
     </div>
 
-    <!-- SCRIPT LOGIC (Router + Sidebar + Supabase) -->
+    <!-- SCRIPT LOGIC -->
     <script>
-        const SUPABASE_URL = 'https://lxnlhqzypezvelmspevv.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_fhisWr9_VvHAwb2INiMCQQ_ya5nXH9q';
+        const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentView = 'home';
@@ -454,7 +454,7 @@
         }
 
         function editItem(id) {
-            const item = db.find(i => i.id === id);
+            const item = db.find(i => i.id == id);
             if (!item) return;
             document.getElementById('form-id').value = item.id;
             document.getElementById('form-title').value = item.title || '';
@@ -495,7 +495,7 @@
             const folder = document.getElementById('form-folder').value;
 
             if (id) {
-                let updateData = { title };
+                let updateData = { title, type, folder };
                 if (type === 'note') updateData.content = document.getElementById('form-note-content').value;
                 if (type === 'link') updateData.url = document.getElementById('form-link-url').value;
                 
@@ -504,7 +504,6 @@
                 else { showToast('เกิดข้อผิดพลาดในการอัปเดต', 'error'); }
             } else {
                 let newItem = {
-                    id: 'mars_' + Date.now(),
                     type,
                     title,
                     folder,
