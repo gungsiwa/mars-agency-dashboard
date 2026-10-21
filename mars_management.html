@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การจัดการและลิงก์ข้อมูล - MARS Cloud</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mars: {
+                            50: '#fff7ed', 100: '#ffedd5', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Supabase JS SDK -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-mars-500 selection:text-white min-h-screen flex flex-col">
+
+    <!-- MAIN APP WRAPPER (มี Sidebar ด้านข้างเหมือนโปรเจกต์เดิม) -->
+    <div id="app-wrapper" class="flex flex-1 overflow-hidden">
+        <!-- SIDEBAR -->
+        <aside class="w-20 lg:w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transition-all z-20">
+            <div>
+                <div class="h-16 flex items-center px-4 lg:px-6 border-b border-slate-800 gap-3">
+                    <div class="w-10 h-10 bg-mars-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md shadow-mars-500/30">
+                        <i class="fa-solid fa-database text-lg"></i>
+                    </div>
+                    <div class="hidden lg:block">
+                        <h2 class="font-bold text-sm tracking-wide">MARS Management</h2>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider bg-mars-500/20 text-mars-400 border border-mars-500/30">Admin Panel</span>
+                    </div>
+                </div>
+
+                <nav class="p-3 space-y-1.5">
+                    <button onclick="router('home')" class="nav-btn w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all group" data-target="home">
+                        <i class="fa-solid fa-house w-5 text-center text-base group-hover:text-mars-500 transition-colors"></i>
+                        <span class="hidden lg:inline text-sm font-medium">ภาพรวม (Home)</span>
+                    </button>
+                    <button onclick="router('notes')" class="nav-btn w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all group" data-target="notes">
+                        <i class="fa-solid fa-book-open w-5 text-center text-base group-hover:text-mars-500 transition-colors"></i>
+                        <span class="hidden lg:inline text-sm font-medium">สมุดโน้ต</span>
+                    </button>
+                    <button onclick="router('media')" class="nav-btn w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all group" data-target="media">
+                        <i class="fa-solid fa-photo-film w-5 text-center text-base group-hover:text-mars-500 transition-colors"></i>
+                        <span class="hidden lg:inline text-sm font-medium">มีเดีย & ไฟล์</span>
+                    </button>
+                    <button onclick="router('links')" class="nav-btn w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all group" data-target="links">
+                        <i class="fa-solid fa-link w-5 text-center text-base group-hover:text-mars-500 transition-colors"></i>
+                        <span class="hidden lg:inline text-sm font-medium">คลังลิงก์</span>
+                    </button>
+                    <button onclick="router('trash')" class="nav-btn w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all group" data-target="trash">
+                        <i class="fa-solid fa-trash-can w-5 text-center text-base group-hover:text-mars-500 transition-colors"></i>
+                        <span class="hidden lg:inline text-sm font-medium">ถังขยะ</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-3 border-t border-slate-800">
+                <button onclick="window.close()" class="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-slate-400 hover:bg-slate-800/60 transition-all group">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-base"></i>
+                    <span class="hidden lg:inline text-sm font-medium">ปิดหน้าต่างนี้</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-slate-950">
+            <header class="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md px-6 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-4 flex-1 max-w-xl">
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                        <input type="text" id="global-search" oninput="handleSearch(this.value)" placeholder="ค้นหาชื่อหัวข้อ, เนื้อหา หรือลิงก์..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-mars-500 transition-all">
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="openCreateModal()" class="bg-mars-600 hover:bg-mars-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg shadow-mars-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="hidden sm:inline">สร้างข้อมูลใหม่</span>
+                    </button>
+                    <div class="w-9 h-9 bg-slate-800 border border-slate-700 rounded-full flex items-center justify-center font-bold text-xs uppercase text-mars-400">M</div>
+                </div>
+            </header>
+
+            <div id="view-container" class="flex-1 overflow-y-auto p-6 lg:p-8"></div>
+        </main>
+    </div>
+
+    <!-- MODAL: CREATE / EDIT -->
+    <div id="data-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+                <h3 id="modal-title" class="font-bold text-base">สร้างข้อมูลใหม่</h3>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-100 transition-all"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="data-form" onsubmit="handleFormSubmit(event)" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <input type="hidden" id="form-id">
+                <input type="hidden" id="form-folder" value="home">
+                
+                <div id="type-select-group">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">ประเภทข้อมูล</label>
+                    <select id="form-type" onchange="switchFormType(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-mars-500 transition-all">
+                        <option value="note">สมุดโน้ต (Note)</option>
+                        <option value="media">มีเดีย (ภาพ / วิดีโอ)</option>
+                        <option value="link">คลังลิงก์ (Web Link)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">ชื่อหัวข้อ (ไม่บังคับ)</label>
+                    <input type="text" id="form-title" placeholder="ระบุชื่อหัวข้อ..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-mars-500 transition-all">
+                </div>
+
+                <div id="field-note-container" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">เนื้อหาโน้ต</label>
+                        <textarea id="form-note-content" rows="4" placeholder="พิมพ์เนื้อหาที่นี่..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm focus:outline-none focus:border-mars-500 transition-all"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">แนบไฟล์ภาพ/วิดีโอเพิ่มเติม</label>
+                        <input type="file" id="form-note-files" multiple accept="image/*,video/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-400">
+                    </div>
+                </div>
+
+                <div id="field-media-container" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">อัปโหลดภาพหรือวิดีโอ</label>
+                        <input type="file" id="form-media-files" multiple accept="image/*,video/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-400">
+                    </div>
+                </div>
+
+                <div id="field-link-container" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">URL เว็บไซต์ปลายทาง</label>
+                        <input type="url" id="form-link-url" placeholder="https://example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-mars-500 transition-all">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 flex justify-end gap-3 shrink-0">
+                    <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-xl text-sm font-medium transition-all">ยกเลิก</button>
+                    <button type="submit" class="bg-mars-600 hover:bg-mars-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-mars-500/20">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX MODAL -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex-col items-center justify-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 text-white flex items-center justify-center text-xl hover:bg-mars-600 transition-all z-10"><i class="fa-solid fa-xmark"></i></button>
+        <div class="relative max-w-5xl max-h-[80vh] flex items-center justify-center">
+            <div id="lightbox-content" class="flex items-center justify-center"></div>
+            <button id="lightbox-prev" onclick="prevMedia()" class="absolute left-[-60px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 text-white flex items-center justify-center hover:bg-mars-600 transition-all"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="lightbox-next" onclick="nextMedia()" class="absolute right-[-60px] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700 text-white flex items-center justify-center hover:bg-mars-600 transition-all"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 border border-slate-800 text-slate-100 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-mars-500 text-lg"></i>
+        <span id="toast-message" class="text-sm font-medium">บันทึกสำเร็จ</span>
+    </div>
+
+    <!-- SCRIPT LOGIC (Router + Sidebar + Supabase) -->
+    <script>
+        const SUPABASE_URL = 'https://lxnlhqzypezvelmspevv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_fhisWr9_VvHAwb2INiMCQQ_ya5nXH9q';
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentView = 'home';
+        let searchQuery = '';
+        let db = [];
+        let trashBin = [];
+        let activeMediaList = [];
+        let activeMediaIndex = 0;
+
+        async function fetchSupabaseData() {
+            const { data, error } = await client.from('mars_items').select('*').order('created_at', { ascending: false });
+            if (!error && data) {
+                db = data.filter(i => !i.deleted_at);
+                trashBin = data.filter(i => i.deleted_at);
+                renderView();
+            }
+        }
+
+        function router(view) {
+            currentView = view;
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.target === view) {
+                    btn.classList.add('bg-slate-800', 'text-slate-100'); btn.classList.remove('text-slate-400');
+                } else {
+                    btn.classList.remove('bg-slate-800', 'text-slate-100'); btn.classList.add('text-slate-400');
+                }
+            });
+            renderView();
+        }
+
+        function handleSearch(val) { searchQuery = val.toLowerCase(); renderView(); }
+
+        function renderView() {
+            const container = document.getElementById('view-container');
+            let filteredDB = db.filter(item => {
+                return searchQuery === '' || 
+                    (item.title && item.title.toLowerCase().includes(searchQuery)) ||
+                    (item.content && item.content.toLowerCase().includes(searchQuery)) ||
+                    (item.url && item.url.toLowerCase().includes(searchQuery));
+            });
+
+            if (currentView === 'home') {
+                container.innerHTML = `
+                    <div class="max-w-7xl mx-auto space-y-8">
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight">การจัดการและลิงก์ข้อมูล (Dashboard)</h1>
+                            <p class="text-xs text-slate-400 mt-1">ซิงค์ข้อมูลผ่าน Supabase Cloud เรียบร้อย</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div onclick="router('notes')" class="bg-slate-900 border border-slate-800 hover:border-mars-500/50 p-6 rounded-2xl cursor-pointer transition-all group shadow-xl">
+                                <div class="w-12 h-12 rounded-xl bg-mars-500/10 border border-mars-500/20 text-mars-500 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book-open"></i></div>
+                                <h3 class="font-bold text-base mb-1">สมุดโน้ต (Notes)</h3>
+                                <p class="text-xs text-slate-400">จัดการข้อความและเอกสาร</p>
+                            </div>
+                            <div onclick="router('media')" class="bg-slate-900 border border-slate-800 hover:border-mars-500/50 p-6 rounded-2xl cursor-pointer transition-all group shadow-xl">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-photo-film"></i></div>
+                                <h3 class="font-bold text-base mb-1">มีเดีย & ไฟล์ (Media)</h3>
+                                <p class="text-xs text-slate-400">คลังภาพและวิดีโอ</p>
+                            </div>
+                            <div onclick="router('links')" class="bg-slate-900 border border-slate-800 hover:border-mars-500/50 p-6 rounded-2xl cursor-pointer transition-all group shadow-xl">
+                                <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-500 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform"><i class="fa-solid fa-link"></i></div>
+                                <h3 class="font-bold text-base mb-1">คลังลิงก์ (Web Links)</h3>
+                                <p class="text-xs text-slate-400">ลิงก์เว็บไซต์ปลายทาง</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4 pt-4">
+                            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">ข้อมูลล่าสุดทั้งหมด</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                ${filteredDB.length === 0 ? `<div class="col-span-2 text-center py-12 text-slate-500 text-sm">ไม่พบข้อมูลในระบบ</div>` : filteredDB.map(item => renderCard(item)).join('')}
+                            </div>
+                        </div>
+                    </div>`;
+            } else if (currentView === 'notes') {
+                const items = filteredDB.filter(i => i.type === 'note');
+                container.innerHTML = `<div class="max-w-5xl mx-auto space-y-6"><div class="flex items-center justify-between"><h1 class="text-2xl font-bold tracking-tight">สมุดโน้ตทั้งหมด</h1><button onclick="openCreateModal('note', 'notes')" class="bg-mars-600 hover:bg-mars-500 text-white px-4 py-2 rounded-xl text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-plus"></i> เพิ่มโน้ตใหม่</button></div><div class="space-y-4">${items.length === 0 ? `<div class="text-center py-12 text-slate-500 text-sm">ยังไม่มีสมุดโน้ต</div>` : items.map(item => renderPaperView(item)).join('')}</div></div>`;
+            } else if (currentView === 'media') {
+                const items = filteredDB.filter(i => i.type === 'media');
+                container.innerHTML = `<div class="max-w-7xl mx-auto space-y-6"><div class="flex items-center justify-between"><h1 class="text-2xl font-bold tracking-tight">คลังมีเดียและไฟล์</h1><button onclick="openCreateModal('media', 'media')" class="bg-mars-600 hover:bg-mars-500 text-white px-4 py-2 rounded-xl text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-plus"></i> อัปโหลดมีเดีย</button></div><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${items.length === 0 ? `<div class="col-span-3 text-center py-12 text-slate-500 text-sm">ยังไม่มีไฟล์มีเดีย</div>` : items.map(item => renderMediaCard(item)).join('')}</div></div>`;
+            } else if (currentView === 'links') {
+                const items = filteredDB.filter(i => i.type === 'link');
+                container.innerHTML = `<div class="max-w-5xl mx-auto space-y-6"><div class="flex items-center justify-between"><h1 class="text-2xl font-bold tracking-tight">คลังลิงก์เว็บไซต์</h1><button onclick="openCreateModal('link', 'links')" class="bg-mars-600 hover:bg-mars-500 text-white px-4 py-2 rounded-xl text-xs font-medium flex items-center gap-2"><i class="fa-solid fa-plus"></i> เพิ่มลิงก์ใหม่</button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${items.length === 0 ? `<div class="col-span-2 text-center py-12 text-slate-500 text-sm">ยังไม่มีลิงก์</div>` : items.map(item => renderLinkCard(item)).join('')}</div></div>`;
+            } else if (currentView === 'trash') {
+                container.innerHTML = `<div class="max-w-5xl mx-auto space-y-6"><h1 class="text-2xl font-bold tracking-tight">ถังขยะ (Trash Bin)</h1><div class="space-y-4">${trashBin.length === 0 ? `<div class="text-center py-12 text-slate-500 text-sm">ถังขยะว่างเปล่า</div>` : trashBin.map(item => renderTrashCard(item)).join('')}</div></div>`;
+            }
+        }
+
+        function renderCard(item) {
+            if (item.type === 'note') return renderPaperView(item);
+            if (item.type === 'media') return renderMediaCard(item);
+            if (item.type === 'link') return renderLinkCard(item);
+            return '';
+        }
+
+        function isVideoFile(url) {
+            if (!url) return false;
+            return url.startsWith('data:video/') || url.includes('.mp4') || url.includes('.webm') || url.includes('.ogg') || url.includes('video');
+        }
+
+        function renderThumbnail(fileUrl) {
+            if (isVideoFile(fileUrl)) {
+                return `
+                    <div class="w-full h-full bg-slate-950 relative flex items-center justify-center">
+                        <video src="${fileUrl}" class="w-full h-full object-cover pointer-events-none" preload="metadata"></video>
+                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <div class="w-8 h-8 rounded-full bg-mars-600/80 text-white flex items-center justify-center text-xs shadow-md">
+                                <i class="fa-solid fa-play ml-0.5"></i>
+                            </div>
+                        </div>
+                    </div>`;
+            } else {
+                return `<img src="${fileUrl}" class="w-full h-full object-cover">`;
+            }
+        }
+
+        function renderPaperView(item) {
+            let formattedContent = item.content ? item.content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-mars-400 underline hover:text-mars-300">$1</a>') : '';
+            const files = item.files || [];
+            const isLongContent = item.content && item.content.length > 250;
+
+            return `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative group shadow-lg">
+                    ${renderOptionsMenu(item.id)}
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-lg bg-mars-500/10 text-mars-500 flex items-center justify-center text-xs"><i class="fa-solid fa-book-open"></i></div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-200">${item.title || 'สมุดโน้ต (ไม่มีชื่อหัวข้อ)'}</h4>
+                            <span class="text-[10px] text-slate-500">${new Date(item.created_at).toLocaleDateString('th-TH')}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <div id="note-content-${item.id}" class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 text-sm text-slate-300 whitespace-pre-wrap leading-relaxed overflow-hidden transition-all duration-300 ${isLongContent ? 'max-h-36' : ''}">
+                            ${formattedContent}
+                        </div>
+                        ${isLongContent ? `<div id="note-fade-${item.id}" class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-slate-950 to-transparent rounded-b-xl pointer-events-none"></div>` : ''}
+                    </div>
+
+                    ${isLongContent ? `
+                        <div class="mt-2 text-right">
+                            <button onclick="toggleExpandNote('${item.id}')" id="btn-expand-${item.id}" class="text-xs text-mars-400 hover:text-mars-300 font-medium inline-flex items-center gap-1">
+                                <i class="fa-solid fa-chevron-down"></i> อ่านทั้งหมด / ดูโค้ดเพิ่มเติม
+                            </button>
+                        </div>
+                    ` : ''}
+
+                    ${files.length > 0 ? `
+                        <div class="grid grid-cols-4 gap-2 mt-3">
+                            ${files.map((f, idx) => `
+                                <div class="aspect-square bg-slate-950 rounded-lg overflow-hidden border border-slate-800 cursor-pointer relative" onclick='openLightbox(${JSON.stringify(files)}, ${idx})'>
+                                    ${renderThumbnail(f)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>`;
+        }
+
+        function toggleExpandNote(id) {
+            const contentEl = document.getElementById(`note-content-${id}`);
+            const fadeEl = document.getElementById(`note-fade-${id}`);
+            const btnEl = document.getElementById(`btn-expand-${id}`);
+
+            if (contentEl.classList.contains('max-h-36')) {
+                contentEl.classList.remove('max-h-36');
+                if (fadeEl) fadeEl.classList.add('hidden');
+                btnEl.innerHTML = `<i class="fa-solid fa-chevron-up"></i> ย่อเก็บ`;
+            } else {
+                contentEl.classList.add('max-h-36');
+                if (fadeEl) fadeEl.classList.remove('hidden');
+                btnEl.innerHTML = `<i class="fa-solid fa-chevron-down"></i> อ่านทั้งหมด / ดูโค้ดเพิ่มเติม`;
+            }
+        }
+
+        function renderMediaCard(item) {
+            const files = item.files || [];
+            const previewFiles = files.slice(0, 3);
+            return `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative group shadow-lg flex flex-col justify-between">
+                    ${renderOptionsMenu(item.id)}
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs"><i class="fa-solid fa-photo-film"></i></div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-200">${item.title || 'คลังมีเดีย'}</h4>
+                                <span class="text-[10px] text-slate-500">${files.length} ไฟล์แนบ</span>
+                            </div>
+                        </div>
+                        ${files.length > 0 ? `
+                            <div class="grid grid-cols-3 gap-2 mt-3 cursor-pointer" onclick='openLightbox(${JSON.stringify(files)}, 0)'>${previewFiles.map(f => `
+                                    <div class="aspect-square bg-slate-950 rounded-lg overflow-hidden border border-slate-800 relative">
+                                        ${renderThumbnail(f)}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `<div class="text-xs text-slate-500 py-6 text-center">ไม่มีไฟล์แนบ</div>`}
+                    </div>
+                </div>`;
+        }
+
+        function renderLinkCard(item) {
+            return `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative group shadow-lg flex items-center justify-between cursor-pointer hover:border-sky-500/50 transition-all" onclick="window.open('${item.url}', '_blank')">
+                    <div onclick="event.stopPropagation()">${renderOptionsMenu(item.id)}</div>
+                    <div class="flex items-center gap-4 pr-10">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center text-base shrink-0"><i class="fa-solid fa-link"></i></div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-200 group-hover:text-sky-400 transition-colors">${item.title || item.url}</h4>
+                            <p class="text-xs text-slate-400 truncate max-w-sm mt-0.5">${item.url}</p>
+                        </div>
+                    </div>
+                    <div class="text-slate-500 group-hover:text-sky-400"><i class="fa-solid fa-external-link-alt text-sm"></i></div>
+                </div>`;
+        }
+
+        function renderTrashCard(item) {
+            return `
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center text-base shrink-0"><i class="fa-solid fa-trash-can"></i></div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-200">${item.title || 'รายการที่ถูกลบ'}</h4>
+                            <span class="text-[10px] text-slate-400">ประเภท: ${item.type}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="restoreItem('${item.id}')" class="bg-slate-800 hover:bg-slate-700 text-mars-400 px-3.5 py-2 rounded-xl text-xs font-medium">กู้คืน</button>
+                        <button onclick="permanentDelete('${item.id}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3.5 py-2 rounded-xl text-xs font-medium">ลบถาวร</button>
+                    </div>
+                </div>`;
+        }
+
+        function renderOptionsMenu(id) {
+            return `
+                <div class="absolute top-4 right-4 z-10">
+                    <button onclick="toggleMenu(event, '${id}')" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-ellipsis"></i></button>
+                    <div id="menu-${id}" class="hidden absolute right-0 mt-2 w-36 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-20">
+                        <button onclick="editItem('${id}')" class="w-full text-left px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-mars-500"></i> แก้ไข</button>
+                        <button onclick="moveToTrash('${id}')" class="w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-red-500/10 flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> ลบ</button>
+                    </div>
+                </div>`;
+        }
+
+        function toggleMenu(e, id) {
+            e.stopPropagation();
+            document.querySelectorAll('[id^="menu-"]').forEach(m => { if (m.id !== `menu-${id}`) m.classList.add('hidden'); });
+            document.getElementById(`menu-${id}`).classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', () => { document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden')); });
+
+        function openCreateModal(forcedType = null, folder = 'home') {
+            document.getElementById('form-id').value = '';
+            document.getElementById('form-title').value = '';
+            document.getElementById('form-note-content').value = '';
+            document.getElementById('form-note-files').value = '';
+            document.getElementById('form-media-files').value = '';
+            document.getElementById('form-link-url').value = '';
+            document.getElementById('form-folder').value = folder;
+            document.getElementById('modal-title').innerText = 'สร้างข้อมูลใหม่';
+
+            const typeSelect = document.getElementById('form-type');
+            const typeGroup = document.getElementById('type-select-group');
+            if (forcedType) { typeSelect.value = forcedType; typeGroup.classList.add('hidden'); }
+            else { typeSelect.value = 'note'; typeGroup.classList.remove('hidden'); }
+            switchFormType(typeSelect.value);
+            document.getElementById('data-modal').classList.remove('hidden'); document.getElementById('data-modal').classList.add('flex');
+        }
+
+        function closeModal() { document.getElementById('data-modal').classList.add('hidden'); document.getElementById('data-modal').classList.remove('flex'); }
+
+        function switchFormType(type) {
+            document.getElementById('field-note-container').classList.add('hidden');
+            document.getElementById('field-media-container').classList.add('hidden');
+            document.getElementById('field-link-container').classList.add('hidden');
+            if (type === 'note') document.getElementById('field-note-container').classList.remove('hidden');
+            if (type === 'media') document.getElementById('field-media-container').classList.remove('hidden');
+            if (type === 'link') document.getElementById('field-link-container').classList.remove('hidden');
+        }
+
+        function editItem(id) {
+            const item = db.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('form-id').value = item.id;
+            document.getElementById('form-title').value = item.title || '';
+            document.getElementById('form-folder').value = item.folder || 'home';
+            document.getElementById('form-type').value = item.type;
+            document.getElementById('type-select-group').classList.add('hidden');
+            document.getElementById('modal-title').innerText = 'แก้ไขข้อมูล';
+            switchFormType(item.type);
+            if (item.type === 'note') document.getElementById('form-note-content').value = item.content || '';
+            if (item.type === 'link') document.getElementById('form-link-url').value = item.url || '';
+            document.getElementById('data-modal').classList.remove('hidden'); document.getElementById('data-modal').classList.add('flex');
+        }
+
+        function readFilesAsDataURLs(fileInput) {
+            return new Promise((resolve) => {
+                const files = fileInput.files;
+                if (!files || files.length === 0) { resolve([]); return; }
+                let results = [];
+                let completed = 0;
+                Array.from(files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        results[index] = e.target.result;
+                        completed++;
+                        if (completed === files.length) resolve(results);
+                    };
+                    reader.onerror = () => { completed++; if (completed === files.length) resolve(results); };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-id').value;
+            const type = document.getElementById('form-type').value;
+            const title = document.getElementById('form-title').value.trim();
+            const folder = document.getElementById('form-folder').value;
+
+            if (id) {
+                let updateData = { title };
+                if (type === 'note') updateData.content = document.getElementById('form-note-content').value;
+                if (type === 'link') updateData.url = document.getElementById('form-link-url').value;
+                
+                const { error } = await client.from('mars_items').update(updateData).eq('id', id);
+                if (!error) { showToast('อัปเดตข้อมูลสำเร็จ', 'success'); fetchSupabaseData(); }
+                else { showToast('เกิดข้อผิดพลาดในการอัปเดต', 'error'); }
+            } else {
+                let newItem = {
+                    id: 'mars_' + Date.now(),
+                    type,
+                    title,
+                    folder,
+                    created_at: new Date().toISOString()
+                };
+                if (type === 'note') {
+                    newItem.content = document.getElementById('form-note-content').value;
+                    newItem.files = await readFilesAsDataURLs(document.getElementById('form-note-files'));
+                }
+                if (type === 'link') newItem.url = document.getElementById('form-link-url').value;
+                if (type === 'media') {
+                    newItem.files = await readFilesAsDataURLs(document.getElementById('form-media-files'));
+                }
+
+                const { error } = await client.from('mars_items').insert([newItem]);
+                if (!error) { showToast('สร้างข้อมูลสำเร็จ', 'success'); fetchSupabaseData(); }
+                else { showToast('เกิดข้อผิดพลาดในการบันทึก', 'error'); }
+            }
+            closeModal();
+        }
+
+        async function moveToTrash(id) {
+            const { error } = await client.from('mars_items').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+            if (!error) { showToast('ย้ายไปถังขยะเรียบร้อย', 'info'); fetchSupabaseData(); }
+        }
+
+        async function restoreItem(id) {
+            const { error } = await client.from('mars_items').update({ deleted_at: null }).eq('id', id);
+            if (!error) { showToast('กู้คืนข้อมูลสำเร็จ', 'success'); fetchSupabaseData(); }
+        }
+
+        async function permanentDelete(id) {
+            const { error } = await client.from('mars_items').delete().eq('id', id);
+            if (!error) { showToast('ลบถาวรเรียบร้อย', 'success'); fetchSupabaseData(); }
+        }
+
+        function openLightbox(files, index) {
+            activeMediaList = files; activeMediaIndex = index;
+            renderLightboxContent();
+            document.getElementById('lightbox-modal').classList.remove('hidden'); document.getElementById('lightbox-modal').classList.add('flex');
+        }
+
+        function closeLightbox() { document.getElementById('lightbox-modal').classList.add('hidden'); document.getElementById('lightbox-modal').classList.remove('flex'); }
+
+        function renderLightboxContent() {
+            const currentFile = activeMediaList[activeMediaIndex];
+            const container = document.getElementById('lightbox-content');
+            if (isVideoFile(currentFile)) {
+                container.innerHTML = `<video src="${currentFile}" controls autoplay class="max-h-[75vh] max-w-full rounded-xl object-contain shadow-2xl"></video>`;
+            } else {
+                container.innerHTML = `<img src="${currentFile}" class="max-h-[75vh] max-w-full rounded-xl object-contain shadow-2xl">`;
+            }
+        }
+
+        function nextMedia() { activeMediaIndex = (activeMediaIndex + 1) % activeMediaList.length; renderLightboxContent(); }
+        function prevMedia() { activeMediaIndex = (activeMediaIndex - 1 + activeMediaList.length) % activeMediaList.length; renderLightboxContent(); }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            document.getElementById('toast-icon').className = type === 'success' ? 'fa-solid fa-circle-check text-mars-500 text-lg' : type === 'error' ? 'fa-solid fa-circle-xmark text-red-500 text-lg' : 'fa-solid fa-circle-info text-sky-500 text-lg';
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none'); }, 3000);
+        }
+
+        // โหลดข้อมูลเริ่มต้น
+        fetchSupabaseData();
+        router('home');
+    </script>
+</body>
+</html>
