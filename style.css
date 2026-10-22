@@ -1,8 +1,5 @@
 /* ==========================================================
    MARS Agency - Full Complete Style CSS (Clean Light Theme)
-   - บีบช่องไฟชิดสุดๆ Gap 4px ทั้งหน้าคอมและโมบาย
-   - แท่น Podium หน้าแรก: ย้ายข้อมูลมาไว้ข้างนอก & ขยับความสูง-ต่ำลดหลั่นตามอันดับ
-   - Search Box: เอฟเฟกต์แสงวิ่งหมุนนีออนรอบกล่องค้นหา
    ========================================================== */
 
 @property --angle {
@@ -50,7 +47,7 @@ html, body {
 .mobile-menu-toggle, .sidebar-backdrop, .close-menu-btn { display: none; }
 .mobile-game-btn-slot { display: none; }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .dashboard-layout { display: flex; flex-direction: column; padding: 6px !important; gap: 4px !important; }
     .main-content { order: 2; width: 100% !important; gap: 4px !important; }
     .sidebar-right { order: 3; width: 100% !important; gap: 4px !important; }
@@ -137,7 +134,6 @@ html, body {
 .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 5px 10px; font-size: 11px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: all 0.2s; }
 .tab-btn.active { background: #dbeafe; color: #1d4ed8; font-weight: 600; }
 
-/* ================= 🔍 Search Box (เอฟเฟกต์แสงวิ่งหมุนรอบ) ================= */
 .search-box { 
     flex: 1; 
     min-width: 150px; 
@@ -270,21 +266,18 @@ html, body {
 
 .leaderboard-widget h3 { font-size: 11.5px; color: var(--primary-blue); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; font-weight: 700; }
 
-/* ================= 🏆 แท่น Podium หน้าแรก (ดึงข้อมูลมาไว้ข้างนอก และขยับความสูง-ต่ำตามอันดับ) ================= */
 .main-podium-section {
     display: flex; justify-content: center; align-items: flex-end;
     gap: 6px; margin: 6px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
 }
 .main-podium-column { display: flex; flex-direction: column; align-items: center; width: 32%; text-align: center; }
 
-/* โซนข้อมูลด้านนอกแท่น: เรียงลำดับ ตราเหรียญ ➔ ชื่อ ➔ เลเวล/คลิก ➔ เวลา */
 .main-podium-column .podium-header-outside { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-bottom: 4px; width: 100%; }
 .main-podium-column .podium-medal { font-size: 16px; margin-bottom: 1px; }
 .main-podium-column .podium-name { font-size: 0.72rem !important; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
 .main-podium-column .podium-info-outside { font-size: 0.58rem !important; color: #0284c7; font-weight: 700; width: 100%; }
 .main-podium-column .podium-stat-outside { font-size: 0.52rem !important; color: var(--text-muted); width: 100%; }
 
-/* ตัวบล็อกแท่นยืน (ขยับความสูง-ต่ำลดหลั่นตามลำดับ: ที่ 1 สูงสุด, ที่ 2 และ 3 รองลงมา) */
 .main-podium-column .podium-block {
     background: #f8fafc; border: 1px solid var(--border-color);
     border-radius: 6px 6px 4px 4px; padding: 4px 2px; text-align: center; 
@@ -316,6 +309,206 @@ html, body {
 .admin-trigger-text { cursor: pointer; color: var(--text-muted); text-decoration: underline; }
 .admin-trigger-text:hover { color: var(--primary-blue); }
 
-@media (min-width: 1025px) {
+@media (min-width: 769px) {
     .site-footer-admin { position: fixed; bottom: 6px; left: 10px; width: auto; text-align: left; background: transparent; backdrop-filter: none; border-top: none; padding: 0; }
+}
+
+/* ================= FLASH EVENT (2 COLUMNS & MODAL) ================= */
+.flash-event-card {
+    display: flex;
+    flex-direction: row;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 14px;
+    overflow: hidden;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    margin-bottom: 10px;
+}
+
+.flash-event-media {
+    flex: 0 0 40%;
+    max-width: 40%;
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    height: 110px;
+}
+
+.flash-event-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top; /* 📍 โฟกัสแสดงผลเฉพาะส่วนหัวของรูปภาพ */
+    display: block;
+}
+
+.flash-event-info {
+    flex: 1;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.flash-event-badge {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+
+.flash-event-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 3px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.flash-event-date {
+    font-size: 11px;
+    color: #fbbf24;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.flash-event-desc {
+    font-size: 11px;
+    color: #94a3b8;
+    margin: 0 0 6px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.flash-event-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.flash-event-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease-in-out;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: #1e293b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 14px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    transform: scale(0.95);
+    transition: transform 0.25s ease-in-out;
+    position: relative;
+}
+
+.modal-overlay.active .modal-box {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f59e0b;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.modal-close-btn:hover {
+    color: #ef4444;
+}
+
+.modal-body {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+/* Responsive สำหรับมือถือ */
+@media (max-width: 640px) {
+    .flash-event-card {
+        flex-direction: column;
+    }
+    .flash-event-media {
+        flex: none;
+        max-width: 100%;
+        height: 120px;
+    }
+    .flash-event-media img {
+        object-position: top;
+    }
 }

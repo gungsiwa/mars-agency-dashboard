@@ -25,9 +25,9 @@
             <button class="close-menu-btn" onclick="toggleSidebar()">✕ ปิด</button>
             <div class="brand-box">
                 <div class="brand-logo" style="overflow: hidden; border-radius: 50%;">
-    <video src="marslogo.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"></video>
-    <img src="marslogo.png" alt="MARS Logo" style="display: none; width: 100%; height: 100%; object-fit: cover;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'65\' height=\'65\'><rect width=\'65\' height=\'65\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%23f59e0b\' text-anchor=\'middle\' dominant-baseline=\'central\'>MARS</text></svg>';">
-</div>
+                    <video src="marslogo.mp4" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"></video>
+                    <img src="marslogo.png" alt="MARS Logo" style="display: none; width: 100%; height: 100%; object-fit: cover;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'65\' height=\'65\'><rect width=\'65\' height=\'65\' fill=\'%23000\'/><text x=\'50%\' y=\'50%\' font-size=\'14\' fill=\'%23f59e0b\' text-anchor=\'middle\' dominant-baseline=\'central\'>MARS</text></svg>';">
+                </div>
                 <h1>MARS AGENCY</h1>
                 <p>VJ Status & Activity Hub</p>
             </div>
@@ -43,10 +43,8 @@
         <!-- ================= 2. MAIN CONTENT ================= -->
         <main class="main-content">
             
-            <!-- ข้อความวิ่งย้ายมาอยู่ด้านบนสุด -->
             <div id="noticeBannerContainer"></div>
 
-            <!-- ภาพปกทีมย้ายลงมาอยู่ใต้ข้อความวิ่ง -->
             <div class="hero-team-banner">
                 <img src="herobanner.jpg" alt="MARS Agency Team" onerror="this.src='https://via.placeholder.com/800x280/1e293b/f59e0b?text=MARS+AGENCY+TEAM';">
                 <div class="hero-overlay">
@@ -72,6 +70,9 @@
             <div class="card-list pk-card-list" id="cardList">
                 <div class="loading-text" style="grid-column: span 2; text-align: center; color: var(--text-muted); padding: 30px;">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
             </div>
+
+            <!-- 📍 โซน Flash Event (แสดงผลแบบ 2 คอลัมน์ตรงกลางด้านล่างของการ์ดกิจกรรม) -->
+            <div id="flashEventContainer" style="margin-top: 15px; width: 100%;"></div>
 
             <div class="admin-contact-card">
                 <div class="admin-contact-info">
@@ -116,7 +117,7 @@
 
         <!-- ================= 3. SIDEBAR RIGHT ================= -->
         <aside class="sidebar-right">
-            
+
             <div class="banner-slider-container glass-panel" style="padding: 0; margin: 0; overflow: hidden; position: relative;">
                 <div class="banner-slider-track" id="bannerSliderTrack" style="display: flex; transition: transform 0.5s ease-in-out; width: 100%; height: 160px;"></div>
                 <div class="banner-dots" style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 2;" id="bannerDots"></div>
@@ -157,10 +158,7 @@
 
             <div class="leaderboard-widget glass-panel">
                 <h3>🏆 ท็อปแรงค์เกมจับคู่ VJ</h3>
-                
-                <!-- โซนแท่น Podium ยืนข้างนอก (เรียง: เหรียญ ➔ ชื่อ ➔ เลเวล/คลิก ➔ เวลา) -->
                 <div class="main-podium-section" id="mainPodiumContainer"></div>
-
                 <table class="lb-table">
                     <thead>
                         <tr>
@@ -188,6 +186,7 @@
         © 2026 <span id="secret-admin-trigger" class="admin-trigger-text" title="System Portal">MARS Agency</span>. All rights reserved.
     </footer>
 
+    <!-- Admin & Modals -->
     <div style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; pointer-events: none;">
         <div id="admin-menu-popup" style="display: none; position: absolute; bottom: 35px; left: 0; background: #1e1e1e; border: 1px solid #444; border-radius: 10px; padding: 15px; width: 260px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); color: #fff; pointer-events: auto;">
             <div style="font-size: 13px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 8px;">
@@ -243,5 +242,18 @@
             }
         }
     </script>
+
+    <!-- Flash Event Modal (ป๊อปอัพรายละเอียดเต็ม พร้อมปุ่มกากบาท) -->
+    <div id="flashEventModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">รายละเอียด Flash Event</h3>
+                <button class="modal-close-btn" onclick="closeFlashEventModal()">&times;</button>
+            </div>
+            <div id="modalBody" class="modal-body modal-description">
+                <!-- เนื้อหาเต็มจะถูกแทรกผ่าน JS -->
+            </div>
+        </div>
+    </div>
 </body>
 </html>

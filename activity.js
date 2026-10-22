@@ -1,9 +1,11 @@
-// --- activity.js: จัดการข้อมูล Google Sheets และการแสดงผลการ์ดกิจกรรม (รวม Activity Extra เรียงตามเวลา) ---
+// --- activity.js: จัดการข้อมูล Google Sheets, Flash Events และการแสดงผลการ์ดกิจกรรม ---
 
 const PK_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1314436716&single=true&output=csv";
 const EXTRA_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=651460921&single=true&output=csv";
+const FLASH_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1120098084&single=true&output=csv";
 
 let allActivities = [];
+let flashEvents = [];
 let currentTab = 'today';
 
 export async function initActivityModule() {
@@ -12,6 +14,7 @@ export async function initActivityModule() {
         searchInput.addEventListener('input', () => filterCards());
     }
     await loadActivityData();
+    await loadFlashEventData();
 }
 
 export function switchTab(tabName, event) {
@@ -32,19 +35,62 @@ export function switchTab(tabName, event) {
 
 window.switchTab = switchTab;
 
+// ฟังก์ชัน parseCSV ที่ปรับปรุงใหม่ให้รองรับการขึ้นบรรทัดใหม่ในเครื่องหมายคำพูด
 function parseCSV(text) {
-    const lines = text.split("\n");
     const result = [];
-    if (lines.length === 0) return result;
-    
-    const headers = lines[0].split(",").map(h => h.trim().replace(/^["']|["']$/g, ''));
+    let rows = [];
+    let currentRow = [];
+    let currentField = "";
+    let insideQuotes = "";
 
-    for (let i = 1; i < lines.length; i++) {
-        if (!lines[i].trim()) continue;
-        const currentline = lines[i].split(",");
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        const nextC = text[i + 1];
+
+        if (insideQuotes) {
+            if (c === '"') {
+                if (nextC === '"') {
+                    currentField += '"';
+                    i++;
+                } else {
+                    insideQuotes = false;
+                }
+            } else {
+                currentField += c;
+            }
+        } else {
+            if (c === '"') {
+                insideQuotes = true;
+            } else if (c === ',') {
+                currentRow.push(currentField.trim());
+                currentField = "";
+            } else if (c === '\r') {
+                // ข้าม \r
+            } else if (c === '\n') {
+                currentRow.push(currentField.trim());
+                rows.push(currentRow);
+                currentRow = [];
+                currentField = "";
+            } else {
+                currentField += c;
+            }
+        }
+    }
+    if (currentField !== "" || currentRow.length > 0) {
+        currentRow.push(currentField.trim());
+        rows.push(currentRow);
+    }
+
+    if (rows.length === 0) return result;
+
+    const headers = rows[0].map(h => h.replace(/^["']|["']$/g, ''));
+
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.length === 1 && row[0] === "") continue;
         const obj = {};
         for (let j = 0; j < headers.length; j++) {
-            let val = currentline[j] ? currentline[j].trim() : "";
+            let val = row[j] !== undefined ? row[j] : "";
             val = val.replace(/^["']|["']$/g, '');
             obj[headers[j]] = val;
         }
@@ -58,7 +104,6 @@ async function loadActivityData() {
         const lastUpdatedBox = document.getElementById("lastUpdatedBox");
         if (lastUpdatedBox) lastUpdatedBox.innerText = `กำลังดึงข้อมูลจากระบบ... ⏳`;
 
-        // ดึงข้อมูลทั้งสองชีตพร้อมกัน
         const [pkRes, extraRes] = await Promise.all([
             fetch(PK_SHEET_URL),
             fetch(EXTRA_SHEET_URL)
@@ -70,7 +115,6 @@ async function loadActivityData() {
         const pkData = parseCSV(pkText).map(item => ({ ...item, _type: 'PK' }));
         const extraData = parseCSV(extraText).map(item => ({ ...item, _type: 'EXTRA' }));
 
-        // รวมข้อมูลกิจกรรมทั้งหมดเข้าด้วยกัน
         allActivities = [...pkData, ...extraData];
 
         if (lastUpdatedBox) {
@@ -84,6 +128,108 @@ async function loadActivityData() {
     }
 }
 
+// โหลดข้อมูล Flash Event จาก CSV
+async function loadFlashEventData() {
+    try {
+        const res = await fetch(FLASH_SHEET_URL);
+        const text = await res.text();
+        const data = parseCSV(text);
+        
+        flashEvents = data.filter(item => (item.is_active || '').toUpperCase() === 'TRUE');
+        renderFlashEvents();
+    } catch (err) {
+        console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล Flash Event:", err);
+    }
+}
+
+// เรนเดอร์ Flash Events แบบ 2 คอลัมน์ (พร้อมแสดงวันเริ่มและวันสิ้นสุดกิจกรรม)
+function renderFlashEvents() {
+    const flashContainer = document.getElementById("flashEventContainer");
+    if (!flashContainer) return;
+
+    if (flashEvents.length === 0) {
+        flashContainer.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    flashEvents.forEach(event => {
+        const title = event.title || 'Flash Event';
+        const badge = event.badge_label || '';
+        const banner = event.banner_url || '';
+        const startDate = event.start_date || '';
+        const endDate = event.end_date || '';
+        const eventId = event.event_id || '';
+        const shortDesc = event.description || 'คลิกเพื่อดูรายละเอียดเพิ่มเติม...';
+        
+        // จัดรูปแบบแสดงผลวันเริ่มและวันสิ้นสุด
+        const dateDisplayHtml = (startDate && endDate) 
+            ? `<div class="flash-event-date"><i class="far fa-calendar-alt"></i> ระยะเวลา: ${startDate} - ${endDate}</div>` 
+            : (startDate ? `<div class="flash-event-date"><i class="far fa-calendar-alt"></i> เริ่ม: ${startDate}</div>` : '');
+
+        html += `
+        <div class="flash-event-card">
+            <div class="flash-event-media">
+                ${banner ? `<img src="${banner}" alt="${title}">` : '<img src="https://via.placeholder.com/400x200/1e293b/f59e0b?text=Flash+Event" alt="Flash Event">'}
+            </div>
+            <div class="flash-event-info">
+                ${badge ? `<span class="flash-event-badge">${badge}</span>` : '<span class="flash-event-badge">⚡ FLASH EVENT</span>'}
+                <h3 class="flash-event-title">${title}</h3>
+                ${dateDisplayHtml}
+                <p class="flash-event-desc">${shortDesc}</p>
+                <button type="button" class="flash-event-btn" onclick="openFlashEventModal('${eventId}')">
+                    📖 รายละเอียดเพิ่มเติม
+                </button>
+            </div>
+        </div>
+        `;
+    });
+    flashContainer.innerHTML = html;
+}
+
+// ฟังก์ชันเปิด Modal Flash Event พร้อมปุ่มกากบาท
+window.openFlashEventModal = function(eventId) {
+    const event = flashEvents.find(e => e.event_id === eventId);
+    if (!event) return;
+
+    const modal = document.getElementById("flashEventModal");
+    if (!modal) return;
+
+    const titleEl = modal.querySelector('.modal-title');
+    const descEl = modal.querySelector('.modal-description');
+    
+    if (titleEl) titleEl.innerText = event.title || 'รายละเอียด Flash Event';
+    if (descEl) {
+        let contentHtml = '';
+        if (event.banner_url) {
+            contentHtml += `<img src="${event.banner_url}" alt="${event.title || ''}" style="width:100%; border-radius:8px; margin-bottom: 12px; display: block;">`;
+        }
+        if (event.start_date && event.end_date) {
+            contentHtml += `<p style="font-size: 12px; color: #f59e0b; margin-bottom: 8px; font-weight: 600;">📅 ระยะเวลา: ${event.start_date} - ${event.end_date}</p>`;
+        }
+        contentHtml += (event.description || '').replace(/\n/g, '<br>');
+        descEl.innerHTML = contentHtml;
+    }
+
+    modal.classList.add('active');
+};
+
+// ฟังก์ชันปิด Modal Flash Event (ทำงานร่วมกับปุ่มกากบาท)
+window.closeFlashEventModal = function() {
+    const modal = document.getElementById("flashEventModal");
+    if (modal) {
+        modal.classList.remove('active');
+    }
+};
+
+// ปิด Modal เมื่อคลิกพื้นที่ว่างด้านนอกกล่อง
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById("flashEventModal");
+    if (e.target === modal) {
+        closeFlashEventModal();
+    }
+});
+
 function parseDateStrToDate(dateStr) {
     if (!dateStr) return null;
     const cleanDate = dateStr.trim().split(' ')[0];
@@ -95,7 +241,6 @@ function parseDateStrToDate(dateStr) {
     return isNaN(isoDate) ? null : isoDate;
 }
 
-// รวมวันที่ (Date) และเวลา (Time) เพื่อใช้เรียงลำดับตามเวลาจริง
 function parseDateTimeToObj(item) {
     let datePart = item.Date || item.DateTime || '';
     let timePart = item.Time || '00:00';
@@ -136,14 +281,13 @@ function renderActivities(dataToRender = allActivities) {
         }
     });
 
-    // เรียงลำดับตามเวลาจริงทั้ง PK และ Extra ผสมกัน
     tabFiltered.sort((a, b) => {
         const timeA = parseDateTimeToObj(a).getTime();
         const timeB = parseDateTimeToObj(b).getTime();
         if (currentTab === 'today') {
-            return timeA - timeB; // วันนี้เรียงจากเวลาเช้าไปค่ำ
+            return timeA - timeB;
         } else {
-            return timeB - timeA; // ย้อนหลังเรียงจากใหม่ไปเก่า
+            return timeB - timeA;
         }
     });
 
@@ -155,7 +299,6 @@ function renderActivities(dataToRender = allActivities) {
     let html = '';
     tabFiltered.forEach(item => {
         if (item._type === 'EXTRA') {
-            // ================= โครงสร้างการ์ด Activity_Extra (ปรับตำแหน่งตามต้องการ) =================
             const actName = item.ActivityName && item.ActivityName.trim() !== '' ? item.ActivityName : 'กิจกรรมพิเศษ';
             const vName = item.Name && item.Name.trim() !== '' ? item.Name : 'วีเจ';
             const vId = item.BigoID && item.BigoID.trim() !== '' ? item.BigoID : '-';
@@ -167,7 +310,6 @@ function renderActivities(dataToRender = allActivities) {
             html += `
             <div class="pk-match-card card-extra-single">
                 <div class="extra-card-body">
-                    <!-- ฝั่งซ้าย: โครงเดิม (รูป, ชื่อ VJ, ID) -->
                     <div class="extra-left-info">
                         <div class="avatar-aura" style="border: 2px solid var(--mars-green); box-shadow: 0 0 12px var(--mars-glow);">
                             <img src="${vImg}" alt="${vName}">
@@ -178,15 +320,11 @@ function renderActivities(dataToRender = allActivities) {
                             <div class="vj-id">ID: ${vId} ${vId !== '-' ? `<button class="copy-btn" onclick="copyToClipboard('${vId}')" title="คัดลอก ID">📋</button>` : ''}</div>
                         </div>
                     </div>
-
-                    <!-- ฝั่งขวา: ชื่อกิจกรรมอยู่บน, เวลาอยู่ล่าง -->
                     <div class="extra-center-info">
                         <div class="extra-act-title">${actName}</div>
                         <div class="digital-clock">${timeStr}</div>
                     </div>
                 </div>
-
-                <!-- Footer: แสดงวันที่แทนคำว่ากิจกรรมพิเศษ และสถานะขวาล่างคงเดิม -->
                 <div class="card-footer-status" style="display: flex; justify-content: space-between; align-items: center; color: #fbbf24; background: rgba(245, 158, 11, 0.08); padding: 6px 12px; font-size: 12px;">
                     <span>📅 วันที่: ${dateStr}</span>
                     <span>📌 สถานะ: ${vStatus}</span>
@@ -194,9 +332,7 @@ function renderActivities(dataToRender = allActivities) {
             </div>
             `;
         } else {
-            // ================= โครงสร้างการ์ด PK เดิม =================
             const activityName = item.ActivityName && item.ActivityName.trim() !== '' ? item.ActivityName : 'Super PK';
-            
             const leftAgency = item.OurAgency && item.OurAgency.trim() !== '' ? item.OurAgency : 'MARS AGENCY';
             const leftAvatar = item.OurImage && item.OurImage.trim() !== '' ? item.OurImage : '';
             const leftName = item.Name && item.Name.trim() !== '' ? item.Name : '?';
@@ -227,13 +363,11 @@ function renderActivities(dataToRender = allActivities) {
                             <div class="vj-id">ID: ${leftId} ${leftId !== '-' ? `<button class="copy-btn" onclick="copyToClipboard('${leftId}')" title="คัดลอก ID">📋</button>` : ''}</div>
                         </div>
                     </div>
-
                     <div class="digital-scoreboard">
                         <div class="event-tag">${activityName}</div>
                         <div class="digital-clock">${time}</div>
                         <div class="vs-status">⚔️ VS</div>
                     </div>
-
                     <div class="side-right">
                         <div style="min-width: 0;">
                             <div class="agency-label" style="color: var(--opponent-blue);">${rightAgency}</div>
@@ -243,7 +377,6 @@ function renderActivities(dataToRender = allActivities) {
                         <div class="avatar-aura">${rightAvatarHtml}</div>
                     </div>
                 </div>
-
                 <div class="card-footer-status" style="display: flex; justify-content: space-between; align-items: center; color: #fbbf24; background: rgba(245, 158, 11, 0.08); padding: 6px 12px; font-size: 12px;">
                     <span>📅 วันที่: ${activityDateStr}</span>
                     <span>📌 สถานะ: ${status}</span>
