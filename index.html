@@ -71,9 +71,10 @@
                 <div class="loading-text" style="grid-column: span 2; text-align: center; color: var(--text-muted); padding: 30px;">กำลังโหลดข้อมูลจากระบบ... ⏳</div>
             </div>
 
-            <!-- 📍 โซน Flash Event (แสดงผลแบบ 2 คอลัมน์ตรงกลางด้านล่างของการ์ดกิจกรรม) -->
+            <!-- 📍 โซน Flash Event -->
             <div id="flashEventContainer" style="margin-top: 15px; width: 100%;"></div>
 
+            <!-- 📍 แถบติดต่อแอดมิน (อยู่ก่อนการ์ดกริดบน Desktop) -->
             <div class="admin-contact-card">
                 <div class="admin-contact-info">
                     <h3>💬 ติดต่อแอดมินสังกัด MARS</h3>
@@ -82,34 +83,19 @@
                 <a href="https://line.me/ti/p/IG2mfqJhkb" target="_blank" class="admin-action-btn">แชทแอดมิน</a>
             </div>
 
-            <div class="center-notion-btn-container desktop-notion-box" style="margin-top: 5px;">
-                <style>
-                    @media (max-width: 767px) {
-                        .desktop-notion-box { display: none !important; }
-                    }
-                </style>
-                <a href="bonus-view.html" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35);">
-                    <div class="game-thumbnail-wrapper" style="display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3);">
-                        <span style="font-size: 24px;">📊</span>
-                    </div>
-                    <div class="game-cta-text-info">
-                        <span class="game-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b;">เอกสารสังกัด</span>
+            <!-- 📍 โซน Shortcut Cards สำหรับแสดงผลเฉพาะบน Desktop (อยู่ใต้แถบติดต่อแอดมิน) -->
+            <div class="shortcut-cards-grid desktop-shortcut-grid">
+                <a href="bonus-view.html" class="shortcut-card-item program-card">
+                    <div class="shortcut-card-badge">เอกสารสังกัด</div>
+                    <div class="shortcut-card-icon">📊</div>
+                    <div class="shortcut-card-content">
                         <h4>รายได้และโบนัสวีเจ</h4>
-                        <p>คลิกเพื่ออ่านรายละเอียดตารางเรตโบนัสสังกัด</p>
+                        <p>ตารางเรตโบนัสสังกัด</p>
                     </div>
+                    <div class="shortcut-card-action">ดูรายละเอียด →</div>
                 </a>
-            </div>
-
-            <div class="center-game-btn-container desktop-game-btn-bottom">
-                <a href="game.html" class="play-game-cta-card">
-                    <div class="game-thumbnail-wrapper">
-                        <img src="images/picture.png" alt="เกมจับคู่ VJ" onerror="this.src='https://via.placeholder.com/300x150/1e293b/38bdf8?text=VJ+Match+Game';">
-                    </div>
-                    <div class="game-cta-text-info">
-                        <span class="game-badge">🎮 มินิเกมสนุกๆ</span>
-                        <h4>เกมจับคู่ VJ</h4>
-                        <p>คลิกเพื่อเล่นเกม</p>
-                    </div>
+                <a href="game.html" class="shortcut-card-item image-card">
+                    <img src="images/picture.png" alt="เกมจับคู่ VJ" onerror="this.src='https://via.placeholder.com/300x450/1e293b/38bdf8?text=VJ+Match+Game';">
                 </a>
             </div>
 
@@ -130,29 +116,19 @@
                 </div>
             </div>
 
-            <div class="mobile-game-btn-slot">
-                <a href="bonus-view.html" class="play-game-cta-card" style="border-color: rgba(245, 158, 11, 0.35); margin-bottom: 10px;">
-                    <div class="game-thumbnail-wrapper" style="display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3);">
-                        <span style="font-size: 24px;">📊</span>
+            <!-- 📍 โซน Shortcut Cards สำหรับแสดงผลเฉพาะบน Mobile (อยู่ระหว่างลิงก์และช่องทางสำคัญ กับ บอร์ดอันดับเกม) -->
+            <div class="shortcut-cards-grid mobile-shortcut-grid">
+                <a href="bonus-view.html" class="shortcut-card-item program-card">
+                    <div class="shortcut-card-badge">เอกสารสังกัด</div>
+                    <div class="shortcut-card-icon">📊</div>
+                    <div class="shortcut-card-content">
+                        <h4>รายได้และโบนัสวีเจ</h4>
+                        <p>ตารางเรตโบนัสสังกัด</p>
                     </div>
-                    <div class="game-cta-text-info">
-                        <span class="game-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b;">เอกสารสังกัด</span>
-                        <h4 style="margin-top: 2px;">รายได้และโบนัสวีเจ</h4>
-                        <p>คลิกเพื่ออ่านรายละเอียดตารางเรตโบนัส</p>
-                    </div>
+                    <div class="shortcut-card-action">ดูรายละเอียด →</div>
                 </a>
-            </div>
-
-            <div class="mobile-game-btn-slot">
-                <a href="game.html" class="play-game-cta-card">
-                    <div class="game-thumbnail-wrapper">
-                        <img src="images/picture.png" alt="เกมจับคู่ VJ" onerror="this.src='https://via.placeholder.com/300x150/1e293b/38bdf8?text=VJ+Match+Game';">
-                    </div>
-                    <div class="game-cta-text-info">
-                        <span class="game-badge">🎮 มินิเกมสนุกๆ</span>
-                        <h4>เกมจับคู่ VJ</h4>
-                        <p>คลิกเพื่อเล่นเกม</p>
-                    </div>
+                <a href="game.html" class="shortcut-card-item image-card">
+                    <img src="images/picture.png" alt="เกมจับคู่ VJ" onerror="this.src='https://via.placeholder.com/300x450/1e293b/38bdf8?text=VJ+Match+Game';">
                 </a>
             </div>
 
@@ -243,16 +219,14 @@
         }
     </script>
 
-    <!-- Flash Event Modal (ป๊อปอัพรายละเอียดเต็ม พร้อมปุ่มกากบาท) -->
+    <!-- Flash Event Modal -->
     <div id="flashEventModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
                 <h3 id="modalTitle" class="modal-title">รายละเอียด Flash Event</h3>
                 <button class="modal-close-btn" onclick="closeFlashEventModal()">&times;</button>
             </div>
-            <div id="modalBody" class="modal-body modal-description">
-                <!-- เนื้อหาเต็มจะถูกแทรกผ่าน JS -->
-            </div>
+            <div id="modalBody" class="modal-body modal-description"></div>
         </div>
     </div>
 </body>
