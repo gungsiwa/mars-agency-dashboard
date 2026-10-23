@@ -37,6 +37,11 @@
                 <button class="tab-btn nav-btn" id="tab-archive" onclick="switchTab('archive', event); toggleSidebar();">📂 กิจกรรมย้อนหลัง</button>
                 <a href="bonus-view.html" class="nav-btn">📊 รายได้และโบนัสวีเจ</a>
                 <a href="game.html" class="nav-btn">🎮 มินิเกมจับคู่ VJ <span style="font-size: 10px; background: #3b82f6; padding: 1px 5px; border-radius: 4px; margin-left: auto; color:#fff;">New</span></a>
+                
+                <!-- 📢 เมนูชอร์ตคัตประกาศ (วางไว้ล่างสุด แสดงผลเฉพาะเมื่อมีประกาศ Active ในระบบ) -->
+                <a href="announcements.html" id="sidebarAnnouncementShortcut" class="nav-btn" style="display: none; align-items: center; gap: 8px;">
+                    📢 <span id="sidebarAnnouncementTitle" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">ประกาศและกิจกรรม</span>
+                </a>
             </nav>
         </aside>
 
@@ -173,6 +178,7 @@
             <button onclick="openAdminManager('notice')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #2d2d2d; color: #fff; border: 1px solid #555; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px;">📢 จัดการข้อความแจ้งเตือน</button>
             <button onclick="openAdminManager('bonus')" style="width: 100%; padding: 8px 12px; margin-bottom: 12px; background: #3b82f6; color: #fff; border: 1px solid #60a5fa; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600;">📝 จัดการหน้ากระดาษเรตโบนัส</button>
             <button onclick="window.open('mars_management.html', '_blank')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #ea580c; color: #fff; border: 1px solid #f97316; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600;">📂 ข้อมูลและลิงค์สำคัญ</button>
+            <button onclick="openAdminManager('announcement')" style="width: 100%; padding: 8px 12px; margin-bottom: 8px; background: #8b5cf6; color: #fff; border: 1px solid #a78bfa; border-radius: 6px; text-align: left; cursor: pointer; font-size: 13px; font-weight: 600;">📢 จัดการป๊อปอัพประกาศ/โฆษณา</button>
             <button id="logout-btn" style="width: 100%; padding: 8px; background: #dc3545; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">ออกจากระบบ</button>
         </div>
     </div>
@@ -227,6 +233,45 @@
                 <button class="modal-close-btn" onclick="closeFlashEventModal()">&times;</button>
             </div>
             <div id="modalBody" class="modal-body modal-description"></div>
+        </div>
+    </div>
+
+    <!-- ================= 📢 Welcome Popup Modal (หน้าแรก) ================= -->
+    <div id="welcomePopupOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 99999; justify-content: center; align-items: center;">
+        <div style="background: #1e293b; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 16px; width: 90%; max-width: 420px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); color: #fff; position: relative;">
+            <button onclick="closeWelcomePopup()" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.5); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;">✕</button>
+            
+            <!-- โซนรูปภาพ Popup (คลิกเพื่อไปดูหน้ารายละเอียดเต็มที่ announcements.html) -->
+            <div id="welcomePopupImageContainer" onclick="window.location.href='announcements.html'" style="width: 100%; cursor: pointer; max-height: 450px; overflow: hidden;" title="คลิกเพื่อดูประกาศและกิจกรรมทั้งหมด">
+                <!-- รูปภาพจะถูกโหลดผ่าน JavaScript -->
+            </div>
+
+            <!-- แถบด้านล่างสำหรับติ๊กซ่อนวันนี้และปุ่มปิด -->
+            <div style="padding: 12px 16px; background: #0f172a; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1);">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; cursor: pointer;">
+                    <input type="checkbox" id="dontShowTodayCheckbox" style="width: 15px; height: 15px; accent-color: #f59e0b; cursor: pointer;">
+                    ไม่ต้องแสดงอีกในวันนี้
+                </label>
+                <button onclick="closeWelcomePopup()" style="background: #334155; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 📄 Announcement Detail Modal (เก็บสำรองไว้รองรับระบบเดิม) ================= -->
+    <div id="announcementDetailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 100000; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; color: #1e293b; border-radius: 16px; width: 92%; max-width: 650px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div style="background: #0f172a; color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="annDetailTitle" style="font-size: 16px; font-weight: 700; color: #f59e0b; margin: 0;">รายละเอียดประกาศ</h3>
+                <button onclick="closeAnnDetailModal()" style="background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+            </div>
+            
+            <div id="annDetailContent" style="padding: 24px; overflow-y: auto; font-family: 'Prompt', sans-serif; font-size: 15px; line-height: 1.6;">
+                <!-- เนื้อหา HTML จะแสดงที่นี่ -->
+            </div>
+
+            <div style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; text-align: right;">
+                <button onclick="closeAnnDetailModal()" style="background: #2563eb; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">ปิดหน้าต่าง</button>
+            </div>
         </div>
     </div>
 </body>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประกาศและกิจกรรมทั้งหมด - Mars Agency</title>
+    <style>
+        body {
+            font-family: 'Prompt', 'Segoe UI', Tahoma, sans-serif;
+            background-color: #f1f5f9; /* พื้นหลังเว็บเทาอ่อน */
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .header h1 {
+            font-size: 22px;
+            color: #0f172a;
+            margin: 0;
+        }
+        .back-btn {
+            background-color: #475569;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background-color: #334155;
+        }
+        /* สไตล์หน้ากระดาษสีขาวสำหรับเนื้อหาประกาศ */
+        .announcement-paper {
+            background-color: #ffffff;
+            color: #1e293b;
+            border-radius: 10px;
+            padding: 35px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .announcement-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .announcement-date {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+        .announcement-body {
+            font-size: 15px;
+            line-height: 1.7;
+            word-break: break-word;
+        }
+        /* ควบคุมรูปภาพที่แทรกอยู่ในเนื้อหาไม่ให้ล้นจอและจัดกึ่งกลาง */
+        .announcement-body img {
+            max-width: 100% !important;
+            height: auto;
+            border-radius: 6px;
+            margin: 15px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ส่วนหัวและปุ่มย้อนกลับ -->
+        <div class="header">
+            <h1>📢 ประกาศและกิจกรรมทั้งหมด</h1>
+            <a href="index.html" class="back-btn">← กลับหน้าหลัก</a>
+        </div>
+
+        <!-- พื้นที่แสดงรายการประกาศแบบหน้ากระดาษขาว -->
+        <div id="announcements-container">
+            <p style="text-align: center; color: #64748b; margin-top: 40px;">กำลังโหลดข้อมูลประกาศ...</p>
+        </div>
+    </div>
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        async function loadAnnouncements() {
+            const container = document.getElementById('announcements-container');
+            
+            try {
+                const supabaseUrl = 'https://ngdshyexremewbpnlrae.supabase.co'; 
+                const supabaseKey = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o'; 
+                const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+                // ดึงเฉพาะฟิลด์ id, title, content, created_at (ไม่ดึง popup_image มาแสดงซ้ำ)
+                const { data, error } = await client
+                    .from('announcements')
+                    .select('id, title, content, created_at')
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                container.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="announcement-paper" style="text-align: center; color: #64748b;">ยังไม่มีประกาศในขณะนี้</div>';
+                    return;
+                }
+
+                // วนลูปสร้างหน้ากระดาษขาวทีละประกาศ
+                data.forEach(item => {
+                    const paperDiv = document.createElement('div');
+                    paperDiv.className = 'announcement-paper';
+                    
+                    const dateStr = item.created_at ? new Date(item.created_at).toLocaleDateString('th-TH', {
+                        year: 'numeric', month: 'long', day: 'numeric'
+                    }) : '';
+
+                    paperDiv.innerHTML = `
+                        <div class="announcement-title">${item.title || 'ประกาศจากทางเว็บไซต์'}</div>
+                        <div class="announcement-date">📅 เผยแพร่เมื่อ: ${dateStr}</div>
+                        <div class="announcement-body">${item.content || 'ไม่มีเนื้อหาประกาศ'}</div>
+                    `;
+                    container.appendChild(paperDiv);
+                });
+
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+                container.innerHTML = '<div class="announcement-paper" style="text-align: center; color: #ef4444;">ไม่สามารถโหลดข้อมูลประกาศได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAnnouncements);
+    </script>
+</body>
+</html>

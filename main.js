@@ -1,4 +1,4 @@
-// --- main.js: ควบคุมการทำงานหลักของหน้าเว็บ, ระบบแอดมิน และโหลด Leaderboard แบบยืนบนแท่น ---
+// --- main.js: ควบคุมการทำงานหลักของหน้าเว็บ, ระบบแอดมิน, โหลด Leaderboard และ Welcome Popup ---
 
 const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
@@ -23,11 +23,92 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadNoticeBanner();
     loadMainLeaderboard();
     
+    // 📢 เรียกใช้งานระบบ Welcome Popup และ Sidebar Shortcut ประกาศ
+    initWelcomePopup();
+    
     // เรียกใช้งานระบบแอดมินที่แยกไปไว้ใน admin.js
     if (window.initAdminModule && supabaseClient) {
         window.initAdminModule(supabaseClient);
     }
 });
+
+// ================= 📢 ระบบ Welcome Popup และ Sidebar Shortcut ประกาศ =================
+let currentAnnouncementData = null;
+
+async function initWelcomePopup() {
+    if (!supabaseClient) return;
+
+    try {
+        // 1. ดึงข้อมูลประกาศล่าสุดที่มีสถานะเปิดใช้งาน (is_active = true)
+        const { data, error } = await supabaseClient
+            .from('announcements')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        const shortcutEl = document.getElementById('sidebarAnnouncementShortcut');
+        const titleSpan = document.getElementById('sidebarAnnouncementTitle');
+
+        if (error || !data || data.length === 0) {
+            // หากไม่มีประกาศ Active ให้ซ่อนเมนูชอร์ตคัตที่ Sidebar ทันที
+            if (shortcutEl) shortcutEl.style.display = 'none';
+            return;
+        }
+
+        currentAnnouncementData = data[0];
+
+        // 2. อัปเดตข้อความและแสดงผล Sidebar Shortcut ที่มุมล่างซ้าย (แสดงผลเสมอถ้ามีประกาศ Active)
+        if (shortcutEl && titleSpan) {
+            titleSpan.innerText = currentAnnouncementData.title || 'ประกาศและกิจกรรม';
+            shortcutEl.style.display = 'flex';
+        }
+
+        // 3. ตรวจสอบเงื่อนไข "ไม่ต้องแสดงอีกในวันนี้" สำหรับตัว Welcome Popup Overlay หน้าแรก
+        const hideDate = localStorage.getItem('mars_hide_popup_date');
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        if (hideDate === todayStr) {
+            return; // หากผู้ใช้ติ๊กซ่อนในวันนี้แล้ว จะไม่แสดงหน้าต่าง Popup ทับหน้าจอ แต่ปุ่ม Sidebar Shortcut ยังอยู่
+        }
+
+        const overlay = document.getElementById('welcomePopupOverlay');
+        const imgContainer = document.getElementById('welcomePopupImageContainer');
+
+        if (!overlay || !imgContainer) return;
+
+        // แสดงรูปภาพ Popup หน้าแรก
+        imgContainer.innerHTML = `
+            <img src="${currentAnnouncementData.popup_image}" alt="Popup Announcement" style="width: 100%; height: auto; max-height: 450px; object-fit: contain; display: block;" onerror="this.src='https://via.placeholder.com/400x400/1e293b/f59e0b?text=MARS+ANNOUNCEMENT';">
+        `;
+
+        // เมื่อผู้ใช้คลิกที่รูปภาพป๊อปอัพ ➔ พุ่งตรงไปที่หน้า announcements.html ทันทีตามที่ต้องการ
+        imgContainer.onclick = () => {
+            window.location.href = 'announcements.html';
+        };
+
+        // แสดง Modal ป๊อปอัพต้อนรับ
+        overlay.style.display = 'flex';
+
+    } catch (err) {
+        console.error('Error loading announcement popup:', err);
+    }
+}
+
+window.closeWelcomePopup = function() {
+    const overlay = document.getElementById('welcomePopupOverlay');
+    const checkbox = document.getElementById('dontShowTodayCheckbox');
+
+    if (checkbox && checkbox.checked) {
+        // บันทึกวันที่ปัจจุบันลง LocalStorage เพื่อให้ซ่อนไปจนถึงเที่ยงคืนของวันใหม่
+        const todayStr = new Date().toISOString().split('T')[0];
+        localStorage.setItem('mars_hide_popup_date', todayStr);
+    }
+
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+};
 
 // ================= 🏆 ดึงข้อมูล Leaderboard เกมจับคู่ VJ (Podium 1-3 ขวาล่าง + ตาราง 4+) =================
 async function loadMainLeaderboard() {
