@@ -15,11 +15,11 @@
         body {
             background-color: #0f172a;
             color: #fff;
-            min-height: 100vh;
+            height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            overflow: hidden;
             position: relative;
         }
 
@@ -27,7 +27,7 @@
         .home-screen {
             position: relative;
             width: 100vw;
-            height: 100vh;
+            height: 100dvh;
             max-width: 1200px;
             max-height: 800px;
             background: url('images/home.png') no-repeat center center;
@@ -35,7 +35,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 24px;
+            padding: 20px;
             box-shadow: 0 12px 40px rgba(0,0,0,0.6);
             border-radius: 24px;
             overflow: hidden;
@@ -52,13 +52,13 @@
         .top-left-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .player-profile-btn {
             background: rgba(255, 255, 255, 0.88);
             border: 3px solid #fbd578;
-            padding: 6px 18px;
+            padding: 5px 16px;
             border-radius: 30px;
             display: flex;
             align-items: center;
@@ -69,33 +69,33 @@
             transition: transform 0.2s, background 0.2s;
         }
         .player-profile-btn:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.98); }
-        .player-profile-btn span { color: #5c3d2e; font-weight: 700; font-size: 0.95rem; }
+        .player-profile-btn span { color: #5c3d2e; font-weight: 700; font-size: 0.9rem; }
 
         /* 🪙 แถบแสดงจำนวนเหรียญ (Coins) */
         .coin-status-bar {
             background: rgba(255, 255, 255, 0.88);
             border: 3px solid #f59e0b;
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: 30px;
             display: flex;
             align-items: center;
             gap: 6px;
             color: #d97706;
             font-weight: 800;
-            font-size: 1rem;
+            font-size: 0.95rem;
             backdrop-filter: blur(8px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .top-right-actions { display: flex; gap: 10px; }
+        .top-right-actions { display: flex; gap: 8px; }
         
         .icon-circle-btn {
-            width: 46px; height: 46px;
+            width: 42px; height: 42px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.88);
             border: 3px solid #fbd578;
             color: #5c3d2e;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer;
             backdrop-filter: blur(8px);
@@ -122,9 +122,9 @@
         .play-start-btn {
             background: linear-gradient(180deg, #4ade80, #16a34a);
             color: #ffffff;
-            font-size: 1.9rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            padding: 16px 52px;
+            padding: 14px 48px;
             border-radius: 50px;
             border: 5px solid #ffffff;
             box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4), inset 0 3px 6px rgba(255,255,255,0.6);
@@ -141,49 +141,60 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
         }
 
-        /* Sidebar Buttons (ปรับสไตล์: ข้อความอยู่ใต้คุณอิโมจิใหญ่ 5.5rem ชิดติดกันที่สุด) */
+        /* Sidebar Buttons (ปรับให้หัวข้อข้อความขึ้นมาทับซ้อนบนตัวอีโมจิ) */
         .home-sidebar-left, .home-sidebar-right {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             z-index: 10;
         }
-        .home-sidebar-left { left: 35px; }
-        .home-sidebar-right { right: 35px; }
+        .home-sidebar-left { left: 25px; }
+        .home-sidebar-right { right: 25px; }
 
         .menu-widget-btn {
             background: transparent;
             border: none;
             display: flex;
-            flex-direction: column; /* ให้ข้อความอยู่ใต้ดวงอิโมจิ */
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 0px; /* ชิดติดกันมากที่สุด */
-            color: #2e1065;
-            font-weight: 800;
-            font-size: 1.15rem;
             cursor: pointer;
-            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.95), 0 0 15px rgba(255, 255, 255, 0.95);
-            transition: all 0.25s;
             padding: 0;
-            line-height: 1;
+            transition: all 0.25s;
         }
         .menu-widget-btn .btn-emoji {
-            font-size: 5.5rem; /* ขยายขนาดใหญ่ 5-6rem ตามต้องการ */
+            font-size: 5.5rem; /* ขนาดใหญ่ประมาณ 5-6rem ตามต้องการ */
             line-height: 1;
-            margin-bottom: -4px; /* ดึงข้อความให้ขึ้นมาเข้าใกล้อิโมจิมากขึ้น */
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.3));
             transition: transform 0.2s ease-in-out;
+        }
+        .menu-widget-btn .btn-text {
+            margin-top: -26px; /* ดึงข้อความให้ขึ้นมาทับซ้อนบนตัวอีโมจิ */
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.92);
+            color: #2e1065;
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 2px 12px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(6px);
+            border: 2px solid #fbd578;
+            white-space: nowrap;
         }
         .menu-widget-btn:hover {
             transform: scale(1.08);
-            color: #7c3aed;
         }
         .menu-widget-btn:hover .btn-emoji {
-            transform: scale(1.15) rotate(6deg);
+            transform: scale(1.12) rotate(6deg);
+        }
+        .menu-widget-btn:hover .btn-text {
+            background: #ffffff;
+            color: #7c3aed;
+            border-color: #f59e0b;
         }
 
         /* ================= 🎮 GAMEPLAY SCREEN ================= */
@@ -193,8 +204,10 @@
             align-items: center;
             width: 100%;
             max-width: 720px;
-            padding: 20px;
+            max-height: 100dvh;
+            padding: 15px;
             position: relative;
+            overflow-y: auto;
         }
 
         .close-btn {
@@ -209,36 +222,38 @@
         }
         .close-btn:hover { background-color: #ef4444; color: #fff; transform: scale(1.1); }
 
-        h1 { color: #f8fafc; margin-top: 10px; margin-bottom: 5px; font-size: 1.6rem; text-align: center; }
+        h1 { color: #f8fafc; margin-top: 5px; margin-bottom: 5px; font-size: 1.5rem; text-align: center; }
 
         .player-bar {
             display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.15); padding: 6px 18px; border-radius: 20px;
-            margin-bottom: 10px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15); padding: 5px 16px; border-radius: 20px;
+            margin-bottom: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);
             backdrop-filter: blur(4px);
         }
         .player-bar span { color: #38bdf8; font-weight: bold; }
 
         .level-badge {
-            background-color: #3b82f6; color: #fff; padding: 4px 14px;
-            border-radius: 20px; font-size: 0.9rem; margin-bottom: 10px; font-weight: bold;
+            background-color: #3b82f6; color: #fff; padding: 3px 12px;
+            border-radius: 20px; font-size: 0.85rem; margin-bottom: 8px; font-weight: bold;
         }
 
-        .score-board { font-size: 0.95rem; margin-bottom: 15px; color: #cbd5e1; text-align: center; }
+        .score-board { font-size: 0.9rem; margin-bottom: 12px; color: #cbd5e1; text-align: center; }
         
         .game-board {
             display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 10px; width: 100%; max-width: 420px; margin: 0 auto;
+            gap: 8px; width: 100%; max-width: 400px; margin: 0 auto;
         }
-        .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 560px; }
-        .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 4px; max-width: 680px; }
+        .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 520px; }
+        .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 4px; max-width: 640px; }
 
         @media (max-width: 768px) {
-            .home-screen { padding: 14px; height: 100vh; border-radius: 0; }
+            body { align-items: flex-start; }
+            .home-screen { padding: 10px; height: 100dvh; max-height: none; border-radius: 0; }
             .home-sidebar-left, .home-sidebar-right {
-                position: static; transform: none; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 10px; gap: 20px;
+                position: static; transform: none; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 5px; gap: 15px;
             }
-            .menu-widget-btn .btn-emoji { font-size: 3.8rem; }
+            .menu-widget-btn .btn-emoji { font-size: 4rem; }
+            .menu-widget-btn .btn-text { margin-top: -18px; font-size: 0.8rem; padding: 2px 8px; }
             .home-center-area { position: static; transform: none; margin: auto 0; }
             .game-board { max-width: 100% !important; gap: 6px !important; padding: 0 4px; }
             .game-board.level-4, .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
@@ -259,8 +274,8 @@
         .card img { width: 85%; height: 85%; object-fit: cover; border-radius: 8px; display: none; }
         .card.flipped img { display: block; }
         
-        .btn-container { display: flex; gap: 10px; margin-top: 20px; }
-        button.action-btn { padding: 9px 20px; font-size: 0.95rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+        .btn-container { display: flex; gap: 10px; margin-top: 15px; }
+        button.action-btn { padding: 8px 18px; font-size: 0.9rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
         .reset-btn { background-color: #475569; color: white; }
         .reset-btn:hover { background-color: #64748b; }
 
@@ -280,48 +295,48 @@
 
         /* ================= 🏆 Leaderboard Section ================= */
         .leaderboard-container {
-            margin-top: 30px; max-width: 560px; width: 100%;
+            margin-top: 20px; max-width: 540px; width: 100%;
             background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 18px; padding: 18px; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            border-radius: 18px; padding: 16px; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
         }
         .leaderboard-container h3 {
-            margin-top: 0; font-size: 1.15rem; color: #f59e0b; border-bottom: 1px solid #334155;
-            padding-bottom: 10px; text-align: center; letter-spacing: 0.5px;
+            margin-top: 0; font-size: 1.1rem; color: #f59e0b; border-bottom: 1px solid #334155;
+            padding-bottom: 8px; text-align: center; letter-spacing: 0.5px;
         }
 
         .podium-section {
             display: flex; justify-content: center; align-items: flex-end;
-            gap: 12px; margin: 20px 0 15px 0; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08);
+            gap: 10px; margin: 15px 0 12px 0; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);
         }
-        .podium-column { display: flex; flex-direction: column; align-items: center; width: 32%; max-width: 160px; }
-        .podium-header-outside { text-align: center; margin-bottom: 6px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .podium-medal { font-size: 26px; margin-bottom: 2px; }
-        .podium-name { font-size: 0.9rem; font-weight: bold; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-        .podium-info-outside { font-size: 0.78rem; color: #38bdf8; font-weight: 600; width: 100%; }
-        .podium-stat-outside { font-size: 0.72rem; color: #94a3b8; width: 100%; }
+        .podium-column { display: flex; flex-direction: column; align-items: center; width: 32%; max-width: 150px; }
+        .podium-header-outside { text-align: center; margin-bottom: 4px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .podium-medal { font-size: 24px; margin-bottom: 2px; }
+        .podium-name { font-size: 0.85rem; font-weight: bold; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .podium-info-outside { font-size: 0.75rem; color: #38bdf8; font-weight: 600; width: 100%; }
+        .podium-stat-outside { font-size: 0.7rem; color: #94a3b8; width: 100%; }
 
         .podium-block {
             background: linear-gradient(180deg, #1e293b, #0f172a); border: 2px solid #475569;
-            border-radius: 10px 10px 4px 4px; padding: 12px 6px; text-align: center;
+            border-radius: 10px 10px 4px 4px; padding: 10px 6px; text-align: center;
             display: flex; flex-direction: column; align-items: center; position: relative;
             box-shadow: 0 6px 20px rgba(0,0,0,0.5); width: 100%;
         }
-        .podium-column.rank-1 .podium-block { border-color: #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.2), #1e293b); min-height: 80px; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
-        .podium-column.rank-1 { transform: translateY(-8px); }
-        .podium-column.rank-2 .podium-block { border-color: #94a3b8; min-height: 62px; }
-        .podium-column.rank-3 .podium-block { border-color: #b45309; min-height: 48px; }
+        .podium-column.rank-1 .podium-block { border-color: #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.2), #1e293b); min-height: 70px; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
+        .podium-column.rank-1 { transform: translateY(-6px); }
+        .podium-column.rank-2 .podium-block { border-color: #94a3b8; min-height: 55px; }
+        .podium-column.rank-3 .podium-block { border-color: #b45309; min-height: 42px; }
 
         .podium-number {
-            position: absolute; bottom: 2px; font-size: 2.5rem; font-weight: 900;
+            position: absolute; bottom: 2px; font-size: 2.2rem; font-weight: 900;
             color: rgba(255, 255, 255, 0.04); font-family: 'Kanit', sans-serif; pointer-events: none; line-height: 1;
         }
 
-        .lb-table-wrapper { max-height: 220px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th, td { padding: 8px; text-align: center; border-bottom: 1px solid #1e293b; }
+        .lb-table-wrapper { max-height: 180px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th, td { padding: 6px; text-align: center; border-bottom: 1px solid #1e293b; }
         th { color: #94a3b8; font-weight: 600; background: rgba(30, 41, 59, 0.5); }
         td:nth-child(2) { text-align: left; color: #f8fafc; font-weight: 500; }
-        td:nth-child(1) { color: #f59e0b; font-weight: bold; width: 35px; }
+        td:nth-child(1) { color: #f59e0b; font-weight: bold; width: 30px; }
     </style>
 </head>
 <body>
@@ -348,15 +363,15 @@
             </div>
         </div>
 
-        <!-- ฝั่งซ้าย: อิโมจิขนาดใหญ่ 5.5rem + ข้อความอยู่ใต้อิโมจิชิดติดกัน -->
+        <!-- ฝั่งซ้าย: หัวข้อข้อความซ้อนทับบนอีโมจิ -->
         <div class="home-sidebar-left">
             <button class="menu-widget-btn" onclick="scrollToLeaderboard()">
                 <span class="btn-emoji">🏆</span>
-                <span>ลีดเดอร์บอร์ด</span>
+                <span class="btn-text">ลีดเดอร์บอร์ด</span>
             </button>
             <button class="menu-widget-btn" onclick="alert('ระบบคอลเลกชัน (กำลังพัฒนา)')">
                 <span class="btn-emoji">🖼️</span>
-                <span>คอลเลกชัน</span>
+                <span class="btn-text">คอลเลกชัน</span>
             </button>
         </div>
 
@@ -365,15 +380,15 @@
             <button class="play-start-btn" onclick="enterGameScreen()">▶ Level 1</button>
         </div>
 
-        <!-- ฝั่งขวา: อิโมจิขนาดใหญ่ 5.5rem + ข้อความอยู่ใต้อิโมจิชิดติดกัน -->
+        <!-- ฝั่งขวา: หัวข้อข้อความซ้อนทับบนอีโมจิ -->
         <div class="home-sidebar-right">
             <button class="menu-widget-btn" onclick="alert('ร้านค้า (กำลังพัฒนา)')">
                 <span class="btn-emoji">🏪</span>
-                <span>ร้านค้า</span>
+                <span class="btn-text">ร้านค้า</span>
             </button>
             <button class="menu-widget-btn" onclick="alert('วงล้อเสี่ยงโชค (กำลังพัฒนา)')">
                 <span class="btn-emoji">🎡</span>
-                <span>วงล้อโชคดี</span>
+                <span class="btn-text">วงล้อโชคดี</span>
             </button>
         </div>
     </div>
@@ -386,7 +401,7 @@
 
         <div class="player-bar">
             ผู้เล่น: <span id="player-name-display">ไม่ระบุชื่อ</span>
-            <button class="edit-name-btn" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:0.82rem; text-decoration:underline;" onclick="promptChangeName()">[แก้ไขชื่อ]</button>
+            <button class="edit-name-btn" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:0.8rem; text-decoration:underline;" onclick="promptChangeName()">[แก้ไขชื่อ]</button>
         </div>
 
         <div class="level-badge" id="level-title">Level 1 (4 คู่)</div>
