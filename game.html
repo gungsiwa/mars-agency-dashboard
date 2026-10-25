@@ -23,6 +23,22 @@
             position: relative;
         }
 
+        /* 🌈 CSS ข้อความสีรุ้งเคลื่อนไหวสำหรับ Member 🌈 */
+        .user-rainbow-text {
+            background: linear-gradient(90deg, #ff007f, #ff7f00, #ffcc00, #00ff7f, #00ccff, #7f00ff, #ff007f);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            animation: rainbow-shift 3s linear infinite;
+            filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4));
+        }
+
+        @keyframes rainbow-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
         /* ================= 🏠 HOME LOBBY SCREEN ================= */
         .home-screen {
             position: relative;
@@ -437,7 +453,7 @@
                     <span id="home-player-name" class="name-text">กำลังโหลด...</span>
                     <span id="user-badge" class="user-badge badge-guest">Guest</span>
                 </div>
-                <!-- 🪙 แถบเหรียญสะสม -->
+                <!-- 🪙 แถบแสดงจำนวนเหรียญ (Coins) -->
                 <div class="coin-status-bar" title="เหรียญสะสมของคุณ">
                     <span>🪙</span>
                     <span id="user-coins">0</span>
@@ -605,6 +621,7 @@
                 currentUser = session.user;
                 playerName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
                 homePlayerName.innerText = playerName;
+                homePlayerName.classList.add('user-rainbow-text'); // ใช้เอฟเฟกต์สีรุ้งที่ชื่อหน้าโฮม
                 
                 userBadge.innerText = 'Member ✨';
                 userBadge.className = 'user-badge badge-member';
@@ -621,6 +638,7 @@
             if (!savedName) savedName = 'ผู้เล่นทั่วไป';
             playerName = savedName;
             homePlayerName.innerText = playerName;
+            homePlayerName.classList.remove('user-rainbow-text');
 
             userBadge.innerText = 'Guest';
             userBadge.className = 'user-badge badge-guest';
@@ -700,7 +718,7 @@
                 // Update Supabase Auth metadata
                 await supabaseClient.auth.updateUser({ data: { full_name: newName } });
                 
-                // Update player_data table (เปลี่ยนจาก player_name เป็น username)
+                // Update player_data table
                 await supabaseClient.from('player_data').upsert({
                     user_id: currentUser.id,
                     username: newName,
@@ -883,11 +901,15 @@
 
         async function submitScoreToSupabase(maxLevel, clicks, timeSec) {
             try {
+                // กำหนดประเภทบัญชีผู้เล่นเพื่อบันทึกลงในคอลัมน์ user_type
+                const userType = currentUser ? 'Member' : 'Guest';
+
                 await supabaseClient.from('vj_game_leaderboard').insert([{ 
                     player_name: playerName, 
                     max_level: maxLevel, 
                     total_clicks: clicks, 
-                    total_time: timeSec 
+                    total_time: timeSec,
+                    user_type: userType
                 }]);
             } catch (err) { console.error(err); }
         }

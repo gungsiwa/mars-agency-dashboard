@@ -7,6 +7,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Prompt:wght@300;400;500;600;700&family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
+        /* 🌈 CSS ข้อความสีรุ้งเคลื่อนไหวสำหรับ Member บน Leaderboard 🌈 */
+        .user-rainbow-text {
+            background: linear-gradient(90deg, #ff007f, #ff7f00, #ffcc00, #00ff7f, #00ccff, #7f00ff, #ff007f);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            animation: rainbow-shift 3s linear infinite;
+            display: inline-block;
+            filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.2));
+        }
+
+        @keyframes rainbow-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
         /* 🌸 ปรับแต่งกระดาน Leaderboard ในหน้าหลัก (สีสดใสเข้มชัดเจน + ฟอนต์ตารางกระชับ) */
         .leaderboard-widget.glass-panel {
             background: rgba(255, 255, 255, 0.85);
@@ -271,7 +288,7 @@
                 </a>
             </div>
 
-            <!-- 🏆 กระดาน Leaderboard สไตล์พาสเทลใหม่ (ย้ายกลับมาอยู่ภายใน Sidebar ขวาถูกต้องแล้ว) -->
+            <!-- 🏆 กระดาน Leaderboard สไตล์พาสเทลใหม่ -->
             <div class="leaderboard-widget glass-panel">
                 <h3>🏆 ท็อปแรงค์เกมจับคู่ VJ</h3>
                 <div class="main-podium-section" id="mainPodiumContainer"></div>
@@ -358,6 +375,90 @@
                 backdrop.classList.toggle('active');
             }
         }
+
+        // ดึงข้อมูล Leaderboard และแสดงเอฟเฟกต์สีรุ้งสำหรับ Member
+        async function fetchLeaderboardWithUserType() {
+            const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
+            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('vj_game_leaderboard')
+                    .select('*')
+                    .order('max_level', { ascending: false })
+                    .order('total_time', { ascending: true })
+                    .order('total_clicks', { ascending: true })
+                    .limit(10);
+
+                if (error) throw error;
+
+                const podiumContainer = document.getElementById('mainPodiumContainer');
+                const leaderboardBody = document.getElementById('leaderboardBody');
+
+                if (!data || data.length === 0) {
+                    if (leaderboardBody) leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8;">ยังไม่มีข้อมูลอันดับ</td></tr>';
+                    return;
+                }
+
+                // แสดงผลโพเดียม (Top 3)
+                if (podiumContainer) {
+                    const top3 = data.slice(0, 3);
+                    const order = [1, 0, 2]; // ลำดับเรียงโพเดียม: อันดับ 2 (ซ้าย), อันดับ 1 (กลาง), อันดับ 3 (ขวา)
+                    let podiumHTML = '';
+
+                    order.forEach(idx => {
+                        if (top3[idx]) {
+                            const item = top3[idx];
+                            const rank = idx + 1;
+                            const isMember = item.user_type === 'Member';
+                            const nameClass = isMember ? 'podium-name user-rainbow-text' : 'podium-name';
+                            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
+                            const m = Math.floor(item.total_time / 60).toString().padStart(2, '0');
+                            const s = (item.total_time % 60).toString().padStart(2, '0');
+
+                            podiumHTML += `
+                                <div class="podium-column rank-${rank}">
+                                    <div class="player-info-card">
+                                        <div class="podium-medal">${medal}</div>
+                                        <div class="${nameClass}" title="${item.player_name}">${item.player_name}</div>
+                                        <div class="podium-info">Lvl ${item.max_level}</div>
+                                        <div class="podium-stat">⏱️ ${m}:${s}</div>
+                                    </div>
+                                    <div class="pedestal-base">${rank}</div>
+                                </div>
+                            `;
+                        }
+                    });
+                    podiumContainer.innerHTML = podiumHTML;
+                }
+
+                // แสดงผลตารางอันดับ
+                if (leaderboardBody) {
+                    let tableHTML = '';
+                    data.forEach((item, index) => {
+                        const isMember = item.user_type === 'Member';
+                        const nameStyle = isMember ? 'class="user-rainbow-text"' : '';
+                        const m = Math.floor(item.total_time / 60).toString().padStart(2, '0');
+                        const s = (item.total_time % 60).toString().padStart(2, '0');
+
+                        tableHTML += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td><span ${nameStyle}>${item.player_name}</span></td>
+                                <td>Lvl ${item.max_level}</td>
+                                <td>${m}:${s}</td>
+                            </tr>
+                        `;
+                    });
+                    leaderboardBody.innerHTML = tableHTML;
+                }
+            } catch (err) {
+                console.error('Error fetching leaderboard:', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchLeaderboardWithUserType);
     </script>
 
     <!-- Flash Event Modal -->
