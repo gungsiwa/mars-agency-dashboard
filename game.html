@@ -7,440 +7,14 @@
     <!-- Supabase JS Client & Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts สำหรับฟอนต์น่ารักอ่านง่าย -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
-
-        body {
-            background-color: #0f172a;
-            color: #fff;
-            height: 100dvh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* 🌈 CSS ข้อความสีรุ้งเคลื่อนไหวสำหรับ Member 🌈 */
-        .user-rainbow-text {
-            background: linear-gradient(90deg, #ff007f, #ff7f00, #ffcc00, #00ff7f, #00ccff, #7f00ff, #ff007f);
-            background-size: 300% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            animation: rainbow-shift 3s linear infinite;
-            filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.4));
-        }
-
-        @keyframes rainbow-shift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
-
-        /* ================= 🏠 HOME LOBBY SCREEN ================= */
-        .home-screen {
-            position: relative;
-            width: 100vw;
-            height: 100dvh;
-            max-width: 1200px;
-            max-height: 800px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-            border-radius: 24px;
-            overflow: hidden;
-        }
-
-        /* 🎬 วิดีโอพื้นหลังหน้าโฮม */
-        .home-video-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
-
-        /* กำหนดให้องค์ประกอบทั้งหมดในหน้าโฮมอยู่เหนือวิดีโอ */
-        .home-top-bar, .home-sidebar-left, .home-sidebar-right, .home-center-area {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Top Bar */
-        .home-top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .top-left-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .player-profile-btn {
-            background: rgba(255, 255, 255, 0.88);
-            border: 3px solid #fbd578;
-            padding: 5px 16px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s, background 0.2s;
-        }
-        .player-profile-btn:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.98); }
-        .player-profile-btn span.name-text { color: #5c3d2e; font-weight: 700; font-size: 0.9rem; }
-        
-        .user-badge {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-weight: 800;
-        }
-        .badge-guest { background: #e2e8f0; color: #475569; }
-        .badge-member { background: #fef08a; color: #854d0e; border: 1px solid #facc15; }
-
-        /* 🪙 แถบแสดงจำนวนเหรียญ (Coins) */
-        .coin-status-bar {
-            background: rgba(255, 255, 255, 0.88);
-            border: 3px solid #f59e0b;
-            padding: 5px 14px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #d97706;
-            font-weight: 800;
-            font-size: 0.95rem;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .top-right-actions { display: flex; gap: 8px; }
-        
-        .icon-circle-btn {
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.88);
-            border: 3px solid #fbd578;
-            color: #5c3d2e;
-            font-size: 1.2rem;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: all 0.2s;
-            text-decoration: none;
-        }
-        .icon-circle-btn:hover { transform: scale(1.1) rotate(8deg); background: #ffffff; color: #d97706; }
-        .exit-btn { border-color: #fca5a5; color: #ef4444; }
-        .exit-btn:hover { background: #fee2e2; color: #dc2626; }
-
-        /* Center Main Play Button */
-        .home-center-area {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .play-start-btn {
-            background: linear-gradient(180deg, #4ade80, #16a34a);
-            color: #ffffff;
-            font-size: 1.8rem;
-            font-weight: 800;
-            padding: 14px 48px;
-            border-radius: 50px;
-            border: 5px solid #ffffff;
-            box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4), inset 0 3px 6px rgba(255,255,255,0.6);
-            cursor: pointer;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: all 0.2s;
-            animation: pulse-btn 2.2s infinite;
-        }
-        .play-start-btn:hover { transform: scale(1.08); background: linear-gradient(180deg, #86efac, #22c55e); }
-
-        @keyframes pulse-btn {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(74, 222, 128, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
-        }
-
-        /* Sidebar Buttons */
-        .home-sidebar-left, .home-sidebar-right {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .home-sidebar-left { left: 25px; }
-        .home-sidebar-right { right: 25px; }
-
-        .menu-widget-btn {
-            background: transparent;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 0;
-            transition: all 0.25s;
-        }
-        .menu-widget-btn .btn-emoji {
-            font-size: 5.5rem;
-            line-height: 1;
-            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.3));
-            transition: transform 0.2s ease-in-out;
-        }
-        .menu-widget-btn .btn-text {
-            margin-top: -26px;
-            position: relative;
-            z-index: 2;
-            background: rgba(255, 255, 255, 0.92);
-            color: #2e1065;
-            font-weight: 800;
-            font-size: 0.95rem;
-            padding: 2px 12px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            backdrop-filter: blur(6px);
-            border: 2px solid #fbd578;
-            white-space: nowrap;
-        }
-        .menu-widget-btn:hover { transform: scale(1.08); }
-        .menu-widget-btn:hover .btn-emoji { transform: scale(1.12) rotate(6deg); }
-        .menu-widget-btn:hover .btn-text { background: #ffffff; color: #7c3aed; border-color: #f59e0b; }
-
-        /* ================= 🎮 GAMEPLAY SCREEN ================= */
-        .game-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 720px;
-            max-height: 100dvh;
-            padding: 20px;
-            position: relative;
-            overflow-y: auto;
-        }
-
-        .level-badge {
-            background-color: #3b82f6; color: #fff; padding: 6px 18px;
-            border-radius: 20px; font-size: 1rem; margin-bottom: 12px; font-weight: bold;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .score-board { font-size: 0.95rem; margin-bottom: 16px; color: #cbd5e1; text-align: center; }
-        
-        .game-board {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 10px; width: 100%; max-width: 420px; margin: 0 auto 20px auto;
-        }
-        .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 540px; }
-        .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 6px; max-width: 660px; }
-
-        @media (max-width: 768px) {
-            body { align-items: flex-start; }
-            .home-screen { padding: 10px; height: 100dvh; max-height: none; border-radius: 0; }
-            .home-sidebar-left, .home-sidebar-right {
-                position: static; transform: none; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 5px; gap: 15px;
-            }
-            .menu-widget-btn .btn-emoji { font-size: 4rem; }
-            .menu-widget-btn .btn-text { margin-top: -18px; font-size: 0.8rem; padding: 2px 8px; }
-            .home-center-area { position: static; transform: none; margin: auto 0; }
-            .game-board { max-width: 100% !important; gap: 6px !important; padding: 0 4px; }
-            .game-board.level-4, .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
-        }
-
-        /* Card Styles */
-        .card {
-            aspect-ratio: 1 / 1;
-            background: #1e293b url('images/the_reverse.png') no-repeat center center;
-            background-size: cover;
-            border: 3px solid #64748b; border-radius: 12px; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s, background-color 0.2s;
-            position: relative; overflow: hidden;
-        }
-        .card:active { transform: scale(0.95); }
-        .card.flipped { background: #ffffff; border-color: #38bdf8; cursor: default; }
-        .card img { width: 85%; height: 85%; object-fit: cover; border-radius: 8px; display: none; }
-        .card.flipped img { display: block; }
-        
-        .btn-container { display: flex; gap: 12px; margin-top: 10px; }
-        button.action-btn { padding: 10px 22px; font-size: 0.95rem; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .reset-btn { background-color: #475569; color: white; }
-        .reset-btn:hover { background-color: #64748b; transform: translateY(-2px); }
-        .home-btn-action { background-color: #f59e0b; color: #fff; }
-        .home-btn-action:hover { background-color: #d97706; transform: translateY(-2px); }
-
-        /* Modal Overlay & General Box */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.75); display: flex; justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(6px); display: none;
-        }
-        .modal-box {
-            background: #1e293b; border: 1px solid #334155; padding: 24px; border-radius: 18px;
-            max-width: 350px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .modal-box h2 { color: #38bdf8; margin-top: 0; margin-bottom: 12px; font-size: 1.35rem; }
-        .modal-box p { color: #cbd5e1; margin-bottom: 20px; font-size: 0.92rem; line-height: 1.4; }
-        .modal-btn { background-color: #22c55e; color: white; padding: 10px 22px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
-        .modal-btn:hover { background-color: #16a34a; }
-
-        /* ================= 🌸 COZY MODAL STYLES (LOGIN & PROFILE) ================= */
-        .cozy-modal-box {
-            background: #fffdf7;
-            border: 4px solid #fbd578;
-            border-radius: 28px;
-            padding: 30px 24px;
-            max-width: 380px;
-            width: 92%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(92, 61, 46, 0.25);
-            position: relative;
-            color: #5c3d2e;
-        }
-
-        .cozy-modal-box h2 {
-            color: #d97706;
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .cozy-modal-box p.sub-title {
-            color: #78350f;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .login-google-btn {
-            width: 100%;
-            background: #ffffff;
-            color: #475569;
-            border: 2px solid #e2e8f0;
-            padding: 11px 16px;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            transition: all 0.2s;
-            margin-bottom: 16px;
-        }
-        .login-google-btn:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-            transform: translateY(-2px);
-        }
-
-        .divider-text {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: #a8a29e;
-            font-size: 0.8rem;
-            margin: 15px 0;
-            font-weight: 600;
-        }
-        .divider-text::before, .divider-text::after {
-            content: '';
-            flex: 1;
-            border-bottom: 2px dashed #e7e5e4;
-        }
-        .divider-text span { padding: 0 10px; }
-
-        .cozy-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 18px;
-            text-align: left;
-        }
-        .cozy-input-group label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #78350f;
-            margin-left: 4px;
-        }
-
-        .cozy-input {
-            width: 100%;
-            padding: 11px 16px;
-            border: 2px solid #fed7aa;
-            border-radius: 14px;
-            background: #fff;
-            color: #44403c;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .cozy-input:focus {
-            border-color: #f97316;
-        }
-
-        .cozy-submit-btn {
-            width: 100%;
-            background: linear-gradient(180deg, #f59e0b, #d97706);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 6px 15px rgba(217, 119, 6, 0.3);
-            transition: all 0.2s;
-        }
-        .cozy-submit-btn:hover {
-            transform: scale(1.02);
-            background: linear-gradient(180deg, #fbbf24, #d97706);
-        }
-
-        .logout-btn {
-            background: linear-gradient(180deg, #ef4444, #dc2626);
-            box-shadow: 0 6px 15px rgba(220, 38, 38, 0.25);
-            margin-top: 10px;
-        }
-        .logout-btn:hover {
-            background: linear-gradient(180deg, #f87171, #dc2626);
-        }
-
-        .close-modal-x {
-            position: absolute;
-            top: 14px; right: 18px;
-            background: none; border: none;
-            font-size: 1.3rem; color: #a8a29e;
-            cursor: pointer;
-        }
-        .close-modal-x:hover { color: #57534e; }
-    </style>
+    <!-- เชื่อมโยงไฟล์ CSS ที่แยกออกไป -->
+    <link rel="stylesheet" href="game-style.css">
 </head>
 <body>
 
-    <!-- 🏠 1. HOME LOBBY SCREEN (พร้อมวิดีโอพื้นหลัง) -->
+    <!-- 🏠 1. HOME LOBBY SCREEN -->
     <div class="home-screen" id="home-screen">
         <video autoplay muted loop playsinline class="home-video-bg">
             <source src="images/home.mp4" type="video/mp4">
@@ -453,7 +27,6 @@
                     <span id="home-player-name" class="name-text">กำลังโหลด...</span>
                     <span id="user-badge" class="user-badge badge-guest">Guest</span>
                 </div>
-                <!-- 🪙 แถบแสดงจำนวนเหรียญ (Coins) -->
                 <div class="coin-status-bar" title="เหรียญสะสมของคุณ">
                     <span>🪙</span>
                     <span id="user-coins">0</span>
@@ -462,29 +35,25 @@
 
             <div class="top-right-actions">
                 <div class="icon-circle-btn" title="ตั้งค่า" onclick="alert('เมนูตั้งค่า (กำลังพัฒนา)')">⚙️</div>
-                <!-- 🚪 ปุ่มทางออกไปยังหน้าเว็บหลัก -->
                 <a href="index.html" class="icon-circle-btn exit-btn" title="ออกจากเกมกลับหน้าหลัก">🚪</a>
             </div>
         </div>
 
-        <!-- ฝั่งซ้าย -->
         <div class="home-sidebar-left">
-            <a href="leaderboard.html" class="menu-widget-btn" style="text-decoration: none;">
+            <button class="menu-widget-btn" onclick="openInGameLeaderboard()">
                 <span class="btn-emoji">🏆</span>
                 <span class="btn-text">ลีดเดอร์บอร์ด</span>
-            </a>
+            </button>
             <button class="menu-widget-btn" onclick="handleMemberFeature('คอลเลกชัน')">
                 <span class="btn-emoji">🖼️</span>
                 <span class="btn-text">คอลเลกชัน</span>
             </button>
         </div>
 
-        <!-- ตรงกลาง -->
         <div class="home-center-area">
             <button class="play-start-btn" onclick="enterGameScreen()">▶ Level 1</button>
         </div>
 
-        <!-- ฝั่งขวา -->
         <div class="home-sidebar-right">
             <button class="menu-widget-btn" onclick="handleMemberFeature('ร้านค้า')">
                 <span class="btn-emoji">🏪</span>
@@ -521,7 +90,36 @@
         </div>
     </div>
 
-    <!-- 🔐 3. COZY LOGIN MODAL -->
+    <!-- 🏆 3. IN-GAME LEADERBOARD MODAL -->
+    <div class="modal-overlay" id="in-game-leaderboard-modal">
+        <div class="cozy-modal-box" style="max-width: 460px; width: 95%;">
+            <button class="close-modal-x" onclick="closeInGameLeaderboard()">✕</button>
+            <h2>🏆 บอร์ดจัดอันดับสูงสุด</h2>
+            <p class="sub-title">(Leaderboard)</p>
+            <div class="in-game-lb-container" style="max-height: 380px; overflow-y: auto; text-align: left; margin-bottom: 15px;">
+                <!-- โพเดียม Top 3 -->
+                <div class="main-podium-section" id="inGamePodiumContainer"></div>
+                <!-- ตารางอันดับ 4+ -->
+                <table class="lb-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ผู้เล่น</th>
+                            <th>เลเวล</th>
+                            <th>คลิก</th> <!-- เพิ่มหัวตารางคลิกกลับเข้าไป -->
+                            <th>เวลา</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inGameLeaderboardBody">
+                        <tr><td colspan="5" style="text-align: center; padding: 15px; color: #78350f;">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="cozy-submit-btn" onclick="closeInGameLeaderboard()">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
+    <!-- 🔐 4. LOGIN MODAL -->
     <div class="modal-overlay" id="login-modal">
         <div class="cozy-modal-box">
             <button class="close-modal-x" onclick="closeLoginModal()">✕</button>
@@ -549,7 +147,7 @@
         </div>
     </div>
 
-    <!-- 👤 4. PLAYER PROFILE & EDIT MODAL -->
+    <!-- 👤 5. PROFILE MODAL -->
     <div class="modal-overlay" id="profile-modal">
         <div class="cozy-modal-box">
             <button class="close-modal-x" onclick="closeProfileModal()">✕</button>
@@ -566,355 +164,7 @@
         </div>
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const allVjImages = [
-            'images/vj1.png', 'images/vj2.png', 'images/vj3.png', 'images/vj4.png',
-            'images/vj5.png', 'images/vj6.png', 'images/vj7.png', 'images/vj8.png',
-            'images/vj9.png', 'images/vj10.png', 'images/vj11.png', 'images/vj12.png',
-            'images/vj13.png', 'images/vj14.png', 'images/vj15.png', 'images/vj16.png'
-        ];
-
-        const levels = [
-            { level: 1, pairs: 4, name: 'Level 1: ง่าย (4 คู่)' },
-            { level: 2, pairs: 6, name: 'Level 2: ปานกลาง (6 คู่)' },
-            { level: 3, pairs: 8, name: 'Level 3: ท้าทาย (8 คู่)' },
-            { level: 4, pairs: 12, name: 'Level 4: ยาก (12 คู่)' },
-            { level: 5, pairs: 16, name: 'Level 5: สูงสุด (16 คู่)' }
-        ];
-
-        let currentLevelIdx = 0;
-        let cards = [], flippedCards = [];
-        let matchedCount = 0, clickCount = 0, playerName = '';
-        let timerInterval = null, totalSeconds = 0, totalClicksAccumulated = 0, gameStarted = false;
-        let userCoins = 0;
-        let currentUser = null;
-
-        const homeScreen = document.getElementById('home-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const board = document.getElementById('board');
-        const clicksDisplay = document.getElementById('clicks');
-        const matchesDisplay = document.getElementById('matches');
-        const totalMatchesDisplay = document.getElementById('total-matches');
-        const levelTitle = document.getElementById('level-title');
-        const timerDisplay = document.getElementById('timer');
-        const homePlayerName = document.getElementById('home-player-name');
-        const userBadge = document.getElementById('user-badge');
-        const levelModal = document.getElementById('level-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDesc = document.getElementById('modal-desc');
-        const modalActionBtn = document.getElementById('modal-action-btn');
-        const userCoinsDisplay = document.getElementById('user-coins');
-        const loginModal = document.getElementById('login-modal');
-        const profileModal = document.getElementById('profile-modal');
-        const profileUserEmail = document.getElementById('profile-user-email');
-        const profileDisplayName = document.getElementById('profile-display-name');
-        const logoutActionBtn = document.getElementById('logout-action-btn');
-
-        // Check Auth Status on Load
-        async function checkUserSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session?.user) {
-                currentUser = session.user;
-                playerName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
-                homePlayerName.innerText = playerName;
-                homePlayerName.classList.add('user-rainbow-text'); // ใช้เอฟเฟกต์สีรุ้งที่ชื่อหน้าโฮม
-                
-                userBadge.innerText = 'Member ✨';
-                userBadge.className = 'user-badge badge-member';
-
-                await loadPlayerDataFromSupabase(currentUser.id);
-            } else {
-                currentUser = null;
-                initGuestPlayer();
-            }
-        }
-
-        function initGuestPlayer() {
-            let savedName = localStorage.getItem('vj_game_player_name');
-            if (!savedName) savedName = 'ผู้เล่นทั่วไป';
-            playerName = savedName;
-            homePlayerName.innerText = playerName;
-            homePlayerName.classList.remove('user-rainbow-text');
-
-            userBadge.innerText = 'Guest';
-            userBadge.className = 'user-badge badge-guest';
-
-            let savedCoins = localStorage.getItem('vj_game_user_coins');
-            userCoins = savedCoins ? parseInt(savedCoins, 10) : 0;
-            userCoinsDisplay.innerText = userCoins;
-        }
-
-        async function loadPlayerDataFromSupabase(userId) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('player_data')
-                    .select('coins, username')
-                    .eq('user_id', userId)
-                    .single();
-
-                if (data) {
-                    if (data.username) {
-                        playerName = data.username;
-                        homePlayerName.innerText = playerName;
-                    }
-                    userCoins = data.coins || 0;
-                    userCoinsDisplay.innerText = userCoins;
-                }
-            } catch (err) {
-                console.log('No existing player record found or DB error:', err);
-            }
-        }
-
-        // Profile & Login UI Handling
-        function handleProfileClick() {
-            if (currentUser) {
-                profileUserEmail.innerText = `บัญชี: ${currentUser.email}`;
-                profileDisplayName.value = playerName;
-                logoutActionBtn.style.display = 'block';
-                profileModal.style.display = 'flex';
-            } else {
-                profileUserEmail.innerText = `สถานะ: ผู้เล่นทั่วไป (Guest)`;
-                profileDisplayName.value = playerName;
-                logoutActionBtn.style.display = 'none';
-                profileModal.style.display = 'flex';
-            }
-        }
-
-        function openLoginModal(customSubtitle) {
-            if (customSubtitle) {
-                document.getElementById('login-modal-subtitle').innerText = customSubtitle;
-            } else {
-                document.getElementById('login-modal-subtitle').innerText = 'เพื่อบันทึกเหรียญและเล่นเกมต่อสะสมรางวัล';
-            }
-            loginModal.style.display = 'flex';
-        }
-
-        function closeLoginModal() { loginModal.style.display = 'none'; }
-        function closeProfileModal() { profileModal.style.display = 'none'; }
-
-        function handleMemberFeature(featureName) {
-            if (!currentUser) {
-                openLoginModal(`กรุณาล็อกอิน เพื่อใช้งานระบบ ${featureName} และสะสมเหรียญรางวัลค่ะ ✨`);
-            } else {
-                alert(`ระบบ ${featureName} (กำลังพัฒนาสำหรับสมาชิก)`);
-            }
-        }
-
-        async function saveProfileChanges() {
-            const newName = profileDisplayName.value.trim();
-            if (!newName) {
-                alert('กรุณากรอกชื่อผู้เล่น');
-                return;
-            }
-
-            playerName = newName;
-            homePlayerName.innerText = playerName;
-
-            if (currentUser) {
-                // Update Supabase Auth metadata
-                await supabaseClient.auth.updateUser({ data: { full_name: newName } });
-                
-                // Update player_data table
-                await supabaseClient.from('player_data').upsert({
-                    user_id: currentUser.id,
-                    username: newName,
-                    coins: userCoins,
-                    updated_at: new Date()
-                });
-                alert('อัปเดตชื่อผู้เล่นบนระบบเรียบร้อยแล้ว!');
-            } else {
-                localStorage.setItem('vj_game_player_name', newName);
-                alert('เปลี่ยนชื่อเรียบร้อยแล้ว!');
-            }
-
-            closeProfileModal();
-        }
-
-        async function loginWithGoogle() {
-            const { error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.href }
-            });
-            if (error) alert('เกิดข้อผิดพลาดในการล็อกอินด้วย Google: ' + error.message);
-        }
-
-        async function loginWithEmail() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            if (!email || !password) {
-                alert('กรุณากรอกอีเมลและรหัสผ่าน');
-                return;
-            }
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            
-            if (error) {
-                const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ email, password });
-                if (signUpError) {
-                    alert('ไม่สามารถเข้าสู่ระบบหรือสมัครสมาชิกได้: ' + signUpError.message);
-                } else {
-                    alert('สมัครสมาชิกเรียบร้อยแล้ว! กำลังเข้าสู่ระบบ...');
-                    location.reload();
-                }
-            } else {
-                closeLoginModal();
-                checkUserSession();
-            }
-        }
-
-        async function logoutUser() {
-            await supabaseClient.auth.signOut();
-            closeProfileModal();
-            location.reload();
-        }
-
-        async function addCoins(amount) {
-            userCoins += amount;
-            userCoinsDisplay.innerText = userCoins;
-
-            if (currentUser) {
-                // อัปเดตข้อมูลเหรียญและ username ใน player_data
-                await supabaseClient.from('player_data').upsert({
-                    user_id: currentUser.id,
-                    username: playerName,
-                    coins: userCoins,
-                    updated_at: new Date()
-                });
-            } else {
-                localStorage.setItem('vj_game_user_coins', userCoins);
-            }
-        }
-
-        function enterGameScreen() {
-            homeScreen.style.display = 'none';
-            gameScreen.style.display = 'flex';
-            currentLevelIdx = 0;
-            startLevel(0);
-        }
-
-        function returnToHome() {
-            stopTimer();
-            gameScreen.style.display = 'none';
-            homeScreen.style.display = 'flex';
-        }
-
-        function startLevel(levelIdx) {
-            const levelConfig = levels[levelIdx];
-            board.classList.remove('level-4', 'level-5');
-            if (levelConfig.level === 4) board.classList.add('level-4');
-            else if (levelConfig.level === 5) board.classList.add('level-5');
-
-            levelTitle.innerText = levelConfig.name;
-            levelModal.style.display = 'none';
-            totalMatchesDisplay.innerText = levelConfig.pairs;
-
-            const selectedImages = [...allVjImages].sort(() => Math.random() - 0.5).slice(0, levelConfig.pairs);
-            cards = [...selectedImages, ...selectedImages].sort(() => Math.random() - 0.5);
-
-            board.innerHTML = '';
-            flippedCards = [];
-            matchedCount = 0; clickCount = 0;
-            clicksDisplay.innerText = clickCount;
-            matchesDisplay.innerText = matchedCount;
-
-            cards.forEach((imgUrl) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.value = imgUrl;
-                card.innerHTML = `<img src="${imgUrl}" alt="VJ">`;
-                card.addEventListener('click', flipCard);
-                board.appendChild(card);
-            });
-
-            if (levelIdx === 0) {
-                totalSeconds = 0; totalClicksAccumulated = 0; gameStarted = false;
-                stopTimer(); timerDisplay.innerText = '00:00';
-            }
-        }
-
-        function startTimer() {
-            if (gameStarted) return;
-            gameStarted = true;
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                totalSeconds++;
-                const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-                const s = (totalSeconds % 60).toString().padStart(2, '0');
-                timerDisplay.innerText = `${m}:${s}`;
-            }, 1000);
-        }
-
-        function stopTimer() { clearInterval(timerInterval); gameStarted = false; }
-
-        function flipCard() {
-            if (!gameStarted) startTimer();
-            if (flippedCards.length === 2 || this.classList.contains('flipped')) return;
-
-            this.classList.add('flipped');
-            flippedCards.push(this);
-
-            if (flippedCards.length === 2) {
-                clickCount++; totalClicksAccumulated++;
-                clicksDisplay.innerText = clickCount;
-                checkMatch();
-            }
-        }
-
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            if (card1.dataset.value === card2.dataset.value) {
-                matchedCount++; matchesDisplay.innerText = matchedCount; flippedCards = [];
-                if (matchedCount === levels[currentLevelIdx].pairs) {
-                    stopTimer();
-                    addCoins(10 * levels[currentLevelIdx].level);
-                    submitScoreToSupabase(levels[currentLevelIdx].level, totalClicksAccumulated, totalSeconds);
-                    setTimeout(() => {
-                        if (currentLevelIdx < levels.length - 1) {
-                            modalTitle.innerText = `🎉 ผ่าน Level ${levels[currentLevelIdx].level} แล้ว!`;
-                            modalDesc.innerText = `เวลาสะสม: ${timerDisplay.innerText} | รับรางวัล 🪙 +${10 * levels[currentLevelIdx].level} เหรียญ`;
-                            modalActionBtn.innerText = 'ไปด่านถัดไป ➔';
-                            modalActionBtn.onclick = nextLevel;
-                            levelModal.style.display = 'flex';
-                        } else {
-                            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-                            modalTitle.innerText = `🏆 ยินดีด้วย! จบเกมครบทุกเลเวล`;
-                            modalDesc.innerText = `เวลารวมทั้งหมด: ${timerDisplay.innerText} | บันทึกคะแนนสูงสุดเรียบร้อย!`;
-                            modalActionBtn.innerText = 'เล่นใหม่อีกครั้ง 🔄';
-                            modalActionBtn.onclick = resetEntireGame;
-                            levelModal.style.display = 'flex';
-                        }
-                    }, 400);
-                }
-            } else {
-                setTimeout(() => { card1.classList.remove('flipped'); card2.classList.remove('flipped'); flippedCards = []; }, 850);
-            }
-        }
-
-        function restartLevel() { startLevel(currentLevelIdx); }
-        function nextLevel() { if (currentLevelIdx < levels.length - 1) { currentLevelIdx++; startLevel(currentLevelIdx); } }
-        function resetEntireGame() { currentLevelIdx = 0; startLevel(0); }
-
-        async function submitScoreToSupabase(maxLevel, clicks, timeSec) {
-            try {
-                // กำหนดประเภทบัญชีผู้เล่นเพื่อบันทึกลงในคอลัมน์ user_type
-                const userType = currentUser ? 'Member' : 'Guest';
-
-                await supabaseClient.from('vj_game_leaderboard').insert([{ 
-                    player_name: playerName, 
-                    max_level: maxLevel, 
-                    total_clicks: clicks, 
-                    total_time: timeSec,
-                    user_type: userType
-                }]);
-            } catch (err) { console.error(err); }
-        }
-
-        checkUserSession();
-    </script>
+    <!-- 🔴 จุดสำคัญ: ต้องใส่ type="module" ตรงนี้เพื่อให้เรียกใช้ import ไฟล์กลางได้ -->
+    <script type="module" src="game-script.js"></script>
 </body>
 </html>
