@@ -30,8 +30,6 @@
             height: 100dvh;
             max-width: 1200px;
             max-height: 800px;
-            background: url('images/home.png') no-repeat center center;
-            background-size: cover;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -41,12 +39,28 @@
             overflow: hidden;
         }
 
+        /* 🎬 วิดีโอพื้นหลังหน้าโฮม */
+        .home-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* กำหนดให้องค์ประกอบทั้งหมดในหน้าโฮมอยู่เหนือวิดีโอ */
+        .home-top-bar, .home-sidebar-left, .home-sidebar-right, .home-center-area {
+            position: relative;
+            z-index: 2;
+        }
+
         /* Top Bar */
         .home-top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 10;
         }
 
         .top-left-group {
@@ -107,7 +121,7 @@
         .exit-btn { border-color: #fca5a5; color: #ef4444; }
         .exit-btn:hover { background: #fee2e2; color: #dc2626; }
 
-        /* Center Main Play Button (น่ารักสดใส) */
+        /* Center Main Play Button */
         .home-center-area {
             position: absolute;
             top: 50%; left: 50%;
@@ -116,7 +130,6 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            z-index: 5;
         }
 
         .play-start-btn {
@@ -141,7 +154,7 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
         }
 
-        /* Sidebar Buttons (ปรับให้หัวข้อข้อความขึ้นมาทับซ้อนบนตัวอีโมจิ) */
+        /* Sidebar Buttons */
         .home-sidebar-left, .home-sidebar-right {
             position: absolute;
             top: 50%;
@@ -149,7 +162,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            z-index: 10;
         }
         .home-sidebar-left { left: 25px; }
         .home-sidebar-right { right: 25px; }
@@ -165,13 +177,13 @@
             transition: all 0.25s;
         }
         .menu-widget-btn .btn-emoji {
-            font-size: 5.5rem; /* ขนาดใหญ่ประมาณ 5-6rem ตามต้องการ */
+            font-size: 5.5rem;
             line-height: 1;
             filter: drop-shadow(0 6px 14px rgba(0,0,0,0.3));
             transition: transform 0.2s ease-in-out;
         }
         .menu-widget-btn .btn-text {
-            margin-top: -26px; /* ดึงข้อความให้ขึ้นมาทับซ้อนบนตัวอีโมจิ */
+            margin-top: -26px;
             position: relative;
             z-index: 2;
             background: rgba(255, 255, 255, 0.92);
@@ -205,46 +217,25 @@
             width: 100%;
             max-width: 720px;
             max-height: 100dvh;
-            padding: 15px;
+            padding: 20px;
             position: relative;
             overflow-y: auto;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 15px; right: 15px;
-            background: #ffffff; color: #ef4444; border: 2px solid #fca5a5;
-            width: 40px; height: 40px; border-radius: 50%;
-            font-size: 1.2rem; font-weight: bold;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; text-decoration: none; transition: all 0.2s; z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        .close-btn:hover { background-color: #ef4444; color: #fff; transform: scale(1.1); }
-
-        h1 { color: #f8fafc; margin-top: 5px; margin-bottom: 5px; font-size: 1.5rem; text-align: center; }
-
-        .player-bar {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.15); padding: 5px 16px; border-radius: 20px;
-            margin-bottom: 8px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(4px);
-        }
-        .player-bar span { color: #38bdf8; font-weight: bold; }
-
         .level-badge {
-            background-color: #3b82f6; color: #fff; padding: 3px 12px;
-            border-radius: 20px; font-size: 0.85rem; margin-bottom: 8px; font-weight: bold;
+            background-color: #3b82f6; color: #fff; padding: 6px 18px;
+            border-radius: 20px; font-size: 1rem; margin-bottom: 12px; font-weight: bold;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        .score-board { font-size: 0.9rem; margin-bottom: 12px; color: #cbd5e1; text-align: center; }
+        .score-board { font-size: 0.95rem; margin-bottom: 16px; color: #cbd5e1; text-align: center; }
         
         .game-board {
             display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 8px; width: 100%; max-width: 400px; margin: 0 auto;
+            gap: 10px; width: 100%; max-width: 420px; margin: 0 auto 20px auto;
         }
-        .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 6px; max-width: 520px; }
-        .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 4px; max-width: 640px; }
+        .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 540px; }
+        .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 6px; max-width: 660px; }
 
         @media (max-width: 768px) {
             body { align-items: flex-start; }
@@ -259,7 +250,7 @@
             .game-board.level-4, .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
         }
 
-        /* Card Styles With the_reverse.png Back Cover */
+        /* Card Styles */
         .card {
             aspect-ratio: 1 / 1;
             background: #1e293b url('images/the_reverse.png') no-repeat center center;
@@ -274,10 +265,12 @@
         .card img { width: 85%; height: 85%; object-fit: cover; border-radius: 8px; display: none; }
         .card.flipped img { display: block; }
         
-        .btn-container { display: flex; gap: 10px; margin-top: 15px; }
-        button.action-btn { padding: 8px 18px; font-size: 0.9rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+        .btn-container { display: flex; gap: 12px; margin-top: 10px; }
+        button.action-btn { padding: 10px 22px; font-size: 0.95rem; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
         .reset-btn { background-color: #475569; color: white; }
-        .reset-btn:hover { background-color: #64748b; }
+        .reset-btn:hover { background-color: #64748b; transform: translateY(-2px); }
+        .home-btn-action { background-color: #f59e0b; color: #fff; }
+        .home-btn-action:hover { background-color: #d97706; transform: translateY(-2px); }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -292,57 +285,16 @@
         .modal-box p { color: #cbd5e1; margin-bottom: 20px; font-size: 0.92rem; line-height: 1.4; }
         .modal-btn { background-color: #22c55e; color: white; padding: 10px 22px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
         .modal-btn:hover { background-color: #16a34a; }
-
-        /* ================= 🏆 Leaderboard Section ================= */
-        .leaderboard-container {
-            margin-top: 20px; max-width: 540px; width: 100%;
-            background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 18px; padding: 16px; box-sizing: border-box; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-        }
-        .leaderboard-container h3 {
-            margin-top: 0; font-size: 1.1rem; color: #f59e0b; border-bottom: 1px solid #334155;
-            padding-bottom: 8px; text-align: center; letter-spacing: 0.5px;
-        }
-
-        .podium-section {
-            display: flex; justify-content: center; align-items: flex-end;
-            gap: 10px; margin: 15px 0 12px 0; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-        .podium-column { display: flex; flex-direction: column; align-items: center; width: 32%; max-width: 150px; }
-        .podium-header-outside { text-align: center; margin-bottom: 4px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .podium-medal { font-size: 24px; margin-bottom: 2px; }
-        .podium-name { font-size: 0.85rem; font-weight: bold; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-        .podium-info-outside { font-size: 0.75rem; color: #38bdf8; font-weight: 600; width: 100%; }
-        .podium-stat-outside { font-size: 0.7rem; color: #94a3b8; width: 100%; }
-
-        .podium-block {
-            background: linear-gradient(180deg, #1e293b, #0f172a); border: 2px solid #475569;
-            border-radius: 10px 10px 4px 4px; padding: 10px 6px; text-align: center;
-            display: flex; flex-direction: column; align-items: center; position: relative;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5); width: 100%;
-        }
-        .podium-column.rank-1 .podium-block { border-color: #f59e0b; background: linear-gradient(180deg, rgba(245, 158, 11, 0.2), #1e293b); min-height: 70px; box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); }
-        .podium-column.rank-1 { transform: translateY(-6px); }
-        .podium-column.rank-2 .podium-block { border-color: #94a3b8; min-height: 55px; }
-        .podium-column.rank-3 .podium-block { border-color: #b45309; min-height: 42px; }
-
-        .podium-number {
-            position: absolute; bottom: 2px; font-size: 2.2rem; font-weight: 900;
-            color: rgba(255, 255, 255, 0.04); font-family: 'Kanit', sans-serif; pointer-events: none; line-height: 1;
-        }
-
-        .lb-table-wrapper { max-height: 180px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-        th, td { padding: 6px; text-align: center; border-bottom: 1px solid #1e293b; }
-        th { color: #94a3b8; font-weight: 600; background: rgba(30, 41, 59, 0.5); }
-        td:nth-child(2) { text-align: left; color: #f8fafc; font-weight: 500; }
-        td:nth-child(1) { color: #f59e0b; font-weight: bold; width: 30px; }
     </style>
 </head>
 <body>
 
-    <!-- 🏠 1. HOME LOBBY SCREEN -->
+    <!-- 🏠 1. HOME LOBBY SCREEN (พร้อมวิดีโอพื้นหลัง) -->
     <div class="home-screen" id="home-screen">
+        <video autoplay muted loop playsinline class="home-video-bg">
+            <source src="images/home.mp4" type="video/mp4">
+        </video>
+
         <div class="home-top-bar">
             <div class="top-left-group">
                 <div class="player-profile-btn" onclick="promptChangeName()">
@@ -363,24 +315,24 @@
             </div>
         </div>
 
-        <!-- ฝั่งซ้าย: หัวข้อข้อความซ้อนทับบนอีโมจิ -->
+        <!-- ฝั่งซ้าย -->
         <div class="home-sidebar-left">
-            <button class="menu-widget-btn" onclick="scrollToLeaderboard()">
+            <a href="leaderboard.html" class="menu-widget-btn" style="text-decoration: none;">
                 <span class="btn-emoji">🏆</span>
                 <span class="btn-text">ลีดเดอร์บอร์ด</span>
-            </button>
+            </a>
             <button class="menu-widget-btn" onclick="alert('ระบบคอลเลกชัน (กำลังพัฒนา)')">
                 <span class="btn-emoji">🖼️</span>
                 <span class="btn-text">คอลเลกชัน</span>
             </button>
         </div>
 
-        <!-- ตรงกลาง: ปุ่มเล่นเกมทรงโค้งมนสีสดใส -->
+        <!-- ตรงกลาง -->
         <div class="home-center-area">
             <button class="play-start-btn" onclick="enterGameScreen()">▶ Level 1</button>
         </div>
 
-        <!-- ฝั่งขวา: หัวข้อข้อความซ้อนทับบนอีโมจิ -->
+        <!-- ฝั่งขวา -->
         <div class="home-sidebar-right">
             <button class="menu-widget-btn" onclick="alert('ร้านค้า (กำลังพัฒนา)')">
                 <span class="btn-emoji">🏪</span>
@@ -395,15 +347,6 @@
 
     <!-- 🎮 2. GAMEPLAY SCREEN -->
     <div class="game-screen" id="game-screen">
-        <a href="javascript:void(0);" onclick="returnToHome()" class="close-btn" title="กลับหน้าโฮม">✕</a>
-
-        <h1>🎮 จับคู่ VJ MARS Agency</h1>
-
-        <div class="player-bar">
-            ผู้เล่น: <span id="player-name-display">ไม่ระบุชื่อ</span>
-            <button class="edit-name-btn" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:0.8rem; text-decoration:underline;" onclick="promptChangeName()">[แก้ไขชื่อ]</button>
-        </div>
-
         <div class="level-badge" id="level-title">Level 1 (4 คู่)</div>
         <div class="score-board">
             เวลา: <span id="timer">00:00</span> | จำนวนคลิก: <span id="clicks">0</span> | สำเร็จ: <span id="matches">0</span>/<span id="total-matches">4</span>
@@ -413,22 +356,7 @@
 
         <div class="btn-container">
             <button class="action-btn reset-btn" onclick="restartLevel()">เริ่มด่านนี้ใหม่</button>
-            <button class="action-btn reset-btn" onclick="returnToHome()">กลับหน้าโฮม</button>
-        </div>
-
-        <div class="leaderboard-container" id="leaderboard-anchor">
-            <h3>🏆 บอร์ดจัดอันดับสูงสุด (Leaderboard)</h3>
-            <div class="podium-section" id="podium-section"></div>
-            <div class="lb-table-wrapper">
-                <table>
-                    <thead>
-                        <tr><th>#</th><th>ชื่อผู้เล่น</th><th>เลเวล</th><th>คลิก</th><th>เวลา</th></tr>
-                    </thead>
-                    <tbody id="leaderboard-body">
-                        <tr><td colspan="5" style="color: #94a3b8;">กำลังโหลดข้อมูล...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <button class="action-btn home-btn-action" onclick="returnToHome()">กลับหน้าโฮม</button>
         </div>
     </div>
 
@@ -475,7 +403,6 @@
         const totalMatchesDisplay = document.getElementById('total-matches');
         const levelTitle = document.getElementById('level-title');
         const timerDisplay = document.getElementById('timer');
-        const playerNameDisplay = document.getElementById('player-name-display');
         const homePlayerName = document.getElementById('home-player-name');
         const levelModal = document.getElementById('level-modal');
         const modalTitle = document.getElementById('modal-title');
@@ -491,10 +418,8 @@
                 localStorage.setItem('vj_game_player_name', savedName.trim());
             }
             playerName = savedName.trim();
-            playerNameDisplay.innerText = playerName;
             homePlayerName.innerText = `ผู้เล่น: ${playerName}`;
 
-            // โหลดเหรียญสะสม
             let savedCoins = localStorage.getItem('vj_game_user_coins');
             userCoins = savedCoins ? parseInt(savedCoins, 10) : 0;
             userCoinsDisplay.innerText = userCoins;
@@ -505,7 +430,6 @@
             if (newName && newName.trim() !== '') {
                 playerName = newName.trim();
                 localStorage.setItem('vj_game_player_name', playerName);
-                playerNameDisplay.innerText = playerName;
                 homePlayerName.innerText = `ผู้เล่น: ${playerName}`;
             }
         }
@@ -527,12 +451,6 @@
             stopTimer();
             gameScreen.style.display = 'none';
             homeScreen.style.display = 'flex';
-        }
-
-        function scrollToLeaderboard() {
-            homeScreen.style.display = 'none';
-            gameScreen.style.display = 'flex';
-            document.getElementById('leaderboard-anchor').scrollIntoView({ behavior: 'smooth' });
         }
 
         function startLevel(levelIdx) {
@@ -603,7 +521,7 @@
                 matchedCount++; matchesDisplay.innerText = matchedCount; flippedCards = [];
                 if (matchedCount === levels[currentLevelIdx].pairs) {
                     stopTimer();
-                    addCoins(10 * levels[currentLevelIdx].level); // ให้รางวัลเหรียญคอยน์เมื่อผ่านด่าน
+                    addCoins(10 * levels[currentLevelIdx].level);
                     submitScoreToSupabase(levels[currentLevelIdx].level, totalClicksAccumulated, totalSeconds);
                     setTimeout(() => {
                         if (currentLevelIdx < levels.length - 1) {
@@ -634,90 +552,10 @@
         async function submitScoreToSupabase(maxLevel, clicks, timeSec) {
             try {
                 await supabaseClient.from('vj_game_leaderboard').insert([{ player_name: playerName, max_level: maxLevel, total_clicks: clicks, total_time: timeSec }]);
-                fetchLeaderboard();
             } catch (err) { console.error(err); }
-        }
-
-        async function fetchLeaderboard() {
-            const podiumSection = document.getElementById('podium-section');
-            const tbody = document.getElementById('leaderboard-body');
-            try {
-                const { data, error } = await supabaseClient
-                    .from('vj_game_leaderboard')
-                    .select('*')
-                    .order('max_level', { ascending: false })
-                    .order('total_clicks', { ascending: true })
-                    .order('total_time', { ascending: true })
-                    .limit(50);
-
-                if (error || !data || data.length === 0) {
-                    podiumSection.innerHTML = '';
-                    tbody.innerHTML = `<tr><td colspan="5" style="color: #94a3b8;">ยังไม่มีประวัติคะแนน</td></tr>`;
-                    return;
-                }
-
-                const uniquePlayers = [];
-                const seenNames = new Set();
-                for (const row of data) {
-                    const name = row.player_name || 'Anonymous';
-                    if (!seenNames.has(name)) { seenNames.add(name); uniquePlayers.push(row); }
-                    if (uniquePlayers.length >= 50) break;
-                }
-
-                let podiumHtml = '';
-                const top3 = [uniquePlayers[1], uniquePlayers[0], uniquePlayers[2]]; 
-                const medals = ['🥈', '👑', '🥉'];
-                const rankClasses = ['rank-2', 'rank-1', 'rank-3'];
-                const displayNumbers = ['2', '1', '3'];
-
-                top3.forEach((row, i) => {
-                    if (row) {
-                        const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
-                        const s = (row.total_time % 60).toString().padStart(2, '0');
-                        podiumHtml += `
-                            <div class="podium-column ${rankClasses[i]}">
-                                <div class="podium-header-outside">
-                                    <div class="podium-medal">${medals[i]}</div>
-                                    <div class="podium-name" title="${escapeHtml(row.player_name)}">${escapeHtml(row.player_name)}</div>
-                                    <div class="podium-info-outside">Lv.${row.max_level} | 🖱️ ${row.total_clicks}คลิก</div>
-                                    <div class="podium-stat-outside">⏱️ ${m}:${s}</div>
-                                </div>
-                                <div class="podium-block"><div class="podium-number">${displayNumbers[i]}</div></div>
-                            </div>
-                        `;
-                    } else {
-                        podiumHtml += `
-                            <div class="podium-column ${rankClasses[i]}" style="opacity: 0.3;">
-                                <div class="podium-header-outside"><div class="podium-medal">${medals[i]}</div><div class="podium-name">-</div></div>
-                                <div class="podium-block"><div class="podium-number">${displayNumbers[i]}</div></div>
-                            </div>
-                        `;
-                    }
-                });
-                podiumSection.innerHTML = podiumHtml;
-
-                tbody.innerHTML = '';
-                const restPlayers = uniquePlayers.slice(3);
-                if (restPlayers.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="color: #94a3b8; text-align: center;">ไม่มีอันดับเพิ่มเติม</td></tr>`;
-                } else {
-                    restPlayers.forEach((row, index) => {
-                        const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
-                        const s = (row.total_time % 60).toString().padStart(2, '0');
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${index + 4}</td><td>${escapeHtml(row.player_name)}</td><td>Lv.${row.max_level}</td><td>${row.total_clicks}</td><td>${m}:${s}</td>`;
-                        tbody.appendChild(tr);
-                    });
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
         initPlayer();
-        fetchLeaderboard();
     </script>
 </body>
 </html>

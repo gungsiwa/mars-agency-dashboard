@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลีดเดอร์บอร์ด - VJ MARS Agency</title>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kanit', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #fbcfe8 0%, #e0e7ff 50%, #bae6fd 100%);
+            color: #475569;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 🌸 ปุ่มกลับหน้าหลักสไตล์น่ารักมุมซ้ายบน */
+        .back-home-btn {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: #ffffff;
+            color: #ec4899;
+            border: 3px solid #f472b6;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.2);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+        .back-home-btn:hover {
+            background: #fdf2f8;
+            transform: scale(1.05);
+        }
+
+        /* 🏆 กระดาน Leaderboard */
+        .leaderboard-wrapper {
+            max-width: 620px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 4px solid #ffffff;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(244, 114, 182, 0.15), 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .leaderboard-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #db2777;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-shadow: 0 2px 4px rgba(219, 39, 119, 0.1);
+        }
+
+        /* 🥇🥈🥉 ส่วนโพเดียมอันดับ 1-3 */
+        .podium-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* จัดให้แท่นตั้งอยู่บนพื้นเดียวกัน */
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 2px dashed #fbcfe8;
+            min-height: 250px;
+        }
+
+        .podium-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 32%;
+            max-width: 170px;
+        }
+
+        /* ข้อมูลผู้เล่น (ลอยอยู่นอกแท่นยืน) */
+        .player-info-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            margin-bottom: 8px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .podium-medal { font-size: 28px; line-height: 1; margin-bottom: 2px; }
+        .podium-name { 
+            font-size: 0.92rem; 
+            font-weight: 700; 
+            color: #1e293b; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            width: 100%; 
+        }
+        .podium-info { font-size: 0.78rem; color: #ec4899; font-weight: 600; }
+        .podium-stat { font-size: 0.72rem; color: #64748b; }
+
+        /* ตัวแท่นยืน (Pedestal) ที่มีระดับความสูงแตกต่างกัน */
+        .pedestal-base {
+            width: 100%;
+            border-radius: 16px 16px 12px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+            border: 3px solid;
+            transition: all 0.3s ease;
+        }
+
+        /* อันดับ 1: สูงที่สุด */
+        .podium-column.rank-1 .pedestal-base {
+            height: 95px;
+            background: linear-gradient(180deg, #fef08a 0%, #fde047 100%);
+            border-color: #f59e0b;
+            color: #b45309;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25);
+        }
+
+        /* อันดับ 2: สูงปานกลาง */
+        .podium-column.rank-2 .pedestal-base {
+            height: 70px;
+            background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+            border-color: #38bdf8;
+            color: #0369a1;
+        }
+
+        /* อันดับ 3: ความสูงต่ำที่สุด */
+        .podium-column.rank-3 .pedestal-base {
+            height: 52px;
+            background: linear-gradient(180deg, #ffedd5 0%, #fed7aa 100%);
+            border-color: #fb923c;
+            color: #c2410c;
+        }
+
+        /* 📜 ตารางอันดับที่ 4 เป็นต้นไป */
+        .lb-table-wrapper {
+            max-height: 240px;
+            overflow-y: auto;
+            border-radius: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: #fce7f3;
+            color: #be185d;
+            font-weight: 700;
+            padding: 10px 8px;
+            text-align: center;
+        }
+        th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-weight: 500;
+        }
+        td:nth-child(2) { text-align: left; font-weight: 600; color: #1e293b; }
+        td:nth-child(1) { color: #db2777; font-weight: 800; width: 40px; }
+
+        tr:hover td {
+            background: #fdf2f8;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .leaderboard-wrapper { padding: 16px; }
+            .podium-medal { font-size: 22px; }
+            .podium-name { font-size: 0.8rem; }
+            .podium-column.rank-1 .pedestal-base { height: 80px; }
+            .podium-column.rank-2 .pedestal-base { height: 60px; }
+            .podium-column.rank-3 .pedestal-base { height: 45px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ปุ่มกลับหน้าโฮม/หน้าเกม -->
+    <a href="game.html" class="back-home-btn">🏠 กลับหน้าเกม</a>
+
+    <div class="leaderboard-wrapper">
+        <div class="leaderboard-title">
+            🏆 บอร์ดจัดอันดับสูงสุด (Leaderboard)
+        </div>
+
+        <!-- โพเดียม 1-3 -->
+        <div class="podium-section" id="podium-section"></div>
+
+        <!-- ตารางอันดับที่ 4 เป็นต้นไป -->
+        <div class="lb-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ชื่อผู้เล่น</th>
+                        <th>เลเวล</th>
+                        <th>คลิก</th>
+                        <th>เวลา</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="5" style="color: #94a3b8; text-align: center;">กำลังโหลดข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function fetchLeaderboard() {
+            const podiumSection = document.getElementById('podium-section');
+            const tbody = document.getElementById('leaderboard-body');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('vj_game_leaderboard')
+                    .select('*')
+                    .order('max_level', { ascending: false })
+                    .order('total_clicks', { ascending: true })
+                    .order('total_time', { ascending: true })
+                    .limit(50);
+
+                if (error || !data || data.length === 0) {
+                    podiumSection.innerHTML = '';
+                    tbody.innerHTML = `<tr><td colspan="5" style="color: #94a3b8; text-align: center;">ยังไม่มีประวัติคะแนน</td></tr>`;
+                    return;
+                }
+
+                const uniquePlayers = [];
+                const seenNames = new Set();
+                for (const row of data) {
+                    const name = row.player_name || 'Anonymous';
+                    if (!seenNames.has(name)) { seenNames.add(name); uniquePlayers.push(row); }
+                    if (uniquePlayers.length >= 50) break;
+                }
+
+                let podiumHtml = '';
+                // เรียงลำดับแสดงผล: อันดับ 2 (ซ้าย), อันดับ 1 (กลาง), อันดับ 3 (ขวา)
+                const top3 = [uniquePlayers[1], uniquePlayers[0], uniquePlayers[2]]; 
+                const rankNumbers = ['2', '1', '3'];
+                const medals = ['🥈', '👑', '🥉'];
+                const rankClasses = ['rank-2', 'rank-1', 'rank-3'];
+
+                top3.forEach((row, i) => {
+                    if (row) {
+                        const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
+                        const s = (row.total_time % 60).toString().padStart(2, '0');
+                        podiumHtml += `
+                            <div class="podium-column ${rankClasses[i]}">
+                                <!-- ข้อมูลผู้เล่นอยู่ด้านบน นอกแท่นยืน -->
+                                <div class="player-info-card">
+                                    <div class="podium-medal">${medals[i]}</div>
+                                    <div class="podium-name" title="${escapeHtml(row.player_name)}">${escapeHtml(row.player_name)}</div>
+                                    <div class="podium-info">Lv.${row.max_level} | 🖱️ ${row.total_clicks}</div>
+                                    <div class="podium-stat">⏱️ ${m}:${s}</div>
+                                </div>
+                                <!-- แท่นยืนแสดงหมายเลขอันดับ -->
+                                <div class="pedestal-base">
+                                    ${rankNumbers[i]}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        podiumHtml += `
+                            <div class="podium-column ${rankClasses[i]}" style="opacity: 0.35;">
+                                <div class="player-info-card">
+                                    <div class="podium-medal">${medals[i]}</div>
+                                    <div class="podium-name">-</div>
+                                    <div class="podium-info">Lv.-</div>
+                                </div>
+                                <div class="pedestal-base">
+                                    ${rankNumbers[i]}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                podiumSection.innerHTML = podiumHtml;
+
+                tbody.innerHTML = '';
+                const restPlayers = uniquePlayers.slice(3);
+                if (restPlayers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="color: #94a3b8; text-align: center;">ไม่มีอันดับเพิ่มเติม</td></tr>`;
+                } else {
+                    restPlayers.forEach((row, index) => {
+                        const m = Math.floor(row.total_time / 60).toString().padStart(2, '0');
+                        const s = (row.total_time % 60).toString().padStart(2, '0');
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${index + 4}</td><td>${escapeHtml(row.player_name)}</td><td>Lv.${row.max_level}</td><td>${row.total_clicks}</td><td>${m}:${s}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        fetchLeaderboard();
+    </script>
+</body>
+</html>
