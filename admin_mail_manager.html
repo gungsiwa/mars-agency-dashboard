@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Mail Manager - Mars Agency</title>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: #fff; width: 100%; max-width: 600px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #333; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="email"], input[type="password"], input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .hidden { display: none; }
+        .step-indicator { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .card-summary { background: #eef6ff; border-left: 4px solid #007bff; padding: 12px; margin-bottom: 15px; border-radius: 4px; }
+        .error-msg { color: #dc3545; font-size: 13px; text-align: center; margin-top: 10px; }
+        .checkbox-group { max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 6px; background: #fafafa; }
+        .checkbox-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
+        .checkbox-item input { margin-right: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- หน้าล็อกอิน (Email & Password) -->
+    <div id="auth-section">
+        <h2>Admin Login</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">กรอก Gmail และรหัสผ่านเพื่อเข้าสู่ระบบหลังบ้าน</p>
+        
+        <div class="form-group">
+            <label>Gmail</label>
+            <input type="email" id="login-email" placeholder="admin@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>รหัสผ่าน (Password)</label>
+            <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button onclick="loginWithEmailPassword()">เข้าสู่ระบบ</button>
+        <div id="login-error" class="error-msg"></div>
+    </div>
+
+    <!-- หน้าต่างโมดูลส่งจดหมาย -->
+    <div id="app-section" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span id="user-email" style="font-size: 13px; color: #555; font-weight: bold;"></span>
+            <button onclick="logout()" style="width: auto; padding: 6px 12px; font-size: 12px; background: #dc3545;">ออกจากระบบ</button>
+        </div>
+        <hr style="margin: 15px 0;">
+
+        <!-- ขั้นตอนที่ 1: กรอกข้อมูลจดหมายและเลือกของรางวัล -->
+        <div id="step-1">
+            <div class="step-indicator">ขั้นตอนที่ 1 จาก 3: สร้างเนื้อหาจดหมายและของรางวัล</div>
+            <div class="form-group">
+                <label>หัวข้อจดหมาย (Title)</label>
+                <input type="text" id="mail-title" placeholder="เช่น รางวัลกิจกรรม PK ประจำสัปดาห์">
+            </div>
+            <div class="form-group">
+                <label>เนื้อหาจดหมาย (Content)</label>
+                <textarea id="mail-body" rows="3" placeholder="ระบุรายละเอียดข้อความ..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>ประเภทของรางวัล</label>
+                <select id="reward-type-select" onchange="handleRewardTypeChange()">
+                    <option value="coins">คอยน์ (Coins)</option>
+                    <option value="collection">ไอเทม / สกินจากคอลเลกชัน (Collections)</option>
+                    <option value="custom_item">อุปกรณ์ตัวช่วย / ไอเทมพิเศษ (Custom Item)</option>
+                </select>
+            </div>
+
+            <!-- กรณีเลือก Coins -->
+            <div class="form-group" id="reward-coins-group">
+                <label>จำนวนคอยน์</label>
+                <input type="number" id="reward-coins-amount" placeholder="เช่น 100">
+            </div>
+
+            <!-- กรณีเลือก Collections Item -->
+            <div class="form-group hidden" id="reward-collection-group">
+                <label>เลือกหมวดหมู่ไอเทมจาก Collections</label>
+                <select id="collection-type-select" onchange="loadCollectionItems()">
+                    <option value="">-- เลือกหมวดหมู่ไอเทม --</option>
+                    <option value="theme_home">Theme Home (พื้นหลังโฮม)</option>
+                    <option value="theme_game">Theme Game (พื้นหลังเกม)</option>
+                    <option value="card_back">Card Back (สกินหลังการ์ด)</option>
+                </select>
+
+                <label style="margin-top: 10px;">เลือกไอเทมเฉพาะเจาะจง</label>
+                <select id="collection-item-select">
+                    <option value="">-- กรุณาเลือกหมวดหมู่ก่อน --</option>
+                </select>
+            </div>
+
+            <!-- กรณีเลือก Custom Item / อุปกรณ์ตัวช่วย / กล่องสุ่ม -->
+            <div class="form-group hidden" id="reward-custom-group">
+                <label>รหัสไอเทม (Item Key / Code)</label>
+                <input type="text" id="custom-item-key" placeholder="เช่น magnifying_glass หรือ mystery_box">
+                <label style="margin-top: 10px;">จำนวน</label>
+                <input type="number" id="custom-item-amount" placeholder="เช่น 5">
+            </div>
+
+            <button onclick="goToStep2()">ถัดไป: เลือกผู้รับ</button>
+        </div>
+
+        <!-- ขั้นตอนที่ 2: เลือกผู้รับ -->
+        <div id="step-2" class="hidden">
+            <div class="step-indicator">ขั้นตอนที่ 2 จาก 3: ระบุผู้รับ</div>
+            <div class="form-group">
+                <label>รูปแบบการส่งผู้รับ</label>
+                <select id="send-mode-select" onchange="handleSendModeChange()">
+                    <option value="single">ส่งให้ User รายบุคคล</option>
+                    <option value="multi">เลือกส่งหลาย User</option>
+                    <option value="all">ส่งให้ผู้เล่นทุกคนทั้งหมด (Send to All)</option>
+                </select>
+            </div>
+
+            <!-- โหมดเลือกคนเดียว -->
+            <div class="form-group" id="mode-single-group">
+                <label>เลือกผู้ใช้</label>
+                <select id="user-select">
+                    <option value="">-- กำลังโหลดรายชื่อผู้ใช้ --</option>
+                </select>
+            </div>
+
+            <!-- โหมดเลือกหลายคน -->
+            <div class="form-group hidden" id="mode-multi-group">
+                <label>ติ๊กเลือกรายชื่อผู้รับ</label>
+                <div class="checkbox-group" id="user-checkbox-container">
+                    <!-- รายชื่อผู้ใช้แบบ Checkbox จะถูกโหลดมาแสดงที่นี่ -->
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="backToStep1()" style="background: #6c757d;">ย้อนกลับ</button>
+                <button onclick="goToStep3()">ถัดไป: ตรวจสอบและยืนยัน</button>
+            </div>
+        </div>
+
+        <!-- ขั้นตอนที่ 3: สรุปและกดยืนยันส่ง -->
+        <div id="step-3" class="hidden">
+            <div class="step-indicator">ขั้นตอนที่ 3 จาก 3: ยืนยันการส่งจดหมาย</div>
+            <div class="card-summary">
+                <p><strong>หัวข้อ:</strong> <span id="summary-title"></span></p>
+                <p><strong>เนื้อหา:</strong> <span id="summary-content"></span></p>
+                <p><strong>ของรางวัล:</strong> <span id="summary-reward"></span></p>
+                <p><strong>ผู้รับ:</strong> <span id="summary-user"></span></p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="backToStep2()" style="background: #6c757d;">ย้อนกลับ</button>
+                <button onclick="sendMailFinal()" style="background: #28a745;">บันทึก & ส่งจดหมายทันที</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const ALLOWED_ADMINS = ['gungsiwa.gs@gmail.com']; 
+
+    let tempMailData = {};
+    let allUsersCache = [];
+
+    window.onload = async () => {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session) {
+            validateAdmin(session.user);
+        }
+    };
+
+    async function loginWithEmailPassword() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const errorDiv = document.getElementById('login-error');
+        errorDiv.innerText = '';
+
+        if (!email || !password) {
+            errorDiv.innerText = 'กรุณากรอก Gmail และรหัสผ่านให้ครบถ้วน';
+            return;
+        }
+
+        const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            errorDiv.innerText = 'ล็อกอินไม่สำเร็จ: ' + error.message;
+            return;
+        }
+
+        if (data.user) {
+            validateAdmin(data.user);
+        }
+    }
+
+    function validateAdmin(user) {
+        if (ALLOWED_ADMINS.includes(user.email)) {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('app-section').classList.remove('hidden');
+            document.getElementById('user-email').innerText = `Admin: ${user.email}`;
+            loadUsersList();
+        } else {
+            alert('บัญชีนี้ไม่มีสิทธิ์เข้าใช้งานระบบจัดการจดหมาย');
+            logout();
+        }
+    }
+
+    async function logout() {
+        await _supabase.auth.signOut();
+        window.location.reload();
+    }
+
+    // โหลดรายชื่อผู้ใช้จาก player_data แบบดึงข้อมูลทั้งหมด
+    async function loadUsersList() {
+        const { data: users, error } = await _supabase
+            .from('player_data')
+            .select('*');
+
+        if (error) {
+            console.error('Error loading users:', error);
+            alert('ไม่สามารถโหลดรายชื่อผู้เล่นได้ (โปรดตรวจสอบ RLS Policy ของตาราง player_data): ' + error.message);
+            return;
+        }
+
+        allUsersCache = users || [];
+
+        const select = document.getElementById('user-select');
+        select.innerHTML = '<option value="">-- เลือกผู้รับ --</option>';
+
+        const checkboxContainer = document.getElementById('user-checkbox-container');
+        checkboxContainer.innerHTML = '';
+
+        if (allUsersCache.length > 0) {
+            allUsersCache.forEach(u => {
+                const displayName = u.username || u.display_name || u.name || `User ID: ${u.id}`;
+                
+                select.innerHTML += `<option value="${u.id}">${displayName} (ID: ${u.id})</option>`;
+                
+                checkboxContainer.innerHTML += `
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="selected-users" value="${u.id}" id="user-chk-${u.id}">
+                        <label for="user-chk-${u.id}" style="margin-bottom:0; font-weight:normal;">${displayName} (ID: ${u.id})</label>
+                    </div>
+                `;
+            });
+        } else {
+            checkboxContainer.innerHTML = '<div style="color: #888; text-align: center;">ไม่พบข้อมูลผู้เล่นในระบบ</div>';
+        }
+    }
+
+    // สลับหน้าจอตัวเลือกประเภทของรางวัล
+    function handleRewardTypeChange() {
+        const type = document.getElementById('reward-type-select').value;
+        
+        document.getElementById('reward-coins-group').classList.add('hidden');
+        document.getElementById('reward-collection-group').classList.add('hidden');
+        document.getElementById('reward-custom-group').classList.add('hidden');
+
+        if (type === 'coins') {
+            document.getElementById('reward-coins-group').classList.remove('hidden');
+        } else if (type === 'collection') {
+            document.getElementById('reward-collection-group').classList.remove('hidden');
+        } else if (type === 'custom_item') {
+            document.getElementById('reward-custom-group').classList.remove('hidden');
+        }
+    }
+
+    // โหลดข้อมูลไอเทมจากตาราง collections ตาม item_type ที่เลือก
+    async function loadCollectionItems() {
+        const itemType = document.getElementById('collection-type-select').value;
+        const itemSelect = document.getElementById('collection-item-select');
+        itemSelect.innerHTML = '<option value="">-- กำลังโหลดไอเทม --</option>';
+
+        if (!itemType) {
+            itemSelect.innerHTML = '<option value="">-- กรุณาเลือกหมวดหมู่ก่อน --</option>';
+            return;
+        }
+
+        const { data: items, error } = await _supabase
+            .from('collections')
+            .select('*')
+            .eq('item_type', itemType);
+
+            console.log('ประเภทที่เลือก (itemType):', itemType);
+            console.log('ข้อมูลที่ดึงมาจาก Supabase:', items);
+            console.log('Error (ถ้ามี):', error);
+
+        if (error) {
+            console.error('Error loading collections:', error);
+            itemSelect.innerHTML = '<option value="">-- โหลดข้อมูลไม่สำเร็จ --</option>';
+            return;
+        }
+
+        itemSelect.innerHTML = '<option value="">-- เลือกไอเทม --</option>';
+        if (items && items.length > 0) {
+            items.forEach(item => {
+                const itemName = item.name || item.item_name || item.id;
+                itemSelect.innerHTML += `<option value='${JSON.stringify(item)}'>${itemName} (Type: ${item.item_type})</option>`;
+            });
+        } else {
+            itemSelect.innerHTML = '<option value="">-- ไม่พบไอเทมในหมวดนี้ --</option>';
+        }
+    }
+
+    // สลับหน้าจอรูปแบบการเลือกผู้รับ
+    function handleSendModeChange() {
+        const mode = document.getElementById('send-mode-select').value;
+        if (mode === 'single') {
+            document.getElementById('mode-single-group').classList.remove('hidden');
+            document.getElementById('mode-multi-group').classList.add('hidden');
+        } else if (mode === 'multi') {
+            document.getElementById('mode-single-group').classList.add('hidden');
+            document.getElementById('mode-multi-group').classList.remove('hidden');
+        } else {
+            document.getElementById('mode-single-group').classList.add('hidden');
+            document.getElementById('mode-multi-group').classList.add('hidden');
+        }
+    }
+
+    function goToStep2() {
+        const title = document.getElementById('mail-title').value.trim();
+        const contentVal = document.getElementById('mail-body').value.trim();
+        if (!title || !contentVal) return alert('กรุณากรอกหัวข้อและเนื้อหาจดหมาย');
+
+        const rewardType = document.getElementById('reward-type-select').value;
+        let rewardPayload = {};
+        let rewardText = '';
+
+        if (rewardType === 'coins') {
+            const amount = document.getElementById('reward-coins-amount').value;
+            if (!amount || amount <= 0) return alert('กรุณากรอกจำนวนคอยน์ให้ถูกต้อง');
+            rewardPayload = { type: 'coins', amount: parseInt(amount) };
+            rewardText = `${amount} Coins`;
+        } else if (rewardType === 'collection') {
+            const itemSelectStr = document.getElementById('collection-item-select').value;
+            if (!itemSelectStr) return alert('กรุณาเลือกไอเทมจาก Collections');
+            const itemObj = JSON.parse(itemSelectStr);
+            rewardPayload = { type: 'collection_item', item: itemObj };
+            rewardText = `Item: ${itemObj.name || itemObj.item_name || itemObj.id} (${itemObj.item_type})`;
+        } else if (rewardType === 'custom_item') {
+            const itemKey = document.getElementById('custom-item-key').value.trim();
+            const amount = document.getElementById('custom-item-amount').value;
+            if (!itemKey || !amount || amount <= 0) return alert('กรุณากรอกรหัสไอเทมและจำนวนให้ถูกต้อง');
+            
+            rewardPayload = { type: 'custom_item', item_key: itemKey, amount: parseInt(amount) };
+            rewardText = `Custom Item: [${itemKey}] จำนวน ${amount} ชิ้น`;
+        }
+
+        tempMailData.title = title;
+        tempMailData.content = contentVal;
+        tempMailData.rewardPayload = rewardPayload;
+        tempMailData.rewardText = rewardText;
+
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.remove('hidden');
+    }
+
+    function backToStep1() {
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-1').classList.remove('hidden');
+    }
+
+    function goToStep3() {
+        const mode = document.getElementById('send-mode-select').value;
+        let selectedUserIds = [];
+        let userSummaryText = '';
+
+        if (mode === 'single') {
+            const select = document.getElementById('user-select');
+            if (!select.value) return alert('กรุณาเลือกผู้รับ');
+            selectedUserIds = [select.value];
+            userSummaryText = select.options[select.selectedIndex].text;
+        } else if (mode === 'multi') {
+            const checkboxes = document.querySelectorAll('input[name="selected-users"]:checked');
+            if (checkboxes.length === 0) return alert('กรุณาเลือกผู้รับอย่างน้อย 1 คน');
+            checkboxes.forEach(chk => selectedUserIds.push(chk.value));
+            userSummaryText = `ส่งแบบเลือกสรรจำนวน ${selectedUserIds.length} คน`;
+        } else {
+            if (allUsersCache.length === 0) return alert('ไม่พบข้อมูลผู้เล่นในระบบ');
+            selectedUserIds = allUsersCache.map(u => u.id);
+            userSummaryText = `ส่งให้ผู้เล่นทุกคนทั้งหมด (${allUsersCache.length} คน)`;
+        }
+
+        tempMailData.selectedUserIds = selectedUserIds;
+        tempMailData.userSummaryText = userSummaryText;
+
+        document.getElementById('summary-title').innerText = tempMailData.title;
+        document.getElementById('summary-content').innerText = tempMailData.content;
+        document.getElementById('summary-reward').innerText = tempMailData.rewardText;
+        document.getElementById('summary-user').innerText = tempMailData.userSummaryText;
+
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-3').classList.remove('hidden');
+    }
+
+    function backToStep2() {
+        document.getElementById('step-3').classList.add('hidden');
+        document.getElementById('step-2').classList.remove('hidden');
+    }
+
+    async function sendMailFinal() {
+        try {
+            // เตรียมข้อมูล reward_items ให้รองรับทั้ง custom_item และ collection_item
+            let rewardItemsArr = [];
+            
+            if (tempMailData.rewardPayload?.type === 'custom_item') {
+                rewardItemsArr = [tempMailData.rewardPayload];
+            } else if (tempMailData.rewardPayload?.type === 'collection_item') {
+                // บันทึกข้อมูลไอเทมคอลเลกชัน (เช่น แบ็คกราวด์, ธีม, การ์ด) ลงใน reward_items
+                rewardItemsArr = [tempMailData.rewardPayload];
+            }
+
+            // 1. บันทึกลงตาราง mail_system ตามโครงสร้างเดิมของคุณป้อม
+            const { data: mailInsert, error: mailError } = await _supabase
+                .from('mail_system')
+                .insert({
+                    title: tempMailData.title,
+                    content: tempMailData.content,
+                    reward_coins: tempMailData.rewardPayload?.type === 'coins' ? tempMailData.rewardPayload.amount : 0,
+                    reward_items: rewardItemsArr
+                })
+                .select()
+                .single();
+
+            if (mailError) throw mailError;
+
+            // 2. วนลูปบันทึกประวัติลงตาราง user_mails ตามรายชื่อผู้รับที่เลือก
+            const userMailRecords = tempMailData.selectedUserIds.map(userId => ({
+                mail_id: mailInsert.id,
+                user_id: userId,
+                is_read: false
+            }));
+
+            const { error: userMailError } = await _supabase
+                .from('user_mails')
+                .insert(userMailRecords);
+
+            if (userMailError) throw userMailError;
+
+            alert('ส่งจดหมายและแจกของรางวัลสำเร็จเรียบร้อยแล้ว!');
+            window.location.reload();
+
+        } catch (err) {
+            alert('เกิดข้อผิดพลาด: ' + err.message);
+        }
+    }
+
+</script>
+</body>
+</html>
