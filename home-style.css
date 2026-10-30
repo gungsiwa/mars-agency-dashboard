@@ -1,6 +1,5 @@
 /* ==========================================================
-   HOME SCREEN STYLES (home-style.css)
-   อิงจากต้นฉบับของคุณป้อม 100%
+   HOME SCREEN STYLES (home-style.css) - ฉบับแก้ไขสมบูรณ์
    ========================================================== */
 
 * { 
@@ -25,52 +24,12 @@ body {
     color: #fff;
     height: 100vh;
     height: 100dvh;
-    min-height: -webkit-fill-available; /* บังคับให้เต็มพื้นที่จอจริงบนมือถือ */
+    min-height: -webkit-fill-available;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     position: relative;
-}
-
-.home-screen {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    min-height: -webkit-fill-available; /* ป้องกันปัญหายอดฮิตของเบราว์เซอร์มือถือ */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 15px; /* ลด Padding ลงเล็กน้อยเพื่อให้มีพื้นที่หายใจในจอมือถือจริง */
-    box-sizing: border-box;
-    overflow: hidden; /* ล็อกไม่ให้เนื้อหาข้างในดันจนล้นจอ */
-}
-
-/* Responsive สำหรับหน้า Home บนมือถือจริง */
-@media (max-width: 768px) {
-    .home-sidebar-left, .home-sidebar-right {
-        position: static; 
-        transform: none; 
-        flex-direction: row; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        margin-top: 2px; 
-        gap: 10px; /* ลดช่องว่างลงนิดหน่อยให้พอดีหน้าจอมือถือจริง */
-    }
-    .menu-widget-btn .btn-emoji { font-size: 3.2rem; } /* ปรับขนาดไอคอนให้ไม่เบียดกันจนเกินไป */
-    .menu-widget-btn .btn-text { margin-top: -12px; font-size: 0.75rem; padding: 2px 8px; }
-    .home-center-area { position: static; transform: none; margin: auto 0; }
-    
-    .home-screen {
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        min-height: -webkit-fill-available;
-        padding: 10px;
-        overflow: hidden;
-        justify-content: space-between;
-    }
 }
 
 /* 🌈 ข้อความสีรุ้งเคลื่อนไหวสำหรับ VIP */
@@ -103,11 +62,13 @@ body {
     transform-origin: center center;
 }
 
+/* หน้าจอหลัก Home Screen (รวมการตั้งค่าให้เสถียรทั้งคอมและมือถือในที่เดียว) */
 .home-screen {
     position: relative;
     width: 100vw;
+    height: 100vh;
     height: 100dvh;
-    min-height: 100vh;
+    min-height: -webkit-fill-available;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -290,7 +251,9 @@ body {
 .menu-widget-btn:hover .btn-emoji { transform: scale(1.12) rotate(6deg); }
 .menu-widget-btn:hover .btn-text { background: #ffffff; color: #7c3aed; border-color: #f59e0b; }
 
-/* Media Query เฉพาะส่วนหน้า Home บนมือถือ */
+/* ==========================================================
+   MOBILE RESPONSIVE (จัดการหน้าจออุปกรณ์มือถือจริงอย่างถูกต้อง)
+   ========================================================== */
 @media (max-width: 768px) {
     .home-sidebar-left, .home-sidebar-right {
         position: static; 
@@ -298,11 +261,11 @@ body {
         flex-direction: row; 
         flex-wrap: wrap; 
         justify-content: center; 
-        margin-top: 5px; 
-        gap: 15px;
+        margin-top: 2px; 
+        gap: 10px;
     }
-    .menu-widget-btn .btn-emoji { font-size: 3.5rem; }
-    .menu-widget-btn .btn-text { margin-top: -15px; font-size: 0.75rem; padding: 2px 8px; }
+    .menu-widget-btn .btn-emoji { font-size: 3.2rem; }
+    .menu-widget-btn .btn-text { margin-top: -12px; font-size: 0.75rem; padding: 2px 8px; }
     .home-center-area { position: static; transform: none; margin: auto 0; }
     
     .home-screen {
