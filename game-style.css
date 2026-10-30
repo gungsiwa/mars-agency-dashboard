@@ -274,18 +274,10 @@ body {
 
 @media (max-width: 768px) {
     body { 
-        align-items: center; /* เปลี่ยนจาก flex-start เป็น center เพื่อจัดกึ่งกลางแนวตั้ง */
-        height: 100vh;       /* ใช้ 100vh หรือ 100dvh เพื่อล็อกความสูงหน้าจอ */
-        overflow: hidden;    /* ปิดการเลื่อนหน้าจอของ body ไม่ให้มี Scrollbar ส่วนเกิน */
-    }
-    
-    .home-screen {
-        width: 100vw;
+        align-items: center; 
         height: 100vh;
         height: 100dvh;
-        min-height: auto;
-        padding: 15px;
-        overflow: hidden;
+        overflow: hidden; /* ล็อกหน้าจอไม่ให้เลื่อนหนี */
     }
 
     .home-sidebar-left, .home-sidebar-right {
@@ -304,14 +296,22 @@ body {
     .game-screen {
         width: 100vw;
         height: 100vh;
-        height: 100dvh; /* บังคับความสูงให้พอดีกับหน้าจอมือถือเป๊ะๆ */
+        height: 100dvh; /* บังคับความสูงให้พอดีกับจออุปกรณ์จริง */
         min-height: auto;
-        padding: 10px;
-        overflow: hidden; /* ป้องกันไม่ให้หน้าจอเกมล้นและเลื่อนได้ */
+        padding: 8px; /* ลด Padding ลงเล็กน้อยเพื่อกันล้น */
+        overflow: hidden; /* ปิด Scrollbar ไม่ให้เลื่อน */
+        justify-content: space-between; /*กระจายพื้นที่ด้านบนและล่างให้สมดุล */
     }
     
-    .game-board { max-width: 100% !important; gap: 6px !important; padding: 0 4px; }
-    .game-board.level-4, .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
+    .game-board { 
+        max-width: 100% !important; 
+        gap: 4px !important; /* ลดช่องว่างระหว่างการ์ดลงนิดหน่อยในมือถือจอเล็ก */
+        padding: 0 2px; 
+    }
+    .game-board.level-4, .game-board.level-5 { 
+        grid-template-columns: repeat(4, 1fr) !important; 
+        max-width: 100% !important; 
+    }
 }
 
 .card {
