@@ -277,7 +277,7 @@ body {
         align-items: center; 
         height: 100vh;
         height: 100dvh;
-        overflow: hidden; /* ล็อกหน้าจอไม่ให้เลื่อนหนี */
+        overflow: hidden; /* ล็อกไม่ให้หน้าจอหลักเลื่อน */
     }
 
     .home-sidebar-left, .home-sidebar-right {
@@ -293,20 +293,33 @@ body {
     .menu-widget-btn .btn-text { margin-top: -15px; font-size: 0.75rem; padding: 2px 8px; }
     .home-center-area { position: static; transform: none; margin: auto 0; }
     
+    /* ปรับหน้าจอหลัก (Home) ให้เต็มจอพอดีและไม่ล้น */
+    .home-screen {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        min-height: -webkit-fill-available;
+        padding: 10px;
+        overflow: hidden;
+        justify-content: space-between;
+    }
+
+    /* ปรับหน้าจอเกม (Game) ให้ยืดหยุ่นเต็มจอพอดี ไม่ต้องเลื่อนหนี */
     .game-screen {
         width: 100vw;
         height: 100vh;
-        height: 100dvh; /* บังคับความสูงให้พอดีกับจออุปกรณ์จริง */
-        min-height: auto;
-        padding: 8px; /* ลด Padding ลงเล็กน้อยเพื่อกันล้น */
-        overflow: hidden; /* ปิด Scrollbar ไม่ให้เลื่อน */
-        justify-content: space-between; /*กระจายพื้นที่ด้านบนและล่างให้สมดุล */
+        height: 100dvh;
+        min-height: -webkit-fill-available;
+        padding: 8px 10px;
+        overflow: hidden; /* ปิด Scrollbar ส่วนเกิน */
+        justify-content: flex-start; /* จัดเรียงจากด้านบนลงมาสวยๆ ไม่ให้เบียดกัน */
     }
     
     .game-board { 
         max-width: 100% !important; 
-        gap: 4px !important; /* ลดช่องว่างระหว่างการ์ดลงนิดหน่อยในมือถือจอเล็ก */
-        padding: 0 2px; 
+        gap: 6px !important; 
+        padding: 0 4px; 
+        margin: 5px auto 10px auto; /* ปรับระยะห่างกระดานเกมให้พอดีจอ */
     }
     .game-board.level-4, .game-board.level-5 { 
         grid-template-columns: repeat(4, 1fr) !important; 
