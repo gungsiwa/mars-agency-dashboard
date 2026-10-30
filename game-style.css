@@ -274,19 +274,28 @@ body {
 
 @media (max-width: 768px) {
     body { 
-        align-items: flex-start; 
-        height: auto;
-        overflow-y: auto;
+        align-items: center; /* เปลี่ยนจาก flex-start เป็น center เพื่อจัดกึ่งกลางแนวตั้ง */
+        height: 100vh;       /* ใช้ 100vh หรือ 100dvh เพื่อล็อกความสูงหน้าจอ */
+        overflow: hidden;    /* ปิดการเลื่อนหน้าจอของ body ไม่ให้มี Scrollbar ส่วนเกิน */
     }
-    .game-screen {
-        width: 100%;
-        height: auto;
-        min-height: 100vh;
-        padding: 10px 10px 60px 10px;
+    
+    .home-screen {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        min-height: auto;
+        padding: 15px;
+        overflow: hidden;
     }
 
     .home-sidebar-left, .home-sidebar-right {
-        position: static; transform: none; flex-direction: row; flex-wrap: wrap; justify-content: center; margin-top: 5px; gap: 15px;
+        position: static; 
+        transform: none; 
+        flex-direction: row; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        margin-top: 5px; 
+        gap: 15px;
     }
     .menu-widget-btn .btn-emoji { font-size: 3.5rem; }
     .menu-widget-btn .btn-text { margin-top: -15px; font-size: 0.75rem; padding: 2px 8px; }
@@ -294,10 +303,13 @@ body {
     
     .game-screen {
         width: 100vw;
-        height: 100dvh;
-        min-height: 100vh;
+        height: 100vh;
+        height: 100dvh; /* บังคับความสูงให้พอดีกับหน้าจอมือถือเป๊ะๆ */
+        min-height: auto;
         padding: 10px;
+        overflow: hidden; /* ป้องกันไม่ให้หน้าจอเกมล้นและเลื่อนได้ */
     }
+    
     .game-board { max-width: 100% !important; gap: 6px !important; padding: 0 4px; }
     .game-board.level-4, .game-board.level-5 { grid-template-columns: repeat(4, 1fr) !important; max-width: 100% !important; }
 }
