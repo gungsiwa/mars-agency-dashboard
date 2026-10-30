@@ -1,3 +1,15 @@
+/* ==========================================================
+   GAME SCREEN STYLES (game-style.css)
+   อิงจากต้นฉบับของคุณป้อม 100%
+   ========================================================== */
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Kanit', sans-serif; 
+}
+
 html, body {
     width: 100%;
     height: 100%;
@@ -7,13 +19,6 @@ html, body {
     color: #fff;
     margin: 0;
     padding: 0;
-}
-
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
-    font-family: 'Kanit', sans-serif; 
 }
 
 body {
@@ -27,223 +32,6 @@ body {
     overflow: hidden;
     position: relative;
 }
-
-/* 🌈 ข้อความสีรุ้งเคลื่อนไหวสำหรับ VIP */
-.user-rainbow-text {
-    background: linear-gradient(90deg, #ff007f, #ff7f00, #ffcc00, #00ff7f, #00ccff, #7f00ff, #ff007f);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 900;
-    animation: rainbow-shift 3s linear infinite;
-    filter: drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000) drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
-}
-
-@keyframes rainbow-shift {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
-}
-
-@keyframes mailboxShake {
-    0% { transform: rotate(0deg); }
-    20% { transform: rotate(-14deg); }
-    40% { transform: rotate(14deg); }
-    60% { transform: rotate(-10deg); }
-    80% { transform: rotate(10deg); }
-    100% { transform: rotate(0deg); }
-}
-
-.mailbox-shaking {
-    animation: mailboxShake 0.6s ease-in-out infinite;
-    transform-origin: center center;
-}
-
-.home-screen {
-    position: relative;
-    width: 100vw;
-    height: 100dvh;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.home-video-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-}
-
-.home-top-bar, .home-sidebar-left, .home-sidebar-right, .home-center-area {
-    position: relative;
-    z-index: 2;
-}
-
-.home-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.top-left-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.player-profile-btn {
-    background: rgba(255, 255, 255, 0.88);
-    border: 3px solid #fbd578;
-    padding: 5px 16px;
-    border-radius: 30px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transition: transform 0.2s, background 0.2s;
-}
-.player-profile-btn:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.98); }
-.player-profile-btn span.name-text { color: #5c3d2e; font-weight: 700; font-size: 0.9rem; }
-
-.user-badge {
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-weight: 800;
-}
-.badge-guest { background: #e2e8f0; color: #475569; }
-.badge-VIP { background: #fef08a; color: #854d0e; border: 1px solid #facc15; }
-
-.coin-status-bar {
-    background: rgba(255, 255, 255, 0.88);
-    border: 3px solid #f59e0b;
-    padding: 5px 14px;
-    border-radius: 30px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #d97706;
-    font-weight: 800;
-    font-size: 0.95rem;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.top-right-actions { display: flex; gap: 8px; }
-
-.icon-circle-btn {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.88);
-    border: 3px solid #fbd578;
-    color: #5c3d2e;
-    font-size: 1.2rem;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transition: all 0.2s;
-    text-decoration: none;
-}
-.icon-circle-btn:hover { transform: scale(1.1) rotate(8deg); background: #ffffff; color: #d97706; }
-
-.exit-btn {
-    border-color: #fca5a5;
-    color: #ef4444;
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 10;
-}
-.exit-btn:hover { background: #fee2e2; color: #dc2626; }
-
-.home-center-area {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-.play-start-btn {
-    background: linear-gradient(180deg, #4ade80, #16a34a);
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 800;
-    padding: 14px 48px;
-    border-radius: 50px;
-    border: 5px solid #ffffff;
-    box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4), inset 0 3px 6px rgba(255,255,255,0.6);
-    cursor: pointer;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: all 0.2s;
-    animation: pulse-btn 2.2s infinite;
-}
-.play-start-btn:hover { transform: scale(1.08); background: linear-gradient(180deg, #86efac, #22c55e); }
-
-@keyframes pulse-btn {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(74, 222, 128, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
-}
-
-.home-sidebar-left, .home-sidebar-right {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-.home-sidebar-left { left: 25px; }
-.home-sidebar-right { right: 25px; }
-
-.menu-widget-btn {
-    background: transparent;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    padding: 0;
-    transition: all 0.25s;
-}
-.menu-widget-btn .btn-emoji {
-    font-size: 5.5rem;
-    line-height: 1;
-    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.3));
-    transition: transform 0.2s ease-in-out;
-}
-.menu-widget-btn .btn-text {
-    margin-top: -26px;
-    position: relative;
-    z-index: 2;
-    background: rgba(255, 255, 255, 0.92);
-    color: #2e1065;
-    font-weight: 800;
-    font-size: 0.95rem;
-    padding: 2px 12px;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    backdrop-filter: blur(6px);
-    border: 2px solid #fbd578;
-    white-space: nowrap;
-}
-.menu-widget-btn:hover { transform: scale(1.08); }
-.menu-widget-btn:hover .btn-emoji { transform: scale(1.12) rotate(6deg); }
-.menu-widget-btn:hover .btn-text { background: #ffffff; color: #7c3aed; border-color: #f59e0b; }
 
 .game-screen {
     display: none;
@@ -272,6 +60,7 @@ body {
 .game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 540px; }
 .game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 6px; max-width: 660px; }
 
+/* Media Query เฉพาะส่วนหน้าจอเกมบนมือถือ */
 @media (max-width: 768px) {
     body { 
         align-items: center; 
@@ -280,46 +69,21 @@ body {
         overflow: hidden; /* ล็อกไม่ให้หน้าจอหลักเลื่อน */
     }
 
-    .home-sidebar-left, .home-sidebar-right {
-        position: static; 
-        transform: none; 
-        flex-direction: row; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        margin-top: 5px; 
-        gap: 15px;
-    }
-    .menu-widget-btn .btn-emoji { font-size: 3.5rem; }
-    .menu-widget-btn .btn-text { margin-top: -15px; font-size: 0.75rem; padding: 2px 8px; }
-    .home-center-area { position: static; transform: none; margin: auto 0; }
-    
-    /* ปรับหน้าจอหลัก (Home) ให้เต็มจอพอดีและไม่ล้น */
-    .home-screen {
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        min-height: -webkit-fill-available;
-        padding: 10px;
-        overflow: hidden;
-        justify-content: space-between;
-    }
-
-    /* ปรับหน้าจอเกม (Game) ให้ยืดหยุ่นเต็มจอพอดี ไม่ต้องเลื่อนหนี */
     .game-screen {
         width: 100vw;
         height: 100vh;
         height: 100dvh;
         min-height: -webkit-fill-available;
         padding: 8px 10px;
-        overflow: hidden; /* ปิด Scrollbar ส่วนเกิน */
-        justify-content: flex-start; /* จัดเรียงจากด้านบนลงมาสวยๆ ไม่ให้เบียดกัน */
+        overflow: hidden;
+        justify-content: flex-start;
     }
     
     .game-board { 
         max-width: 100% !important; 
         gap: 6px !important; 
         padding: 0 4px; 
-        margin: 5px auto 10px auto; /* ปรับระยะห่างกระดานเกมให้พอดีจอ */
+        margin: 5px auto 10px auto;
     }
     .game-board.level-4, .game-board.level-5 { 
         grid-template-columns: repeat(4, 1fr) !important; 
