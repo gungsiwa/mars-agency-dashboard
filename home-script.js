@@ -1,5 +1,4 @@
 // --- home-script.js: ระบบโปรไฟล์, ร้านค้า, จดหมาย, เช็คอิน, วงล้อ, คอลเลกชัน และลีดเดอร์บอร์ด ---
-import { renderLeaderboard } from './leaderboard-renderer.js';
 
 const SUPABASE_URL = 'https://ngdshyexremewbpnlrae.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_NcBG60jTTDqonaFiD1RwKw_etSq5A2o';
@@ -132,7 +131,7 @@ async function loadPlayerDataFromSupabase(userId) {
     }
 }
 
-// 👤 ฟังก์ชันจัดการ Modal โปรไฟล์ (แก้ไขปุ่มล็อกอินในโปรไฟล์ให้กดใช้งานได้ปกติ)
+// 👤 ฟังก์ชันจัดการ Modal โปรไฟล์
 function handleProfileClick() {
     const profileUserEmail = document.getElementById('profile-user-email');
     const profileDisplayName = document.getElementById('profile-display-name');
@@ -141,7 +140,6 @@ function handleProfileClick() {
 
     if (!profileBox) return;
 
-    // 1. จัดการช่องใส่ชื่อ + ปุ่มบันทึกขนาดเล็กให้อยู่ในแถวเดียวกัน
     let nameInputGroup = document.getElementById('profile-name-input-group');
     if (!nameInputGroup && profileDisplayName) {
         const labelEl = profileBox.querySelector('label') || document.createElement('label');
@@ -158,7 +156,6 @@ function handleProfileClick() {
         saveBtn.id = 'profile-save-name-btn';
         saveBtn.innerText = '💾 บันทึก';
         saveBtn.type = 'button';
-        // ผูก Event Click โดยตรงป้องกันหลุด
         saveBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (typeof saveProfileChanges === 'function') {
@@ -190,7 +187,6 @@ function handleProfileClick() {
         }
     }
 
-    // 2. จัดการส่วนฟอร์มล็อกอินพ่วงสำหรับผู้เล่น Guest ให้สมบูรณ์
     let guestLoginSection = document.getElementById('profile-guest-login-section');
     if (!guestLoginSection) {
         guestLoginSection = document.createElement('div');
@@ -213,18 +209,14 @@ function handleProfileClick() {
         
         profileBox.appendChild(guestLoginSection);
 
-        // ดัก Event ปุ่ม Google Login ภายในโปรไฟล์โดยตรง
         const googleBtn = document.getElementById('profile-google-login-btn');
         if (googleBtn) {
             googleBtn.addEventListener('click', async function(e) {
                 e.preventDefault();
-                if (typeof loginWithGoogle === 'function') {
-                    await loginWithGoogle();
-                }
+                if (typeof loginWithGoogle === 'function') await loginWithGoogle();
             });
         }
 
-        // ดัก Event ปุ่ม Email Login ภายในโปรไฟล์โดยตรง
         const emailBtn = document.getElementById('profile-email-login-btn');
         if (emailBtn) {
             emailBtn.addEventListener('click', async function(e) {
@@ -235,12 +227,7 @@ function handleProfileClick() {
 
                 const email = emailInput.value.trim();
                 const password = passwordInput.value;
-                if (!email || !password) {
-                    alert('กรุณากรอกอีเมลและรหัสผ่าน');
-                    return;
-                }
-
-                if (typeof window.supabaseClient === 'undefined') return;
+                if (!email || !password) { alert('กรุณากรอกอีเมลและรหัสผ่าน'); return; }
 
                 const { error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) {
@@ -260,7 +247,6 @@ function handleProfileClick() {
         }
     }
 
-    // 3. ควบคุมการแสดงผลตามสถานะ User ปัจจุบัน
     if (window.currentUser) {
         if (profileUserEmail) profileUserEmail.innerText = `บัญชี: ${window.currentUser.email}`;
         if (profileDisplayName) profileDisplayName.value = window.playerName;
@@ -414,7 +400,7 @@ function renderTableData(users, tbodyElement) {
     tbodyElement.innerHTML = html;
 }
 
-// 🛡️ ระบบตรวจสอบสิทธิ์ (Access Guard) บังคับ Guest เด้งไปหน้า Login ทันที
+// 🛡️ ระบบตรวจสอบสิทธิ์
 function handleMemberFeature(featureName) {
     if (!window.currentUser) {
         openLoginModal(`กรุณาล็อกอินเพื่อใช้งานระบบ "${featureName}" และสะสมเหรียญรางวัลค่ะ ✨`);

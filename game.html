@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VJ Matching Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="home-style.css">
     <link rel="stylesheet" href="game-style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -34,7 +35,7 @@
             </div>
         </div>
 
-        <!-- เมนูด้านข้างซ้าย: ลีดเดอร์บอร์ด (เปิดฟรี) -> คอลเลกชัน -> กล่องจดหมาย -> กล่องเช็คอิน -->
+        <!-- เมนูด้านข้างซ้าย: ลีดเดอร์บอร์ด -> คอลเลกชัน -> กล่องจดหมาย -> เช็คอิน -->
         <div class="home-sidebar-left">
             <button class="menu-widget-btn" onclick="openInGameLeaderboard()">
                 <span class="btn-emoji">🏆</span>
@@ -117,7 +118,7 @@
         </div>
     </div>
 
-    <!-- 🪟 Modal: ตั้งค่า (Settings Modal) -->
+    <!-- 🪟 Modal: ตั้งค่า -->
     <div id="settings-modal" class="modal-overlay">
         <div class="cozy-modal-box">
             <button class="close-modal-x" onclick="closeSettingsModal()">✕</button>
