@@ -1,11 +1,13 @@
-// --- activity.js: จัดการข้อมูล Google Sheets, Flash Events และการแสดงผลการ์ดกิจกรรม ---
+// --- activity.js: จัดการข้อมูล Google Sheets, Flash Events, Event List และการแสดงผลการ์ดกิจกรรม ---
 
 const PK_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1314436716&single=true&output=csv";
 const EXTRA_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=651460921&single=true&output=csv";
 const FLASH_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1120098084&single=true&output=csv";
+const EVENT_LIST_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=497563078&single=true&output=csv";
 
 let allActivities = [];
 let flashEvents = [];
+let eventListItems = [];
 let currentTab = 'today';
 
 export async function initActivityModule() {
@@ -15,6 +17,7 @@ export async function initActivityModule() {
     }
     await loadActivityData();
     await loadFlashEventData();
+    await loadEventListData();
 }
 
 export function switchTab(tabName, event) {
@@ -35,13 +38,13 @@ export function switchTab(tabName, event) {
 
 window.switchTab = switchTab;
 
-// ฟังก์ชัน parseCSV ที่ปรับปรุงใหม่ให้รองรับการขึ้นบรรทัดใหม่ในเครื่องหมายคำพูด
+// ฟังก์ชัน parseCSV รองรับการขึ้นบรรทัดใหม่ในเครื่องหมายคำพูด
 function parseCSV(text) {
     const result = [];
     let rows = [];
     let currentRow = [];
     let currentField = "";
-    let insideQuotes = "";
+    let insideQuotes = false;
 
     for (let i = 0; i < text.length; i++) {
         const c = text[i];
@@ -99,6 +102,9 @@ function parseCSV(text) {
     return result;
 }
 
+// -------------------------------------------------------------
+// 1. โหลดข้อมูลกิจกรรมหลัก (PK / Extra)
+// -------------------------------------------------------------
 async function loadActivityData() {
     try {
         const lastUpdatedBox = document.getElementById("lastUpdatedBox");
@@ -128,7 +134,9 @@ async function loadActivityData() {
     }
 }
 
-// โหลดข้อมูล Flash Event จาก CSV
+// -------------------------------------------------------------
+// 2. โหลดข้อมูล Flash Event
+// -------------------------------------------------------------
 async function loadFlashEventData() {
     try {
         const res = await fetch(FLASH_SHEET_URL);
@@ -142,7 +150,132 @@ async function loadFlashEventData() {
     }
 }
 
-// เรนเดอร์ Flash Events แบบ 2 คอลัมน์ (พร้อมแสดงวันเริ่มและวันสิ้นสุดกิจกรรม)
+// -------------------------------------------------------------
+// 3. โหลดและจัดการข้อมูล Event List (แบนเนอร์ปกแนวยาว + Dynamic Sidebar)
+// -------------------------------------------------------------
+async function loadEventListData() {
+    try {
+        const res = await fetch(EVENT_LIST_SHEET_URL);
+        const text = await res.text();
+        const data = parseCSV(text);
+        
+        // กรองเฉพาะรายการที่ is_active เป็น TRUE
+        eventListItems = data.filter(item => (item.is_active || '').toUpperCase() === 'TRUE');
+        
+        renderEventListBanners();
+        renderEventListSidebarShortcuts();
+    } catch (err) {
+        console.error("เกิดข้อผิดพลาดในการโหลดข้อมูล Event List:", err);
+    }
+}
+
+// เรนเดอร์แบนเนอร์ปกแนวยาวของ Event List ต่อท้าย Flash Event
+function renderEventListBanners() {
+    const container = document.getElementById("eventListContainer");
+    if (!container) return;
+
+    if (eventListItems.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    eventListItems.forEach(item => {
+        const eventId = item.event_id || '';
+        const title = item.title || 'กิจกรรม';
+        const coverImg = item.cover_image_url || '';
+        const startDate = item.start_date || '';
+        const endDate = item.end_date || '';
+
+        const dateHtml = (startDate && endDate) ? `📅 ${startDate} - ${endDate}` : (startDate ? `📅 เริ่ม: ${startDate}` : '');
+
+        html += `
+        <div id="event-cover-${eventId}" class="event-list-cover-card" style="position: relative; width: 100%; border-radius: 14px; overflow: hidden; margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 4px 14px rgba(0,0,0,0.15); cursor: pointer;" onclick="openEventListModal('${eventId}')">
+            ${coverImg 
+                ? `<img src="${coverImg}" alt="${title}" style="width: 100%; height: auto; display: block; object-fit: cover;">` 
+                : `<div style="width: 100%; height: 160px; background: #1e293b; display: flex; align-items: center; justify-content: center; color: #f59e0b; font-weight: 600;">${title}</div>`
+            }
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, transparent 100%); padding: 12px 16px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 700; color: #ffffff; margin: 0 0 2px 0;">${title}</h3>
+                    ${dateHtml ? `<span style="font-size: 11px; color: #fbbf24; font-weight: 500;">${dateHtml}</span>` : ''}
+                </div>
+                <button type="button" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;">
+                    ดูรายละเอียด →
+                </button>
+            </div>
+        </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// เรนเดอร์ Dynamic Shortcut รายชื่อกิจกรรมบน Sidebar ด้านซ้าย (ปรับให้คลิกแล้วเปิด Modal ทันที)
+function renderEventListSidebarShortcuts() {
+    const navMenu = document.querySelector(".sidebar-left .nav-menu");
+    if (!navMenu) return;
+
+    // ลบ Shortcut ดั้งเดิมของ Event List ออกก่อนเพื่ออัปเดตใหม่
+    const existingShortcuts = navMenu.querySelectorAll(".event-list-sidebar-shortcut");
+    existingShortcuts.forEach(el => el.remove());
+
+    if (eventListItems.length === 0) return;
+
+    eventListItems.forEach(item => {
+        const eventId = item.event_id || '';
+        const title = item.title || 'กิจกรรม';
+
+        const shortcutBtn = document.createElement("button");
+        shortcutBtn.type = "button";
+        shortcutBtn.className = "nav-btn event-list-sidebar-shortcut";
+        shortcutBtn.innerHTML = `📌 <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title}</span>`;
+        
+        shortcutBtn.onclick = () => {
+            // สั่งเปิด Modal รายละเอียดของกิจกรรมนั้นๆ ทันทีเมื่อคลิกช็อตคัท
+            openEventListModal(eventId);
+
+            // ปิด Sidebar บนมือถืออัตโนมัติ (ถ้ามีฟังก์ชัน toggleSidebar)
+            if (typeof window.toggleSidebar === 'function') {
+                window.toggleSidebar();
+            }
+        };
+
+        navMenu.appendChild(shortcutBtn);
+    });
+}
+
+// Modal สำหรับแสดงรายละเอียดเมื่อคลิกแบนเนอร์ Event List หรือกดจาก Sidebar
+window.openEventListModal = function(eventId) {
+    const item = eventListItems.find(e => e.event_id === eventId);
+    if (!item) return;
+
+    const modal = document.getElementById("flashEventModal");
+    if (!modal) return;
+
+    const titleEl = modal.querySelector('.modal-title');
+    const descEl = modal.querySelector('.modal-description');
+    
+    if (titleEl) titleEl.innerText = item.title || 'รายละเอียดกิจกรรม';
+    if (descEl) {
+        let contentHtml = '';
+        const detailImg = item.detail_image_url || item.banner_url || item.cover_image_url;
+        if (detailImg) {
+            contentHtml += `<img src="${detailImg}" alt="${item.title || ''}" style="width:100%; border-radius:8px; margin-bottom: 12px; display: block;">`;
+        }
+        if (item.start_date && item.end_date) {
+            contentHtml += `<p style="font-size: 12px; color: #f59e0b; margin-bottom: 8px; font-weight: 600;">📅 ระยะเวลา: ${item.start_date} - ${item.end_date}</p>`;
+        }
+        contentHtml += (item.description || '').replace(/\n/g, '<br>');
+        descEl.innerHTML = contentHtml;
+    }
+
+    modal.classList.add('active');
+};
+
+// -------------------------------------------------------------
+// 4. เรนเดอร์ Flash Events
+// -------------------------------------------------------------
 function renderFlashEvents() {
     const flashContainer = document.getElementById("flashEventContainer");
     if (!flashContainer) return;
@@ -162,7 +295,6 @@ function renderFlashEvents() {
         const eventId = event.event_id || '';
         const shortDesc = event.description || 'คลิกเพื่อดูรายละเอียดเพิ่มเติม...';
         
-        // จัดรูปแบบแสดงผลวันเริ่มและวันสิ้นสุด
         const dateDisplayHtml = (startDate && endDate) 
             ? `<div class="flash-event-date"><i class="far fa-calendar-alt"></i> ระยะเวลา: ${startDate} - ${endDate}</div>` 
             : (startDate ? `<div class="flash-event-date"><i class="far fa-calendar-alt"></i> เริ่ม: ${startDate}</div>` : '');
@@ -187,7 +319,6 @@ function renderFlashEvents() {
     flashContainer.innerHTML = html;
 }
 
-// ฟังก์ชันเปิด Modal Flash Event พร้อมปุ่มกากบาท
 window.openFlashEventModal = function(eventId) {
     const event = flashEvents.find(e => e.event_id === eventId);
     if (!event) return;
@@ -214,7 +345,6 @@ window.openFlashEventModal = function(eventId) {
     modal.classList.add('active');
 };
 
-// ฟังก์ชันปิด Modal Flash Event (ทำงานร่วมกับปุ่มกากบาท)
 window.closeFlashEventModal = function() {
     const modal = document.getElementById("flashEventModal");
     if (modal) {
@@ -222,7 +352,6 @@ window.closeFlashEventModal = function() {
     }
 };
 
-// ปิด Modal เมื่อคลิกพื้นที่ว่างด้านนอกกล่อง
 window.addEventListener('click', (e) => {
     const modal = document.getElementById("flashEventModal");
     if (e.target === modal) {

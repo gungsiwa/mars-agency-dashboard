@@ -24,6 +24,60 @@ const profileDisplayName = document.getElementById('profile-display-name');
 const logoutActionBtn = document.getElementById('logout-action-btn');
 const inGameLeaderboardModal = document.getElementById('in-game-leaderboard-modal');
 
+// ดักฟังการเปลี่ยนแปลงสถานะการล็อกอินอัตโนมัติ (ช่วยแก้ปัญหาค้างหน้า Guest หลังล็อกอิน Google)
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+        window.currentUser = session.user;
+        window.playerName = window.currentUser.user_metadata?.full_name || window.currentUser.email.split('@')[0];
+        window.oldPlayerName = window.playerName;
+        if (homePlayerName) {
+            homePlayerName.innerText = window.playerName;
+            homePlayerName.classList.add('user-rainbow-text');
+        }
+        
+        if (userBadge) {
+            userBadge.innerText = 'VIP';
+            userBadge.className = 'user-badge badge-VIP';
+        }
+
+        await loadPlayerDataFromSupabase(window.currentUser.id);
+        await applyEquippedItems();
+    }
+});
+
+async function logoutUser() {
+    try {
+        // 1. สั่งล้าง Session ใน Supabase
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+
+        // 2. ล้างตัวแปรข้อมูลผู้ใช้
+        window.currentUser = null;
+        window.playerName = "";
+
+        // 3. รีเซ็ต UI ของหน้าจอ
+        const homePlayerName = document.getElementById("player-name");
+        const userBadge = document.getElementById("user-badge");
+        
+        if (homePlayerName) {
+            homePlayerName.innerText = "Guest";
+            homePlayerName.classList.remove('user-rainbow-text');
+        }
+        
+        if (userBadge) {
+            userBadge.innerText = 'Guest';
+            userBadge.className = 'user-badge badge-guest';
+        }
+        
+        // 4. ปิด Modal โปรไฟล์และรีโหลดหน้าจอเพื่อคืนสถานะ Guest สมบูรณ์
+        closeProfileModal();
+        location.reload();
+
+    } catch (err) {
+        console.error("เกิดข้อผิดพลาดขณะออกจากระบบ:", err.message);
+    }
+}
+
 async function checkUserSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session?.user) {
@@ -66,7 +120,7 @@ async function applyEquippedItems() {
                     if (homeVideo) {
                         homeVideo.src = `images/${item.item_key}`;
                         homeVideo.load();
-                        homeVideo.play().catch(e => console.log("Auto-play error:", e));
+                        homeVideo.play().catch(e => {});
                     }
                 }
                 if (item.item_type === 'theme_game' && item.item_key) {
@@ -82,9 +136,7 @@ async function applyEquippedItems() {
                 }
             });
         }
-    } catch (err) {
-        console.error("Error in applyEquippedItems:", err);
-    }
+    } catch (err) {}
 }
 
 function initGuestPlayer() {
@@ -126,9 +178,7 @@ async function loadPlayerDataFromSupabase(userId) {
             window.userCoins = data.coins || 0;
             if (userCoinsDisplay) userCoinsDisplay.innerText = window.userCoins;
         }
-    } catch (err) {
-        console.log('No player record found:', err);
-    }
+    } catch (err) {}
 }
 
 // 👤 ฟังก์ชันจัดการ Modal โปรไฟล์
@@ -496,7 +546,6 @@ function renderCollectionItems(items, containerElement, itemType) {
 
         const cardDiv = document.createElement('div');
         cardDiv.className = 'collection-item-card';
-        // ปรับ CSS Style เพิ่มเติมเพื่อให้ป้ายสถานะและชื่อไม่ทับซ้อนกัน จัดเลย์เอาต์ให้สวยงาม
         cardDiv.style.cssText = `background: #fff; border: 2px solid ${isEquipped ? '#3b82f6' : '#fed7aa'}; border-radius: 14px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-height: 180px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);`;
 
         cardDiv.innerHTML = `
@@ -514,19 +563,16 @@ function renderCollectionItems(items, containerElement, itemType) {
     });
 }
 
-// 🔧 ปรับตรรกะ: กดใช้งานไอเทมชิ้นใหม่ ชิ้นเก่าต้องหลุดออก และแสดง "ใช้งานอยู่" ได้แค่ 1 ชิ้นต่อหมวดหมู่
 async function equipCollectionItem(itemId, itemType) {
     try {
         if (!window.currentUser) return;
 
-        // 1. เคลียร์สถานะ is_equipped ของไอเทมทุกชิ้นในหมวดหมู่เดียวกันของ User นี้ให้เป็น false ทั้งหมดก่อน
         await supabaseClient
             .from('collections')
             .update({ is_equipped: false })
             .eq('user_id', window.currentUser.id)
             .eq('item_type', itemType);
 
-        // 2. อัปเดตไอเทมที่ถูกเลือกใหม่ให้เป็น is_equipped: true
         await supabaseClient
             .from('collections')
             .update({ is_equipped: true })
@@ -534,18 +580,14 @@ async function equipCollectionItem(itemId, itemType) {
 
         await applyEquippedItems();
 
-        // โหลดข้อมูลหน้าคอลเลกชันกลับมาแสดงผลใหม่ตามแท็บปัจจุบัน
         let activeCategory = 'cards';
         if (itemType === 'theme_game') activeCategory = 'shirts';
         else if (itemType === 'theme_home') activeCategory = 'backgrounds';
 
         fetchUserCollectionData(activeCategory);
-    } catch (err) {
-        console.error("Error in equipCollectionItem:", err);
-    }
+    } catch (err) {}
 }
 
-// 📭 ระบบกล่องจดหมายและเช็คอิน
 let audioCtx = null;
 let hasPlayedSound = false;
 
@@ -569,9 +611,7 @@ function playNotificationSound() {
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.4);
-    } catch (e) {
-        console.log('Audio error:', e);
-    }
+    } catch (e) {}
 }
 
 async function checkUnreadMails() {
@@ -591,9 +631,7 @@ async function checkUnreadMails() {
             if (mailboxBtn) mailboxBtn.classList.remove('mailbox-shaking');
             hasPlayedSound = false;
         }
-    } catch (err) {
-        console.error('Error checking unread mails:', err);
-    }
+    } catch (err) {}
 }
 
 async function markMailsAsRead() {
@@ -603,9 +641,7 @@ async function markMailsAsRead() {
         const mailboxBtn = document.getElementById('mailbox-btn');
         if (mailboxBtn) mailboxBtn.classList.remove('mailbox-shaking');
         hasPlayedSound = false;
-    } catch (err) {
-        console.error('Error marking mails as read:', err);
-    }
+    } catch (err) {}
 }
 
 window.openMailboxModal = function() {
@@ -629,7 +665,6 @@ window.closeMailboxModal = function() {
     }
 };
 
-// 🔧 ปรับแก้: เรียงลำดับจดหมายให้ฉบับล่าสุด (Newest) ขึ้นมาแสดงอยู่ด้านบนสุดเสมอ
 async function loadUserMails() {
     if (!window.currentUser) return;
     try {
@@ -637,7 +672,7 @@ async function loadUserMails() {
         .from('user_mails')
         .select('*')
         .eq('user_id', window.currentUser.id)
-        .order('created_at', { ascending: false }); // เรียงจากใหม่ไปเก่า จดหมายล่าสุดอยู่บนสุด
+        .order('created_at', { ascending: false });
         
         if (userMailsError) throw userMailsError;
         
@@ -682,9 +717,7 @@ async function loadUserMails() {
         }
         const mailboxList = document.getElementById('mailbox-list');
         if (mailboxList) mailboxList.innerHTML = html;
-    } catch (err) {
-        console.error('Error loading mails:', err);
-    }
+    } catch (err) {}
 }
 
 async function claimMailReward(userMailId) {
@@ -757,29 +790,40 @@ async function claimMailReward(userMailId) {
                     }
 
                     if (itemKeyStr) {
-                        const { data: existingCol } = await supabaseClient
+                        const { data: existingItems, error: fetchColError } = await supabaseClient
                             .from('collections')
-                            .select('id')
-                            .eq('user_id', currentUserId)
-                            .eq('item_key', itemKeyStr)
-                            .maybeSingle();
+                            .select('*')
+                            .eq('item_key', itemKeyStr);
 
-                        if (existingCol) {
-                            await supabaseClient
-                                .from('collections')
-                                .update({ is_unlocked: true })
-                                .eq('id', existingCol.id);
-                        } else {
-                            await supabaseClient
-                                .from('collections')
-                                .insert({
-                                    user_id: currentUserId,
-                                    item_type: itemTypeStr,
-                                    item_key: itemKeyStr,
-                                    name: itemNameStr,
-                                    is_unlocked: true,
-                                    is_equipped: false
-                                });
+                        if (!fetchColError) {
+                            let targetItem = null;
+                            if (existingItems && existingItems.length > 0) {
+                                targetItem = existingItems.find(item => !item.user_id);
+                                if (!targetItem) {
+                                    targetItem = existingItems.find(item => item.user_id === currentUserId);
+                                }
+                            }
+
+                            if (targetItem) {
+                                await supabaseClient
+                                    .from('collections')
+                                    .update({ 
+                                        user_id: currentUserId,
+                                        is_unlocked: true 
+                                    })
+                                    .eq('id', targetItem.id);
+                            } else {
+                                await supabaseClient
+                                    .from('collections')
+                                    .insert({
+                                        user_id: currentUserId,
+                                        item_type: itemTypeStr,
+                                        item_key: itemKeyStr,
+                                        name: itemNameStr,
+                                        is_unlocked: true,
+                                        is_equipped: false
+                                    });
+                            }
                         }
                     }
                 }
@@ -801,7 +845,6 @@ async function claimMailReward(userMailId) {
         loadUserMails();
 
     } catch (err) {
-        console.error('Error claiming reward:', err);
         alert('เกิดข้อผิดพลาดในการรับของรางวัล กรุณาลองใหม่อีกครั้ง');
     }
 }
@@ -826,7 +869,6 @@ async function deleteUserMail(userMailId, isClaimed) {
         alert('🗑️ ลบจดหมายเรียบร้อยแล้ว');
         loadUserMails();
     } catch (err) {
-        console.error('Error deleting mail:', err);
         alert('ไม่สามารถลบจดหมายได้');
     }
 }
@@ -835,7 +877,6 @@ window.loadUserMails = loadUserMails;
 window.claimMailReward = claimMailReward;
 window.deleteUserMail = deleteUserMail;
 
-// 🎁 Daily Reward
 function getTodayLocalDate() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -934,7 +975,6 @@ window.loadDailyRewardStatus = async function() {
         if (statusText) statusText.innerText = `เช็คชื่อต่อเนื่องเพื่อรับรางวัลใหญ่! (Day ${currentStreak})`;
     }
   } catch (err) {
-    console.error(err);
     grid.innerHTML = `<p style="grid-column: span 4; text-align: center; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>`;
   }
 }
@@ -1023,7 +1063,6 @@ window.claimDailyReward = async function() {
       await window.loadDailyRewardStatus();
     }
   } catch (err) {
-    console.error(err);
     alert('เกิดข้อผิดพลาดในการรับรางวัล');
   }
 };
@@ -1075,12 +1114,6 @@ async function loginWithEmail() {
         closeLoginModal();
         checkUserSession();
     }
-}
-
-async function logoutUser() {
-    await supabaseClient.auth.signOut();
-    closeProfileModal();
-    location.reload();
 }
 
 async function addCoins(amount) {
