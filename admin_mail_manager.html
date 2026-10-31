@@ -285,10 +285,6 @@
             .select('*')
             .eq('item_type', itemType);
 
-            console.log('ประเภทที่เลือก (itemType):', itemType);
-            console.log('ข้อมูลที่ดึงมาจาก Supabase:', items);
-            console.log('Error (ถ้ามี):', error);
-
         if (error) {
             console.error('Error loading collections:', error);
             itemSelect.innerHTML = '<option value="">-- โหลดข้อมูลไม่สำเร็จ --</option>';
@@ -339,8 +335,17 @@
             const itemSelectStr = document.getElementById('collection-item-select').value;
             if (!itemSelectStr) return alert('กรุณาเลือกไอเทมจาก Collections');
             const itemObj = JSON.parse(itemSelectStr);
-            rewardPayload = { type: 'collection_item', item: itemObj };
-            rewardText = `Item: ${itemObj.name || itemObj.item_name || itemObj.id} (${itemObj.item_type})`;
+            
+            // --- จุดที่แก้ไข: ดึง item_key (หรือฟิลด์อ้างอิง) แนบไปกับ payload อัตโนมัติ ---
+            const extractedItemKey = itemObj.item_key || itemObj.key || itemObj.id;
+
+            rewardPayload = { 
+                type: 'collection_item', 
+                item_key: extractedItemKey, // บันทึก item_key ลงไปให้เสมอ
+                amount: 1,
+                item: itemObj 
+            };
+            rewardText = `Item: ${itemObj.name || itemObj.item_name || itemObj.id} (${itemObj.item_type}) [Key: ${extractedItemKey}]`;
         } else if (rewardType === 'custom_item') {
             const itemKey = document.getElementById('custom-item-key').value.trim();
             const amount = document.getElementById('custom-item-amount').value;
@@ -404,17 +409,15 @@
 
     async function sendMailFinal() {
         try {
-            // เตรียมข้อมูล reward_items ให้รองรับทั้ง custom_item และ collection_item
             let rewardItemsArr = [];
             
             if (tempMailData.rewardPayload?.type === 'custom_item') {
                 rewardItemsArr = [tempMailData.rewardPayload];
             } else if (tempMailData.rewardPayload?.type === 'collection_item') {
-                // บันทึกข้อมูลไอเทมคอลเลกชัน (เช่น แบ็คกราวด์, ธีม, การ์ด) ลงใน reward_items
                 rewardItemsArr = [tempMailData.rewardPayload];
             }
 
-            // 1. บันทึกลงตาราง mail_system ตามโครงสร้างเดิมของคุณป้อม
+            // 1. บันทึกลงตาราง mail_system พร้อม item_key ที่ถูกแนบมาโดยอัตโนมัติ
             const { data: mailInsert, error: mailError } = await _supabase
                 .from('mail_system')
                 .insert({

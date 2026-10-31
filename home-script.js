@@ -481,13 +481,13 @@ async function fetchUserCollectionData(category) {
             return;
         }
 
-        renderCollectionItems(data, container);
+        renderCollectionItems(data, container, dbCategory);
     } catch (err) {
         container.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #ef4444; padding: 20px;">เกิดข้อผิดพลาดในการโหลด</p>`;
     }
 }
 
-function renderCollectionItems(items, containerElement) {
+function renderCollectionItems(items, containerElement, itemType) {
     containerElement.innerHTML = '';
     items.forEach(item => {
         const isUnlocked = item.is_unlocked;
@@ -496,30 +496,52 @@ function renderCollectionItems(items, containerElement) {
 
         const cardDiv = document.createElement('div');
         cardDiv.className = 'collection-item-card';
-        cardDiv.style.cssText = `background: #fff; border: 2px solid ${isEquipped ? '#3b82f6' : '#fed7aa'}; border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;`;
+        // ปรับ CSS Style เพิ่มเติมเพื่อให้ป้ายสถานะและชื่อไม่ทับซ้อนกัน จัดเลย์เอาต์ให้สวยงาม
+        cardDiv.style.cssText = `background: #fff; border: 2px solid ${isEquipped ? '#3b82f6' : '#fed7aa'}; border-radius: 14px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-height: 180px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);`;
 
         cardDiv.innerHTML = `
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <span style="font-size: 0.65rem; font-weight: 700; padding: 2px 6px; background: ${isUnlocked ? '#dcfce7' : '#f1f5f9'}; color: ${isUnlocked ? '#15803d' : '#64748b'}; border-radius: 8px;">${isUnlocked ? 'ปลดล็อกแล้ว' : 'ล็อก'}</span>
-                    ${isEquipped ? '<span style="font-size: 0.7rem; color: #3b82f6; font-weight: bold;">✓ ใช้งานอยู่</span>' : ''}
-                </div>
-                ${itemKey.endsWith('.mp4') ? `<video src="images/${itemKey}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" controls></video>` : `<img src="images/${itemKey}" alt="${itemKey}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;" onerror="this.src='images/vj1.png'">`}
-                <div style="font-size: 0.8rem; font-weight: 800; color: #5c3d2e;">${item.name || itemKey}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span style="font-size: 0.65rem; font-weight: 700; padding: 3px 8px; background: ${isUnlocked ? '#dcfce7' : '#f1f5f9'}; color: ${isUnlocked ? '#15803d' : '#64748b'}; border-radius: 8px;">${isUnlocked ? 'ปลดล็อกแล้ว' : 'ล็อก'}</span>
+                <span style="font-size: 0.7rem; color: ${isEquipped ? '#3b82f6' : '#94a3b8'}; font-weight: bold; background: ${isEquipped ? '#eff6ff' : 'transparent'}; padding: 2px 6px; border-radius: 6px;">${isEquipped ? '✓ ใช้งานอยู่' : 'มีอยู่'}</span>
             </div>
-            <button onclick="equipCollectionItem('${item.id}', '${itemKey}')" style="margin-top: 8px; background: ${isEquipped ? '#94a3b8' : (isUnlocked ? '#f59e0b' : '#cbd5e1')}; color: white; border: none; padding: 6px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; cursor: ${isUnlocked ? 'pointer' : 'not-allowed'};" ${!isUnlocked ? 'disabled' : ''}>${isEquipped ? 'สวมใส่แล้ว' : 'กดใช้งาน'}</button>
+            <div style="width: 100%; height: 90px; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 8px; background: #f8fafc;">
+                ${itemKey.endsWith('.mp4') ? `<video src="images/${itemKey}" style="width: 100%; height: 100%; object-fit: cover;" controls></video>` : `<img src="images/${itemKey}" alt="${itemKey}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='images/vj1.png'">`}
+            </div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #5c3d2e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; padding: 2px 0;" title="${item.name || itemKey}">${item.name || itemKey}</div>
+            <button onclick="equipCollectionItem('${item.id}', '${itemType}')" style="background: ${isEquipped ? '#94a3b8' : (isUnlocked ? '#f59e0b' : '#cbd5e1')}; color: white; border: none; padding: 7px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; cursor: ${isUnlocked ? 'pointer' : 'not-allowed'}; width: 100%;" ${!isUnlocked ? 'disabled' : ''}>${isEquipped ? 'สวมใส่แล้ว' : 'กดใช้งาน'}</button>
         `;
         containerElement.appendChild(cardDiv);
     });
 }
 
-async function equipCollectionItem(itemId, itemKey) {
+// 🔧 ปรับตรรกะ: กดใช้งานไอเทมชิ้นใหม่ ชิ้นเก่าต้องหลุดออก และแสดง "ใช้งานอยู่" ได้แค่ 1 ชิ้นต่อหมวดหมู่
+async function equipCollectionItem(itemId, itemType) {
     try {
-        await supabaseClient.from('collections').update({ is_equipped: true }).eq('id', itemId);
+        if (!window.currentUser) return;
+
+        // 1. เคลียร์สถานะ is_equipped ของไอเทมทุกชิ้นในหมวดหมู่เดียวกันของ User นี้ให้เป็น false ทั้งหมดก่อน
+        await supabaseClient
+            .from('collections')
+            .update({ is_equipped: false })
+            .eq('user_id', window.currentUser.id)
+            .eq('item_type', itemType);
+
+        // 2. อัปเดตไอเทมที่ถูกเลือกใหม่ให้เป็น is_equipped: true
+        await supabaseClient
+            .from('collections')
+            .update({ is_equipped: true })
+            .eq('id', itemId);
+
         await applyEquippedItems();
-        fetchUserCollectionData('cards');
+
+        // โหลดข้อมูลหน้าคอลเลกชันกลับมาแสดงผลใหม่ตามแท็บปัจจุบัน
+        let activeCategory = 'cards';
+        if (itemType === 'theme_game') activeCategory = 'shirts';
+        else if (itemType === 'theme_home') activeCategory = 'backgrounds';
+
+        fetchUserCollectionData(activeCategory);
     } catch (err) {
-        console.error(err);
+        console.error("Error in equipCollectionItem:", err);
     }
 }
 
@@ -607,13 +629,15 @@ window.closeMailboxModal = function() {
     }
 };
 
+// 🔧 ปรับแก้: เรียงลำดับจดหมายให้ฉบับล่าสุด (Newest) ขึ้นมาแสดงอยู่ด้านบนสุดเสมอ
 async function loadUserMails() {
     if (!window.currentUser) return;
     try {
         const { data: userMails, error: userMailsError } = await supabaseClient
         .from('user_mails')
         .select('*')
-        .eq('user_id', window.currentUser.id);
+        .eq('user_id', window.currentUser.id)
+        .order('created_at', { ascending: false }); // เรียงจากใหม่ไปเก่า จดหมายล่าสุดอยู่บนสุด
         
         if (userMailsError) throw userMailsError;
         
@@ -669,6 +693,8 @@ async function claimMailReward(userMailId) {
         return;
     }
 
+    const currentUserId = window.currentUser.id;
+
     try {
         const { data: userMailData, error: userMailError } = await supabaseClient
             .from('user_mails')
@@ -700,22 +726,62 @@ async function claimMailReward(userMailId) {
 
             if (mailInfo.reward_items && Array.isArray(mailInfo.reward_items) && mailInfo.reward_items.length > 0) {
                 for (const reward of mailInfo.reward_items) {
-                    let rawItemId = reward.item_id || reward.id || 1;
+                    let numericItemId = parseInt(reward.item_id || reward.id || 1, 10);
+                    let itemKeyStr = reward.item_key || '';
+                    let itemTypeStr = reward.item_type || 'theme_home';
+                    let itemNameStr = reward.name || itemKeyStr;
                     let itemAmount = reward.amount || 1;
-                    let numericItemId = parseInt(rawItemId, 10);
-                    if (isNaN(numericItemId)) numericItemId = 1;
 
-                    await supabaseClient.from('user_inventory').insert({
-                        user_id: window.currentUser.id,
-                        item_id: numericItemId,
-                        amount: itemAmount,
-                        status: 'available'
-                    });
+                    const { data: existingInv } = await supabaseClient
+                        .from('user_inventory')
+                        .select('id, amount')
+                        .eq('user_id', currentUserId)
+                        .eq('item_id', numericItemId)
+                        .maybeSingle();
 
-                    await supabaseClient
-                        .from('collections')
-                        .update({ is_unlocked: true, user_id: window.currentUser.id })
-                        .eq('id', numericItemId);
+                    if (existingInv) {
+                        const newAmount = (existingInv.amount || 1) + itemAmount;
+                        await supabaseClient
+                            .from('user_inventory')
+                            .update({ amount: newAmount })
+                            .eq('id', existingInv.id);
+                    } else {
+                        await supabaseClient
+                            .from('user_inventory')
+                            .insert({
+                                user_id: currentUserId,
+                                item_id: numericItemId,
+                                amount: itemAmount,
+                                status: 'available'
+                            });
+                    }
+
+                    if (itemKeyStr) {
+                        const { data: existingCol } = await supabaseClient
+                            .from('collections')
+                            .select('id')
+                            .eq('user_id', currentUserId)
+                            .eq('item_key', itemKeyStr)
+                            .maybeSingle();
+
+                        if (existingCol) {
+                            await supabaseClient
+                                .from('collections')
+                                .update({ is_unlocked: true })
+                                .eq('id', existingCol.id);
+                        } else {
+                            await supabaseClient
+                                .from('collections')
+                                .insert({
+                                    user_id: currentUserId,
+                                    item_type: itemTypeStr,
+                                    item_key: itemKeyStr,
+                                    name: itemNameStr,
+                                    is_unlocked: true,
+                                    is_equipped: false
+                                });
+                        }
+                    }
                 }
             }
         }
@@ -731,11 +797,11 @@ async function claimMailReward(userMailId) {
             confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         }
 
-        alert('🎉 รับของรางวัลและเพิ่มเข้ากระเป๋าสำเร็จ!');
+        alert('🎉 รับของรางวัลและเพิ่มเข้าคอลเลกชันสำเร็จ!');
         loadUserMails();
 
     } catch (err) {
-        console.error('Error claiming mail reward:', err);
+        console.error('Error claiming reward:', err);
         alert('เกิดข้อผิดพลาดในการรับของรางวัล กรุณาลองใหม่อีกครั้ง');
     }
 }
