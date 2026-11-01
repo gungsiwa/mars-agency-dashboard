@@ -1,6 +1,5 @@
 /* ==========================================================
-   GAME SCREEN STYLES (game-style.css)
-   อิงจากต้นฉบับของคุณป้อม 100%
+   GAME SCREEN STYLES (game-style.css) - ปรับปรุงฉบับสมบูรณ์
    ========================================================== */
 
 * { 
@@ -10,11 +9,12 @@
     font-family: 'Kanit', sans-serif; 
 }
 
+/* ล็อกหน้าจอหลักไม่ให้เลื่อนและพอดีกับหน้าจออุปกรณ์พกพา */
 html, body {
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    height: 100dvh;
+    overflow: hidden !important;
     background-color: #0f172a;
     color: #fff;
     margin: 0;
@@ -24,94 +24,100 @@ html, body {
 body {
     background-color: #0f172a;
     color: #fff;
-    height: 100dvh;
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
     position: relative;
 }
 
+/* กรอบหน้าจอเกมหลัก ล็อกขนาดเต็มจอและซ่อนส่วนเกิน */
 .game-screen {
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    width: 100%;
-    min-height: 100%;
-    padding: 10px 10px 50px 10px; /* เพิ่ม Padding ด้านล่าง 50px เพื่อไม่ให้ตกขอบ */
+    width: 100vw;
+    height: 100dvh;
+    max-width: 500px;
+    padding: 8px 10px;
     position: relative;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .level-badge {
-    background-color: #3b82f6; color: #fff; padding: 6px 18px;
-    border-radius: 20px; font-size: 1rem; margin-bottom: 12px; font-weight: bold;
+    background-color: #3b82f6; 
+    color: #fff; 
+    padding: 4px 14px;
+    border-radius: 20px; 
+    font-size: 0.9rem; 
+    margin-bottom: 8px; 
+    font-weight: bold;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.score-board { font-size: 0.95rem; margin-bottom: 16px; color: #cbd5e1; text-align: center; }
+.score-board { 
+    font-size: 0.85rem; 
+    margin-bottom: 10px; 
+    color: #cbd5e1; 
+    text-align: center; 
+}
 
+/* กระดานเกมหลักแบบยืดหยุ่น รองรับการย่อขนาดอัตโนมัติ */
 .game-board {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 10px; width: 100%; max-width: 420px; margin: 0 auto 20px auto;
-}
-.game-board.level-4 { grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 540px; }
-.game-board.level-5 { grid-template-columns: repeat(8, 1fr); gap: 6px; max-width: 660px; }
-
-/* Media Query เฉพาะส่วนหน้าจอเกมบนมือถือ */
-@media (max-width: 768px) {
-    body { 
-        align-items: center; 
-        height: 100vh;
-        height: 100dvh;
-        overflow: hidden; /* ล็อกไม่ให้หน้าจอหลักเลื่อน */
-    }
-
-    .game-screen {
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        min-height: -webkit-fill-available;
-        padding: 8px 10px;
-        overflow: hidden;
-        justify-content: flex-start;
-    }
-    
-    .game-board { 
-        max-width: 100% !important; 
-        gap: 6px !important; 
-        padding: 0 4px; 
-        margin: 5px auto 10px auto;
-    }
-    .game-board.level-4, .game-board.level-5 { 
-        grid-template-columns: repeat(4, 1fr) !important; 
-        max-width: 100% !important; 
-    }
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px; 
+    width: 100%; 
+    max-width: 380px; 
+    margin: 0 auto 10px auto;
+    box-sizing: border-box;
 }
 
+/* เลเวล 4: ปรับเป็น 6 คอลัมน์และบีบช่องว่างเพื่อให้การ์ดย่อลงพอดีจอ */
+.game-board.level-4 { 
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 4px; 
+    max-width: 440px; 
+}
+
+/* เลเวล 5: ปรับเป็น 8 คอลัมน์ ย่อขนาดการ์ดอัตโนมัติไม่ให้ล้น */
+.game-board.level-5 { 
+    grid-template-columns: repeat(8, 1fr); 
+    gap: 3px; 
+    max-width: 480px; 
+}
+
+/* สไตล์การ์ดเกม ปรับสัดส่วนให้ย่อขยายตามพื้นที่ตาราง */
 .card {
     aspect-ratio: 1 / 1;
     background-size: cover;
     background-position: center;
-    border: 3px solid #64748b; border-radius: 12px; cursor: pointer;
-    display: flex; justify-content: center; align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s, background-color 0.2s;
-    position: relative; overflow: hidden;
+    border: 2px solid #64748b; 
+    border-radius: 8px; 
+    cursor: pointer;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); 
+    transition: transform 0.1s, background-color 0.2s;
+    position: relative; 
+    overflow: hidden;
 }
+
 .card:active { transform: scale(0.95); }
 .card.flipped { background: #ffffff !important; border-color: #38bdf8; cursor: default; }
-.card img { width: 85%; height: 85%; object-fit: cover; border-radius: 8px; display: none; }
+.card img { width: 85%; height: 85%; object-fit: cover; border-radius: 6px; display: none; }
 .card.flipped img { display: block; }
 
-.btn-container { display: flex; gap: 12px; margin-top: 10px; }
-button.action-btn { padding: 10px 22px; font-size: 0.95rem; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.btn-container { display: flex; gap: 10px; margin-top: 6px; }
+button.action-btn { padding: 8px 18px; font-size: 0.9rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 .reset-btn { background-color: #475569; color: white; }
 .reset-btn:hover { background-color: #64748b; transform: translateY(-2px); }
 .home-btn-action { background-color: #f59e0b; color: #fff; }
 .home-btn-action:hover { background-color: #d97706; transform: translateY(-2px); }
 
+/* Modal องค์ประกอบแจ้งเตือนต่างๆ */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0;
