@@ -10,6 +10,15 @@ let flashEvents = [];
 let eventListItems = [];
 let currentTab = 'today';
 
+// ฟังก์ชันแปลงลิงก์ใน Description ให้เป็น HTML ที่กดคลิกได้
+function formatDescriptionWithLinks(text) {
+    if (!text) return '';
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; text-decoration: underline; word-break: break-all;">${url}</a>`;
+    });
+}
+
 export async function initActivityModule() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -266,7 +275,7 @@ window.openEventListModal = function(eventId) {
         if (item.start_date && item.end_date) {
             contentHtml += `<p style="font-size: 12px; color: #f59e0b; margin-bottom: 8px; font-weight: 600;">📅 ระยะเวลา: ${item.start_date} - ${item.end_date}</p>`;
         }
-        contentHtml += (item.description || '').replace(/\n/g, '<br>');
+        contentHtml += formatDescriptionWithLinks(item.description || '').replace(/\n/g, '<br>');
         descEl.innerHTML = contentHtml;
     }
 
@@ -338,7 +347,7 @@ window.openFlashEventModal = function(eventId) {
         if (event.start_date && event.end_date) {
             contentHtml += `<p style="font-size: 12px; color: #f59e0b; margin-bottom: 8px; font-weight: 600;">📅 ระยะเวลา: ${event.start_date} - ${event.end_date}</p>`;
         }
-        contentHtml += (event.description || '').replace(/\n/g, '<br>');
+        contentHtml += formatDescriptionWithLinks(event.description || '').replace(/\n/g, '<br>');
         descEl.innerHTML = contentHtml;
     }
 
