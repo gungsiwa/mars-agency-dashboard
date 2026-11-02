@@ -140,12 +140,17 @@
             <button class="close-modal-x" onclick="closeLoginModal()">✕</button>
             <h2>เข้าสู่ระบบ</h2>
             <p id="login-modal-subtitle" class="sub-title">เพื่อบันทึกเหรียญและสะสมรางวัล</p>
+
+            <!-- (ซ่อนหรือลบปุ่ม Google ออกตรงนี้ตามที่ต้องการครับ) -->
+            <!--
             <button class="login-google-btn" onclick="loginWithGoogle()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
                 เข้าสู่ระบบด้วย Google
             </button>
             <div class="divider-text"><span>หรือใช้อีเมล</span></div>
-            <div class="cozy-input-group">
+            -->
+        
+            <div class="cozy-input-group"style=" margin-top: 10px;">
                 <input type="email" id="login-email" class="cozy-input" placeholder="อีเมลของคุณ">
                 <input type="password" id="login-password" class="cozy-input" placeholder="รหัสผ่าน">
             </div>

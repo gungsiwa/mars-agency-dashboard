@@ -243,13 +243,9 @@ function handleProfileClick() {
         guestLoginSection.id = 'profile-guest-login-section';
         guestLoginSection.style.cssText = 'margin-top: 15px; border-top: 2px dashed #fed7aa; padding-top: 15px; text-align: left;';
         
+        // ถอดปุ่ม Google ออกจากตรงนี้ เหลือไว้เฉพาะฟอร์มกรอกอีเมลและรหัสผ่านครับ
         guestLoginSection.innerHTML = `
             <p style="font-size: 0.85rem; font-weight: 700; color: #d97706; margin-bottom: 10px; text-align: center;">✨ ต้องการเข้าสู่ระบบ VIP?</p>
-            <button id="profile-google-login-btn" type="button" class="login-google-btn" style="margin-bottom: 10px; padding: 8px 12px; font-size: 0.85rem; width: 100%;">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16" alt="Google">
-                เข้าสู่ระบบด้วย Google
-            </button>
-            <div class="divider-text" style="margin: 10px 0;"><span>หรือใช้อีเมล</span></div>
             <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
                 <input type="email" id="profile-login-email" class="cozy-input" placeholder="อีเมลของคุณ" style="padding: 8px 12px; font-size: 0.85rem; border: 2px solid #fed7aa; border-radius: 10px;">
                 <input type="password" id="profile-login-password" class="cozy-input" placeholder="รหัสผ่าน" style="padding: 8px 12px; font-size: 0.85rem; border: 2px solid #fed7aa; border-radius: 10px;">
@@ -258,14 +254,6 @@ function handleProfileClick() {
         `;
         
         profileBox.appendChild(guestLoginSection);
-
-        const googleBtn = document.getElementById('profile-google-login-btn');
-        if (googleBtn) {
-            googleBtn.addEventListener('click', async function(e) {
-                e.preventDefault();
-                if (typeof loginWithGoogle === 'function') await loginWithGoogle();
-            });
-        }
 
         const emailBtn = document.getElementById('profile-email-login-btn');
         if (emailBtn) {
