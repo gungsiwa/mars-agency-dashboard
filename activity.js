@@ -171,7 +171,6 @@ async function loadEventListData() {
         const text = await res.text();
         const data = parseCSV(text);
         
-        // กรองเฉพาะรายการที่ is_active เป็น TRUE
         eventListItems = data.filter(item => (item.is_active || '').toUpperCase() === 'TRUE');
         
         renderEventListBanners();
@@ -181,7 +180,6 @@ async function loadEventListData() {
     }
 }
 
-// เรนเดอร์แบนเนอร์ปกแนวยาวของ Event List ต่อท้าย Flash Event
 function renderEventListBanners() {
     const container = document.getElementById("eventListContainer");
     if (!container) return;
@@ -223,12 +221,10 @@ function renderEventListBanners() {
     container.innerHTML = html;
 }
 
-// เรนเดอร์ Dynamic Shortcut รายชื่อกิจกรรมบน Sidebar ด้านซ้าย (ปรับให้คลิกแล้วเปิด Modal ทันที)
 function renderEventListSidebarShortcuts() {
     const navMenu = document.querySelector(".sidebar-left .nav-menu");
     if (!navMenu) return;
 
-    // ลบ Shortcut ดั้งเดิมของ Event List ออกก่อนเพื่ออัปเดตใหม่
     const existingShortcuts = navMenu.querySelectorAll(".event-list-sidebar-shortcut");
     existingShortcuts.forEach(el => el.remove());
 
@@ -244,10 +240,7 @@ function renderEventListSidebarShortcuts() {
         shortcutBtn.innerHTML = `📌 <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title}</span>`;
         
         shortcutBtn.onclick = () => {
-            // สั่งเปิด Modal รายละเอียดของกิจกรรมนั้นๆ ทันทีเมื่อคลิกช็อตคัท
             openEventListModal(eventId);
-
-            // ปิด Sidebar บนมือถืออัตโนมัติ (ถ้ามีฟังก์ชัน toggleSidebar)
             if (typeof window.toggleSidebar === 'function') {
                 window.toggleSidebar();
             }
@@ -257,7 +250,6 @@ function renderEventListSidebarShortcuts() {
     });
 }
 
-// Modal สำหรับแสดงรายละเอียดเมื่อคลิกแบนเนอร์ Event List หรือกดจาก Sidebar
 window.openEventListModal = function(eventId) {
     const item = eventListItems.find(e => e.event_id === eventId);
     if (!item) return;
@@ -546,7 +538,9 @@ function filterCards() {
     renderActivities(filtered);
 }
 
-// ฟังก์ชันโหลดข้อมูลแต้มสังกัด
+// -------------------------------------------------------------
+// 5. โหลดและจัดการข้อมูลแต้มสังกัด (Agency_Points)
+// -------------------------------------------------------------
 async function loadAgencyPointsData() {
     try {
         const res = await fetch(AGENCY_POINTS_SHEET_URL);
@@ -562,20 +556,19 @@ async function loadAgencyPointsData() {
     }
 }
 
-// ฟังก์ชันอัปเดตตัวเลขแต้มคงเหลือลงในการ์ดกริด
 function renderAgencyPoints() {
     if (!agencyPointsData) return;
 
     const pointsVal = agencyPointsData.points || '0';
     
-    // อัปเดตตัวเลขแต้มบนการ์ด (อัปเดตทุกจุดที่มีคลาส .agency-points-value)
+    // อัปเดตตัวเลขแต้มลงคลาส .agency-points-value บนการ์ด
     const pointsElements = document.querySelectorAll('.agency-points-value');
     pointsElements.forEach(el => {
         el.innerText = `${pointsVal} แต้ม`;
     });
 }
 
-// ฟังก์ชันเปิด Modal แสดงรายละเอียดแต้มสังกัด
+// ฟังก์ชันเปิด Modal แสดงรายละเอียดแต้มสังกัด (แก้ไขตัวแปร let contentHtml เรียบร้อย)
 window.openAgencyPointsModal = function() {
     if (!agencyPointsData) return;
 

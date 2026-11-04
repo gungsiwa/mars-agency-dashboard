@@ -239,10 +239,10 @@ html, body {
 }
 .admin-action-btn:hover { transform: scale(1.05); }
 
-/* ================= 📍 SHORTCUT CARDS GRID (สัดส่วนแนวตั้ง 2:3 - มือถือ 3 คอลัมน์ / คอมพิวเตอร์ 4 คอลัมน์) ================= */
+/* ================= 📍 SHORTCUT CARDS GRID (มือถือ 3 คอลัมน์ / คอมพิวเตอร์ 4 คอลัมน์) ================= */
 .shortcut-cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* บนมือถือแสดง 3 คอลัมน์ ขนาดกำลังพอดี */
+    grid-template-columns: repeat(3, 1fr); /* บนมือถือแสดง 3 คอลัมน์ */
     gap: 6px;
     margin-top: 8px;
     margin-bottom: 8px;
@@ -251,31 +251,22 @@ html, body {
 
 @media (min-width: 769px) {
     .shortcut-cards-grid {
-        grid-template-columns: repeat(4, 1fr); /* บนคอมพิวเตอร์ขยายสูงสุด 4 คอลัมน์ */
-        gap: 10px;
+        grid-template-columns: repeat(4, 1fr); /* บนคอมพิวเตอร์แสดง 4 คอลัมน์ */
+        gap: 8px;
     }
 }
 
-/* ควบคุมการแสดงผล Desktop / Mobile แยกกันอย่างเด็ดขาดเพื่อความแม่นยำของตำแหน่ง */
-.desktop-shortcut-grid {
-    display: none;
-}
-.mobile-shortcut-grid {
-    display: grid;
-}
+/* ควบคุมการแสดงผล Desktop / Mobile แยกกัน */
+.desktop-shortcut-grid { display: none; }
+.mobile-shortcut-grid { display: grid; }
 
 @media (min-width: 769px) {
-    .desktop-shortcut-grid {
-        display: grid !important;
-    }
-    .mobile-shortcut-grid {
-        display: none !important;
-    }
+    .desktop-shortcut-grid { display: grid !important; }
+    .mobile-shortcut-grid { display: none !important; }
 }
 
 .shortcut-card-item {
     position: relative;
-    aspect-ratio: 2 / 3; /* บังคับสัดส่วนทรงสี่เหลี่ยมผืนผ้าแนวตั้ง 2:3 เท่ากันเป๊ะ */
     border-radius: 12px;
     overflow: hidden;
     text-decoration: none;
@@ -290,7 +281,6 @@ html, body {
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
 }
 
-/* กรณีการ์ดรูปภาพสำเร็จรูป (Image Card) */
 .shortcut-card-item.image-card img,
 .shortcut-card-item.image-card video {
     width: 100%;
@@ -298,56 +288,6 @@ html, body {
     object-fit: cover;
     display: block;
     border-radius: 12px;
-}
-
-/* กรณีการ์ดเขียนด้วยโค้ดโปรแกรม (Programmatic Card) */
-.shortcut-card-item.program-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    padding: 10px;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.shortcut-card-badge {
-    font-size: 7.5px;
-    background: rgba(245, 158, 11, 0.18);
-    color: #d97706;
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-weight: 700;
-}
-
-.shortcut-card-icon {
-    font-size: 26px;
-    align-self: center;
-    margin: 4px 0;
-}
-
-.shortcut-card-content {
-    width: 100%;
-}
-
-.shortcut-card-content h4 {
-    font-size: 10.5px;
-    color: var(--text-main);
-    font-weight: 700;
-    margin-bottom: 2px;
-    line-height: 1.2;
-}
-
-.shortcut-card-content p {
-    font-size: 8px;
-    color: var(--text-muted);
-    line-height: 1.2;
-}
-
-.shortcut-card-action {
-    font-size: 8.5px;
-    font-weight: 700;
-    color: var(--primary-blue);
-    align-self: flex-end;
-    margin-top: 2px;
 }
 
 .sidebar-right { display: flex; flex-direction: column; gap: 4px !important; height: fit-content; position: sticky; top: 6px; }
@@ -595,7 +535,6 @@ html, body {
     white-space: pre-line;
 }
 
-/* Responsive สำหรับมือถือ */
 @media (max-width: 640px) {
     .flash-event-card {
         flex-direction: column;
@@ -608,4 +547,184 @@ html, body {
     .flash-event-media img {
         object-position: top;
     }
+}
+
+/* --- ดีไซน์การ์ดเรตโบนัสใหม่ (ย่อขนาดฟิตกริดมาตรฐาน) --- */
+.bonus-animated-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    padding: 6px 4px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.bonus-animated-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+.bonus-animated-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(245, 158, 11, 0.12);
+}
+
+.bonus-card-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.bonus-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
+    color: #92400e;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    margin-bottom: 2px;
+    box-shadow: 0 1px 3px rgba(245, 158, 11, 0.1);
+}
+
+.bonus-icon-wrapper {
+    width: 100%;
+    height: 45px;
+    margin: 0 auto 3px;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(241, 245, 249, 0.96));
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 4px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.bonus-chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2px;
+    height: 30px;
+}
+
+.bonus-bar {
+    width: 6px;
+    border-radius: 2px 2px 1px 1px;
+    position: relative;
+    overflow: hidden;
+    animation: wave 2.2s ease-in-out infinite;
+}
+
+.bonus-bar-1 { background: linear-gradient(to top, #ef4444, #f87171); height: 12px; animation-delay: 0s; }
+.bonus-bar-2 { background: linear-gradient(to top, #f97316, #fb923c); height: 16px; animation-delay: 0.25s; }
+.bonus-bar-3 { background: linear-gradient(to top, #eab308, #facc15); height: 21px; animation-delay: 0.5s; }
+.bonus-bar-4 { background: linear-gradient(to top, #22c55e, #4ade80); height: 25px; animation-delay: 0.75s; }
+.bonus-bar-5 { background: linear-gradient(to top, #3b82f6, #60a5fa); height: 30px; animation-delay: 1s; }
+
+@keyframes wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.12); }
+}
+
+.bonus-coins {
+    position: absolute;
+    bottom: 3px;
+    right: 4px;
+    display: flex;
+    gap: 1px;
+}
+
+.bonus-coin {
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6px;
+    font-weight: bold;
+    color: #92400e;
+    box-shadow: 0 1px 2px rgba(245, 158, 11, 0.3);
+    animation: coinBounce 2s ease-in-out infinite;
+}
+
+.bonus-coin:nth-child(2) { animation-delay: 0.3s; }
+.bonus-coin:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes coinBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+.bonus-title {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 3px;
+    font-family: 'Kanit', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.agency-points-value {
+    font-size: 1.50rem;
+    font-weight: 800;
+    color: #2563eb;
+    margin-bottom: 3px;
+    font-family: 'Kanit', sans-serif;
+}
+
+.bonus-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 4px 6px;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+    transition: all 0.3s ease;
+    font-family: 'Kanit', sans-serif;
+}
+
+.bonus-action-btn:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-1px);
 }
