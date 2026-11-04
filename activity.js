@@ -4,11 +4,13 @@ const PK_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57dj
 const EXTRA_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=651460921&single=true&output=csv";
 const FLASH_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1120098084&single=true&output=csv";
 const EVENT_LIST_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=497563078&single=true&output=csv";
+const AGENCY_POINTS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS-vZD57djEboAG1wlDYDcVQkK0p9xtLrbwv1LhMtfJRz7NJjsb0uHqq_y5UEgkS-9aZXwtpm-XqhD8/pub?gid=1215278239&single=true&output=csv";
 
 let allActivities = [];
 let flashEvents = [];
 let eventListItems = [];
 let currentTab = 'today';
+let agencyPointsData = null;
 
 // ฟังก์ชันแปลงลิงก์ใน Description ให้เป็น HTML ที่กดคลิกได้
 function formatDescriptionWithLinks(text) {
@@ -27,6 +29,7 @@ export async function initActivityModule() {
     await loadActivityData();
     await loadFlashEventData();
     await loadEventListData();
+    await loadAgencyPointsData();
 }
 
 export function switchTab(tabName, event) {
@@ -542,3 +545,60 @@ function filterCards() {
 
     renderActivities(filtered);
 }
+
+// ฟังก์ชันโหลดข้อมูลแต้มสังกัด
+async function loadAgencyPointsData() {
+    try {
+        const res = await fetch(AGENCY_POINTS_SHEET_URL);
+        const text = await res.text();
+        const data = parseCSV(text);
+        
+        if (data && data.length > 0) {
+            agencyPointsData = data[0]; // ดึงข้อมูลแถวแรก
+            renderAgencyPoints();
+        }
+    } catch (err) {
+        console.error("เกิดข้อผิดพลาดในการโหลดข้อมูลแต้มสังกัด:", err);
+    }
+}
+
+// ฟังก์ชันอัปเดตตัวเลขแต้มคงเหลือลงในการ์ดกริด
+function renderAgencyPoints() {
+    if (!agencyPointsData) return;
+
+    const pointsVal = agencyPointsData.points || '0';
+    
+    // อัปเดตตัวเลขแต้มบนการ์ด (อัปเดตทุกจุดที่มีคลาส .agency-points-value)
+    const pointsElements = document.querySelectorAll('.agency-points-value');
+    pointsElements.forEach(el => {
+        el.innerText = `${pointsVal} แต้ม`;
+    });
+}
+
+// ฟังก์ชันเปิด Modal แสดงรายละเอียดแต้มสังกัด
+window.openAgencyPointsModal = function() {
+    if (!agencyPointsData) return;
+
+    const modal = document.getElementById("agencyPointsModal");
+    if (!modal) return;
+
+    const titleEl = document.getElementById("pointsModalTitle");
+    const countEl = document.getElementById("pointsModalCount");
+    const descEl = document.getElementById("pointsModalDesc");
+
+    if (titleEl) titleEl.innerText = agencyPointsData.title || 'แต้มสังกัดคงเหลือ';
+    if (countEl) countEl.innerText = `${agencyPointsData.points || '0'} แต้ม`;
+    if (descEl) {
+        let contentHtml = formatDescriptionWithLinks(agencyPointsData.description || '').replace(/\n/g, '<br>');
+        descEl.innerHTML = contentHtml;
+    }
+
+    modal.classList.add('active');
+};
+
+window.closeAgencyPointsModal = function() {
+    const modal = document.getElementById("agencyPointsModal");
+    if (modal) {
+        modal.classList.remove('active');
+    }
+};
